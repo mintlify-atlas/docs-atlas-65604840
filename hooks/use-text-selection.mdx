@@ -55,7 +55,7 @@ function Demo() {
   return (
     <div>
       <p>Select text to see details:</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <p>Try selecting any text on this page to see the selection information.</p>
       {info && (
         <pre>{JSON.stringify(info, null, 2)}</pre>
       )}
@@ -83,7 +83,7 @@ function Demo() {
 
   return (
     <div>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <p>Select some text on this page, then click the button to copy it to your clipboard.</p>
       {selectedText && (
         <button onClick={handleCopy}>
           Copy "{selectedText.slice(0, 20)}..."
