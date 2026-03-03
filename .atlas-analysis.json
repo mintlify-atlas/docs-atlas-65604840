@@ -1,0 +1,328 @@
+{
+  "projectType": "frontend",
+  "projectName": "Kuzenbo",
+  "projectDescription": "Modern React UI suite with composable primitives, token-first theming, and focused packages for charts, notifications, dates, and more.",
+  "theme": "palm",
+  "primaryColor": "#16a34a",
+  "lightColor": null,
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart",
+              "theming",
+              "styling"
+            ]
+          },
+          {
+            "group": "Foundations",
+            "pages": [
+              "foundations/theme-runtime",
+              "foundations/styles-baseline",
+              "foundations/charts",
+              "foundations/architecture"
+            ]
+          },
+          {
+            "group": "Packages",
+            "pages": [
+              "packages/core",
+              "packages/hooks",
+              "packages/charts",
+              "packages/notifications",
+              "packages/date",
+              "packages/datatable",
+              "packages/code",
+              "packages/tiptap",
+              "packages/ai",
+              "packages/theme",
+              "packages/styles"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Layout",
+            "pages": [
+              "components/container",
+              "components/card",
+              "components/separator",
+              "components/spacer",
+              "components/aspect-ratio",
+              "components/resizable"
+            ]
+          },
+          {
+            "group": "Inputs",
+            "pages": [
+              "components/button",
+              "components/input",
+              "components/textarea",
+              "components/checkbox",
+              "components/radio-group",
+              "components/select",
+              "components/switch",
+              "components/slider",
+              "components/number-field",
+              "components/input-otp"
+            ]
+          },
+          {
+            "group": "Forms",
+            "pages": [
+              "components/form",
+              "components/field",
+              "components/fieldset",
+              "components/label",
+              "components/input-group",
+              "components/checkbox-group",
+              "components/button-group"
+            ]
+          },
+          {
+            "group": "Navigation",
+            "pages": [
+              "components/breadcrumb",
+              "components/pagination",
+              "components/tabs",
+              "components/navigation-menu",
+              "components/navigation-list",
+              "components/menubar",
+              "components/sidebar"
+            ]
+          },
+          {
+            "group": "Overlays",
+            "pages": [
+              "components/dialog",
+              "components/drawer",
+              "components/sheet",
+              "components/popover",
+              "components/tooltip",
+              "components/dropdown-menu",
+              "components/context-menu",
+              "components/alert-dialog"
+            ]
+          },
+          {
+            "group": "Feedback",
+            "pages": [
+              "components/alert",
+              "components/toast",
+              "components/progress",
+              "components/spinner",
+              "components/skeleton",
+              "components/meter",
+              "components/announcement"
+            ]
+          },
+          {
+            "group": "Data Display",
+            "pages": [
+              "components/table",
+              "components/badge",
+              "components/pill",
+              "components/avatar",
+              "components/kbd",
+              "components/code",
+              "components/typography",
+              "components/timeline",
+              "components/empty"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "components/accordion",
+              "components/collapsible",
+              "components/carousel",
+              "components/command",
+              "components/combobox",
+              "components/autocomplete",
+              "components/scroll-area",
+              "components/affix",
+              "components/dropzone",
+              "components/qr-code",
+              "components/rating",
+              "components/marquee",
+              "components/emoji-picker",
+              "components/copy-button",
+              "components/preview-card",
+              "components/toggle",
+              "components/toggle-group",
+              "components/toolbar",
+              "components/action-icon",
+              "components/theme-icon",
+              "components/range-slider",
+              "components/item",
+              "components/portal"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Hooks",
+        "groups": [
+          {
+            "group": "State Management",
+            "pages": [
+              "hooks/use-disclosure",
+              "hooks/use-toggle",
+              "hooks/use-counter",
+              "hooks/use-input-state",
+              "hooks/use-list-state",
+              "hooks/use-set-state",
+              "hooks/use-map",
+              "hooks/use-set",
+              "hooks/use-queue",
+              "hooks/use-state-history",
+              "hooks/use-uncontrolled",
+              "hooks/use-validated-state"
+            ]
+          },
+          {
+            "group": "UI & Interaction",
+            "pages": [
+              "hooks/use-click-outside",
+              "hooks/use-hover",
+              "hooks/use-focus-trap",
+              "hooks/use-focus-within",
+              "hooks/use-focus-return",
+              "hooks/use-hotkeys",
+              "hooks/use-long-press",
+              "hooks/use-eye-dropper",
+              "hooks/use-file-dialog",
+              "hooks/use-fullscreen",
+              "hooks/use-collapse",
+              "hooks/use-horizontal-collapse"
+            ]
+          },
+          {
+            "group": "Browser APIs",
+            "pages": [
+              "hooks/use-clipboard",
+              "hooks/use-local-storage",
+              "hooks/use-session-storage",
+              "hooks/use-media-query",
+              "hooks/use-color-scheme",
+              "hooks/use-viewport-size",
+              "hooks/use-document-title",
+              "hooks/use-document-visibility",
+              "hooks/use-favicon",
+              "hooks/use-hash",
+              "hooks/use-network",
+              "hooks/use-orientation",
+              "hooks/use-os",
+              "hooks/use-mobile"
+            ]
+          },
+          {
+            "group": "Effects & Timing",
+            "pages": [
+              "hooks/use-debounced-callback",
+              "hooks/use-debounced-state",
+              "hooks/use-debounced-value",
+              "hooks/use-throttled-callback",
+              "hooks/use-throttled-state",
+              "hooks/use-throttled-value",
+              "hooks/use-interval",
+              "hooks/use-timeout",
+              "hooks/use-idle"
+            ]
+          },
+          {
+            "group": "Observers",
+            "pages": [
+              "hooks/use-event-listener",
+              "hooks/use-window-event",
+              "hooks/use-resize-observer",
+              "hooks/use-mutation-observer",
+              "hooks/use-intersection",
+              "hooks/use-in-viewport"
+            ]
+          },
+          {
+            "group": "Mouse & Scroll",
+            "pages": [
+              "hooks/use-mouse",
+              "hooks/use-move",
+              "hooks/use-radial-move",
+              "hooks/use-window-scroll",
+              "hooks/use-scroll-into-view",
+              "hooks/use-scroller",
+              "hooks/use-scroll-spy",
+              "hooks/use-headroom",
+              "hooks/use-page-leave"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "hooks/use-id",
+              "hooks/use-merged-ref",
+              "hooks/use-previous",
+              "hooks/use-did-update",
+              "hooks/use-force-update",
+              "hooks/use-is-first-render",
+              "hooks/use-isomorphic-effect",
+              "hooks/use-shallow-effect",
+              "hooks/use-mounted",
+              "hooks/use-logger",
+              "hooks/use-fetch",
+              "hooks/use-pagination",
+              "hooks/use-selection",
+              "hooks/use-text-selection",
+              "hooks/use-reduced-motion",
+              "hooks/use-floating-window"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Core APIs",
+            "pages": [
+              "api/provider",
+              "api/size-system",
+              "api/theming",
+              "api/styling"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "70+ composable React UI primitives with predictable styling contracts",
+    "Token-first theming with semantic color system for light and dark modes",
+    "70+ standalone React hooks for common UI patterns and browser APIs",
+    "Focused packages for charts, notifications, dates, data tables, code, and AI workflows",
+    "Built on Base UI with Tailwind CSS and tailwind-variants",
+    "TypeScript-first with full type safety and IntelliSense support"
+  ],
+  "publicApiSurface": [
+    "@kuzenbo/core - Button, Input, Select, Dialog, Dropdown, Card, Table, Toast, and 60+ more components",
+    "@kuzenbo/hooks - useDisclosure, useClipboard, useHotkeys, useMediaQuery, useDebounce, and 65+ more hooks",
+    "@kuzenbo/charts - Chart primitives and prebuilt chart components",
+    "@kuzenbo/notifications - Toast and notification system",
+    "@kuzenbo/date - Calendar and date picker components",
+    "@kuzenbo/datatable - Data table with sorting, filtering, and pagination",
+    "@kuzenbo/code - Code editor and syntax highlighting components",
+    "@kuzenbo/tiptap - Rich text editor built on Tiptap",
+    "@kuzenbo/ai - AI UI primitives and conversation interfaces",
+    "@kuzenbo/theme - Theme runtime and bootstrap utilities",
+    "@kuzenbo/styles - Baseline CSS and reset styles"
+  ]
+}
