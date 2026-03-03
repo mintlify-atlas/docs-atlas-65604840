@@ -1,0 +1,306 @@
+---
+title: "Menubar"
+description: "Build desktop-style menu bars with @kuzenbo/core Menubar, featuring dropdown menus, shortcuts, and checkbox items."
+---
+
+## Overview
+
+`Menubar` provides a horizontal menu bar component similar to desktop application menus.
+
+- Use it for application toolbars with dropdown menus.
+- Supports nested menus, radio groups, and checkbox items.
+- Built on Base UI Menubar with integrated dropdown management.
+- Includes keyboard navigation and focus management.
+
+Ideal for editor toolbars, application headers, and complex menu structures.
+
+## Installation
+
+```npm
+npm i @kuzenbo/core
+```
+
+## Import
+
+```tsx
+import {
+  Menubar,
+  MenubarArrow,
+  MenubarBackdrop,
+  MenubarCheckboxItem,
+  MenubarContent,
+  MenubarGroup,
+  MenubarItem,
+  MenubarLabel,
+  MenubarLinkItem,
+  MenubarMenu,
+  MenubarPopup,
+  MenubarPortal,
+  MenubarPositioner,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger,
+} from "@kuzenbo/core/ui/menubar";
+```
+
+## Basic Example
+
+```tsx
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from "@kuzenbo/core/ui/menubar";
+
+export function BasicMenubar() {
+  return (
+    <Menubar>
+      <MenubarMenu>
+        <MenubarTrigger>File</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem>New File</MenubarItem>
+          <MenubarItem>Open...</MenubarItem>
+          <MenubarItem>Save</MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+      
+      <MenubarMenu>
+        <MenubarTrigger>Edit</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem>Cut</MenubarItem>
+          <MenubarItem>Copy</MenubarItem>
+          <MenubarItem>Paste</MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+    </Menubar>
+  );
+}
+```
+
+## Advanced Example
+
+```tsx
+import {
+  Menubar,
+  MenubarCheckboxItem,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger,
+} from "@kuzenbo/core/ui/menubar";
+
+export function AdvancedMenubar() {
+  return (
+    <Menubar>
+      <MenubarMenu>
+        <MenubarTrigger>File</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem>
+            New File
+            <MenubarShortcut>⌘N</MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem>
+            Open...
+            <MenubarShortcut>⌘O</MenubarShortcut>
+          </MenubarItem>
+          <MenubarSeparator />
+          <MenubarSub>
+            <MenubarSubTrigger>Recent Files</MenubarSubTrigger>
+            <MenubarSubContent>
+              <MenubarItem>document.tsx</MenubarItem>
+              <MenubarItem>styles.css</MenubarItem>
+            </MenubarSubContent>
+          </MenubarSub>
+        </MenubarContent>
+      </MenubarMenu>
+
+      <MenubarMenu>
+        <MenubarTrigger>View</MenubarTrigger>
+        <MenubarContent>
+          <MenubarCheckboxItem checked>Show Sidebar</MenubarCheckboxItem>
+          <MenubarCheckboxItem>Show Minimap</MenubarCheckboxItem>
+          <MenubarSeparator />
+          <MenubarRadioGroup value="dark">
+            <MenubarRadioItem value="light">Light Theme</MenubarRadioItem>
+            <MenubarRadioItem value="dark">Dark Theme</MenubarRadioItem>
+          </MenubarRadioGroup>
+        </MenubarContent>
+      </MenubarMenu>
+    </Menubar>
+  );
+}
+```
+
+## Size Scale
+
+`Menubar` supports `xs | sm | md | lg | xl` sizing that affects all menu triggers and content.
+
+```tsx
+import { Menubar } from "@kuzenbo/core/ui/menubar";
+
+export function SizedMenubar() {
+  return (
+    <Menubar size="lg">
+      {/* Menu items */}
+    </Menubar>
+  );
+}
+```
+
+## API Reference
+
+### Menubar
+
+Root menubar container with size context.
+
+<ParamField path="size" type="InputSize" default="md">
+  Size of the menubar: `xs | sm | md | lg | xl`.
+</ParamField>
+
+### MenubarMenu
+
+Individual menu within the menubar (wraps DropdownMenu).
+
+<ParamField path="size" type="InputSize" default="md">
+  Size override for this menu.
+</ParamField>
+
+### MenubarTrigger
+
+Button that opens the menu dropdown.
+
+### MenubarContent
+
+Dropdown content container.
+
+<ParamField path="align" type="'start' | 'center' | 'end'" default="start">
+  Alignment of the dropdown relative to trigger.
+</ParamField>
+
+<ParamField path="sideOffset" type="number" default={4}>
+  Distance from the trigger.
+</ParamField>
+
+### MenubarItem
+
+Standard menu item.
+
+<ParamField path="disabled" type="boolean" default={false}>
+  Whether the item is disabled.
+</ParamField>
+
+### MenubarLinkItem
+
+Menu item that acts as a link.
+
+<ParamField path="href" type="string">
+  URL for the link.
+</ParamField>
+
+### MenubarCheckboxItem
+
+Menu item with checkbox state.
+
+<ParamField path="checked" type="boolean">
+  Whether the checkbox is checked.
+</ParamField>
+
+<ParamField path="onCheckedChange" type="(checked: boolean) => void">
+  Callback when checked state changes.
+</ParamField>
+
+### MenubarRadioGroup
+
+Group of mutually exclusive radio items.
+
+<ParamField path="value" type="string">
+  Currently selected value.
+</ParamField>
+
+<ParamField path="onValueChange" type="(value: string) => void">
+  Callback when selection changes.
+</ParamField>
+
+### MenubarRadioItem
+
+Individual radio option within a group.
+
+<ParamField path="value" type="string" required>
+  Unique value for this option.
+</ParamField>
+
+### MenubarSeparator
+
+Visual separator between menu items.
+
+### MenubarShortcut
+
+Keyboard shortcut display (typically right-aligned).
+
+### MenubarSub
+
+Nested submenu container.
+
+### MenubarSubTrigger
+
+Trigger for opening a submenu.
+
+### MenubarSubContent
+
+Content of a submenu.
+
+### MenubarLabel
+
+Non-interactive label for grouping items.
+
+### MenubarGroup
+
+Semantic grouping container.
+
+## Accessibility
+
+- Base UI handles ARIA menubar semantics and keyboard navigation.
+- Use arrow keys to navigate between menus and items.
+- Enter/Space to activate items.
+- Escape to close menus.
+- Checkbox and radio items announce their state.
+
+## SSR and RSC Notes
+
+- Menubar is client-interactive (`"use client"`).
+- Portal-based positioning ensures dropdown appears above other content.
+- Use client boundaries when integrating into server components.
+
+## Styling and Tokens
+
+- Default styles use semantic tokens (`bg-background`, `border-border`, `text-foreground`).
+- Menu content includes shadow and border for elevation.
+- Shortcuts typically use `text-muted-foreground` for subtle appearance.
+
+## Troubleshooting
+
+- Menu not opening: ensure `MenubarTrigger` and `MenubarContent` are both inside `MenubarMenu`.
+- Shortcuts not visible: wrap shortcut text in `<MenubarShortcut>` component.
+- Checkbox state not updating: use controlled `checked` prop with `onCheckedChange`.
+- Submenu not appearing: verify `MenubarSubTrigger` and `MenubarSubContent` are inside `MenubarSub`.
+
+## Related Links
+
+- [Navigation Menu](/components/navigation-menu)
+- [Dropdown Menu](/components/dropdown-menu)
+- [Context Menu](/components/context-menu)
+- [Navigation List](/components/navigation-list)

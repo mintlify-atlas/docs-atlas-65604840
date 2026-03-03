@@ -1,0 +1,292 @@
+---
+title: Typography
+description: Semantic text components with consistent styling and hierarchy
+---
+
+The Typography component provides a comprehensive set of semantic text elements with consistent styling, proper hierarchy, and Base UI render composition.
+
+## Import
+
+```tsx
+import { Typography } from "@kuzenbo/core";
+```
+
+## Usage
+
+```tsx
+<Typography.Display>Large display heading</Typography.Display>
+<Typography.H1>Page title</Typography.H1>
+<Typography.Body>Body text content</Typography.Body>
+<Typography.Caption>Helper text</Typography.Caption>
+```
+
+## Anatomy
+
+The Typography component includes multiple text variants:
+
+**Headings:**
+- `Typography.Display` - Extra large display text
+- `Typography.H1` - Primary heading
+- `Typography.H2` - Secondary heading
+- `Typography.H3` - Tertiary heading
+- `Typography.H4` - Quaternary heading
+- `Typography.H5` - Quinary heading
+- `Typography.H6` - Senary heading
+- `Typography.Heading` - Generic heading with variant prop
+
+**Text:**
+- `Typography.Body` - Standard body text
+- `Typography.Lead` - Larger introductory text
+- `Typography.P` - Paragraph text
+- `Typography.Text` - Generic text with variant prop
+- `Typography.Muted` - De-emphasized text
+- `Typography.Small` - Smaller text
+- `Typography.Caption` - Caption text
+- `Typography.Eyebrow` - Uppercase label text
+- `Typography.Overline` - Overline text
+- `Typography.Subheading` - Subheading text
+
+**Lists:**
+- `Typography.Ul` - Unordered list
+- `Typography.Ol` - Ordered list
+- `Typography.Li` - List item
+
+**Other:**
+- `Typography.Link` - Styled link
+- `Typography.Blockquote` - Quoted content
+- `Typography.Prose` - Rich text container
+
+## Props
+
+### Typography.Heading
+
+<ParamField path="variant" type="'display' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'" default="h2">
+  The heading variant determining size and weight.
+</ParamField>
+
+<ParamField path="render" type="function">
+  Base UI render prop for custom element composition.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Typography.Text
+
+<ParamField path="variant" type="'body' | 'lead' | 'muted' | 'small' | 'caption' | 'eyebrow' | 'overline' | 'subheading'" default="body">
+  The text variant determining size, weight, and appearance.
+</ParamField>
+
+<ParamField path="render" type="function">
+  Base UI render prop for custom element composition.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Typography.Link
+
+<ParamField path="href" type="string">
+  Link destination URL.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Typography.Blockquote
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Typography.Prose
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Typography.Ul / Typography.Ol
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Typography.Li
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Examples
+
+### Heading hierarchy
+
+```tsx
+<div className="space-y-4">
+  <Typography.Display>Display Heading</Typography.Display>
+  <Typography.H1>Heading 1</Typography.H1>
+  <Typography.H2>Heading 2</Typography.H2>
+  <Typography.H3>Heading 3</Typography.H3>
+  <Typography.H4>Heading 4</Typography.H4>
+  <Typography.H5>Heading 5</Typography.H5>
+  <Typography.H6>Heading 6</Typography.H6>
+</div>
+```
+
+### Text variants
+
+```tsx
+<div className="space-y-2">
+  <Typography.Lead>
+    This is lead text for introductory paragraphs.
+  </Typography.Lead>
+  <Typography.Body>
+    This is standard body text for main content.
+  </Typography.Body>
+  <Typography.Small>
+    This is small text for fine print.
+  </Typography.Small>
+  <Typography.Muted>
+    This is muted text for de-emphasized content.
+  </Typography.Muted>
+  <Typography.Caption>
+    This is caption text for labels and hints.
+  </Typography.Caption>
+</div>
+```
+
+### Article layout
+
+```tsx
+<article>
+  <Typography.Eyebrow>Product Update</Typography.Eyebrow>
+  <Typography.H1>Introducing Advanced Analytics</Typography.H1>
+  <Typography.Lead>
+    Track your team's performance with real-time insights and customizable dashboards.
+  </Typography.Lead>
+  <Typography.Body>
+    We're excited to announce the release of Advanced Analytics, a comprehensive
+    suite of tools designed to help you understand your data better.
+  </Typography.Body>
+</article>
+```
+
+### Lists
+
+```tsx
+<div>
+  <Typography.H3>Features</Typography.H3>
+  <Typography.Ul>
+    <Typography.Li>Real-time data synchronization</Typography.Li>
+    <Typography.Li>Customizable dashboards</Typography.Li>
+    <Typography.Li>Advanced filtering and search</Typography.Li>
+  </Typography.Ul>
+  
+  <Typography.H3>Getting Started</Typography.H3>
+  <Typography.Ol>
+    <Typography.Li>Install the package</Typography.Li>
+    <Typography.Li>Configure your API keys</Typography.Li>
+    <Typography.Li>Import the components</Typography.Li>
+  </Typography.Ol>
+</div>
+```
+
+### Blockquote
+
+```tsx
+<Typography.Blockquote>
+  "Design is not just what it looks like and feels like.
+  Design is how it works."
+  <Typography.Muted>— Steve Jobs</Typography.Muted>
+</Typography.Blockquote>
+```
+
+### Links
+
+```tsx
+<Typography.Body>
+  For more information, visit our{" "}
+  <Typography.Link href="/docs">documentation</Typography.Link>.
+</Typography.Body>
+```
+
+### Prose container
+
+For rich text content with automatic styling:
+
+```tsx
+<Typography.Prose>
+  <h1>Welcome to Kuzenbo</h1>
+  <p>This is a prose container that automatically styles all child elements.</p>
+  <ul>
+    <li>Automatic heading styles</li>
+    <li>Consistent spacing</li>
+    <li>Styled lists and links</li>
+  </ul>
+</Typography.Prose>
+```
+
+### Custom composition
+
+Use render prop for flexible element types:
+
+```tsx
+<Typography.Heading
+  variant="h1"
+  render={(props) => <h2 {...props} />}
+>
+  Visual H1, semantic H2
+</Typography.Heading>
+
+<Typography.Text
+  variant="body"
+  render={(props) => <span {...props} />}
+>
+  Body text as span
+</Typography.Text>
+```
+
+### Labels and metadata
+
+```tsx
+<div className="space-y-1">
+  <Typography.Eyebrow>Category</Typography.Eyebrow>
+  <Typography.Subheading>Product Features</Typography.Subheading>
+  <Typography.Overline>Last updated: March 2024</Typography.Overline>
+</div>
+```
+
+## Data Attributes
+
+- `[data-slot]` - Component identifier (e.g., "typography-text", "typography-heading")
+- `[data-variant]` - Current variant (e.g., "body", "h1")
+
+## Accessibility
+
+- Uses semantic HTML elements by default
+- Proper heading hierarchy for screen readers
+- Sufficient color contrast for all variants
+- Link components include proper focus states
+- List elements use semantic markup
+- Can override semantic element via render prop while maintaining visual style
+
+## Base UI Integration
+
+Typography components use Base UI's `useRender` for flexible composition:
+
+```tsx
+// Visual style of H1, but semantic H2 for proper hierarchy
+<Typography.H1 render={(props) => <h2 {...props} />}>
+  Section Title
+</Typography.H1>
+
+// Link that looks like body text
+<Typography.Body render={(props) => <a href="/" {...props} />}>
+  Navigate home
+</Typography.Body>
+```
+
+This separation of visual style and semantic meaning ensures both design consistency and accessibility.

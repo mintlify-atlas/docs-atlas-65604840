@@ -1,0 +1,298 @@
+---
+title: Theming
+description: Learn how to customize Kuzenbo themes, implement light/dark mode, and use the theme runtime for consistent theming across your app.
+---
+
+# Theming
+
+Kuzenbo's theme system provides semantic tokens that stay consistent across light and dark mode, with prebuilt themes and full customization support.
+
+## Theme runtime overview
+
+The `@kuzenbo/theme` package provides:
+
+- **ThemeProvider** - React context for theme state management
+- **ThemeBootstrapScript** - Prevents flash of unstyled content
+- **Semantic tokens** - Color variables that adapt to light/dark mode
+- **Prebuilt themes** - 75+ ready-to-use theme variations
+
+## Basic setup
+
+<Steps>
+
+<Step title="Import a prebuilt theme">
+
+Import one of the prebuilt theme CSS files:
+
+```tsx app.tsx
+import "@kuzenbo/theme/prebuilt/kuzenbo.css";
+```
+
+Available prebuilt themes include: `kuzenbo`, `dracula`, `nord`, `rose`, `forest`, `ocean`, `cyberpunk`, and 60+ more.
+
+</Step>
+
+<Step title="Add ThemeBootstrapScript">
+
+The bootstrap script prevents theme flashing by applying the theme before React hydrates:
+
+```tsx app.tsx
+import { ThemeBootstrapScript } from "@kuzenbo/theme";
+
+export default function App() {
+  return (
+    <>
+      <ThemeBootstrapScript />
+      {/* Rest of your app */}
+    </>
+  );
+}
+```
+
+<Note>
+Place `ThemeBootstrapScript` before your app content to ensure it runs first.
+</Note>
+
+</Step>
+
+<Step title="Wrap with ThemeProvider">
+
+Wrap your app with `ThemeProvider` to enable theme switching:
+
+```tsx app.tsx
+import { ThemeProvider } from "@kuzenbo/theme";
+
+export default function App() {
+  return (
+    <>
+      <ThemeBootstrapScript />
+      <ThemeProvider>
+        <main className="bg-background text-foreground min-h-screen">
+          {/* Your app content */}
+        </main>
+      </ThemeProvider>
+    </>
+  );
+}
+```
+
+</Step>
+
+</Steps>
+
+## Theme provider configuration
+
+The `ThemeProvider` accepts several configuration options:
+
+```tsx
+import { ThemeProvider } from "@kuzenbo/theme";
+
+export default function App() {
+  return (
+    <ThemeProvider
+      defaultTheme="system"  // "light" | "dark" | "system"
+      attribute="class"      // CSS selector attribute
+      enableSystem={true}    // Enable system theme detection
+      storageKey="kuzenbo-theme" // localStorage key
+      disableTransitionOnChange={true} // Disable transitions when changing themes
+    >
+      {/* Your app */}
+    </ThemeProvider>
+  );
+}
+```
+
+### ThemeProvider props
+
+<ResponseField name="defaultTheme" type="string" default="system">
+  Default theme to use. Options: `"light"`, `"dark"`, or `"system"`.
+</ResponseField>
+
+<ResponseField name="attribute" type="string" default="class">
+  HTML attribute to use for theme. Use `"class"` to toggle `.dark` class on root.
+</ResponseField>
+
+<ResponseField name="enableSystem" type="boolean" default="true">
+  Enable system theme detection via `prefers-color-scheme`.
+</ResponseField>
+
+<ResponseField name="storageKey" type="string" default="kuzenbo-theme">
+  localStorage key for persisting theme preference.
+</ResponseField>
+
+<ResponseField name="disableTransitionOnChange" type="boolean" default="true">
+  Disable CSS transitions when switching themes to prevent jarring animations.
+</ResponseField>
+
+## Theme bootstrap script
+
+The `ThemeBootstrapScript` component injects an inline script that:
+
+1. Reads theme preference from cookies or localStorage
+2. Detects system theme via `prefers-color-scheme`
+3. Applies the correct theme class before React hydrates
+4. Syncs theme state between cookie and localStorage
+
+### Bootstrap script options
+
+```tsx
+<ThemeBootstrapScript
+  defaultThemeSetting="system" // "light" | "dark" | "system"
+/>
+```
+
+<Tip>
+The bootstrap script uses the same constants as `ThemeProvider` to ensure consistent behavior.
+</Tip>
+
+## Using semantic tokens
+
+Kuzenbo provides semantic color tokens that automatically adapt to the current theme:
+
+### Background tokens
+
+```tsx
+<div className="bg-background">Main background</div>
+<div className="bg-card">Card background</div>
+<div className="bg-popover">Popover background</div>
+<div className="bg-muted">Muted background</div>
+```
+
+### Foreground tokens
+
+```tsx
+<p className="text-foreground">Primary text</p>
+<p className="text-muted-foreground">Secondary text</p>
+<p className="text-card-foreground">Card text</p>
+```
+
+### Accent tokens
+
+```tsx
+<button className="bg-primary text-primary-foreground">Primary</button>
+<button className="bg-secondary text-secondary-foreground">Secondary</button>
+<button className="bg-accent text-accent-foreground">Accent</button>
+```
+
+### Border and input tokens
+
+```tsx
+<div className="border-border">Border</div>
+<input className="border-input" />
+<div className="ring-ring">Focus ring</div>
+```
+
+### Semantic status tokens
+
+```tsx
+<div className="bg-danger text-danger-foreground border-danger-border">
+  Danger alert
+</div>
+<div className="bg-warning text-warning-foreground border-warning-border">
+  Warning alert
+</div>
+<div className="bg-success text-success-foreground border-success-border">
+  Success alert
+</div>
+<div className="bg-info text-info-foreground border-info-border">
+  Info alert
+</div>
+```
+
+## Prebuilt themes
+
+Kuzenbo includes 75+ prebuilt themes. Import any theme CSS file:
+
+<CodeGroup>
+
+```tsx Kuzenbo (default)
+import "@kuzenbo/theme/prebuilt/kuzenbo.css";
+```
+
+```tsx Dracula
+import "@kuzenbo/theme/prebuilt/dracula.css";
+```
+
+```tsx Nord
+import "@kuzenbo/theme/prebuilt/nord.css";
+```
+
+```tsx Rose
+import "@kuzenbo/theme/prebuilt/rose.css";
+```
+
+```tsx Cyberpunk
+import "@kuzenbo/theme/prebuilt/cyberpunk.css";
+```
+
+```tsx Forest
+import "@kuzenbo/theme/prebuilt/forest.css";
+```
+
+</CodeGroup>
+
+### Available themes
+
+Prebuilt themes include: `acid`, `amber`, `amethyst`, `azure`, `ballet`, `berry`, `blood`, `blush`, `bubblegum`, `choco`, `citrine`, `clown`, `coffee`, `coral`, `cream`, `cyberpunk`, `dracula`, `dusty`, `forest`, `glass`, `glitch`, `graphite`, `harvest`, `hematite`, `high-contrast`, `indigo`, `inferno`, `jade`, `jasper`, `kuzenbo`, `lagoon`, `lapis`, `lavender`, `lsd`, `malachite`, `matrix`, `mauve`, `midnight`, `mint`, `mono`, `neon`, `noir`, `nord`, `obsidian`, `ocean`, `onyx`, `paper`, `pastel`, `peaches`, `peridot`, `powder`, `retro`, `rose`, `sakura`, `sandstone`, `sapphire`, `slate`, `slime`, `solar`, `sunset`, `terracotta`, `toxic`, `turquoise`, `twilight`, `ufo`, `vanilla`, `vaporwave`, `vintage`, `warm`, `warning`, and `zen`.
+
+<Tip>
+Choose a theme that matches your brand identity. Each theme includes both light and dark mode variants.
+</Tip>
+
+## Theme constants
+
+The theme package exports useful constants for building custom theme utilities:
+
+```typescript
+import {
+  THEME_COOKIE_KEY,           // "kuzenbo-theme"
+  THEME_STORAGE_KEY,          // "kuzenbo-theme"
+  THEME_COOKIE_MAX_AGE_SECONDS, // 31536000 (1 year)
+  SYSTEM_DARK_MEDIA_QUERY,    // "(prefers-color-scheme: dark)"
+  DEFAULT_THEME_SETTING,      // "system"
+} from "@kuzenbo/theme";
+```
+
+## Theme utilities
+
+The theme package provides utility functions for advanced use cases:
+
+```typescript
+import {
+  parseThemePreference,
+  readThemeFromCookieString,
+  serializeThemeCookie,
+  persistThemeCookie,
+  applyThemeToRootElement,
+  resolveDefaultThemePreference,
+} from "@kuzenbo/theme";
+```
+
+### Parse theme preference
+
+```typescript
+const theme = parseThemePreference("dark"); // "dark" | "light" | null
+```
+
+### Read theme from cookie
+
+```typescript
+const theme = readThemeFromCookieString(document.cookie);
+```
+
+### Apply theme to root
+
+```typescript
+applyThemeToRootElement("dark"); // Adds .dark class and sets color-scheme
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Styling" icon="paintbrush" href="/styling">
+    Learn about the styling system and customization.
+  </Card>
+  <Card title="Custom themes" icon="palette" href="/foundations/theme-runtime">
+    Create your own custom theme.
+  </Card>
+</CardGroup>

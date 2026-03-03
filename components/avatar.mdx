@@ -1,0 +1,213 @@
+---
+title: Avatar
+description: Display user profile images with fallback text and status badges
+---
+
+The Avatar component displays user profile images with automatic fallback handling, status badges, and group layouts. Built on Base UI Avatar primitives.
+
+## Import
+
+```tsx
+import { Avatar } from "@kuzenbo/core";
+```
+
+## Usage
+
+```tsx
+<Avatar size="md">
+  <Avatar.Image src="/user.jpg" alt="Sarah Chen" />
+  <Avatar.Fallback>SC</Avatar.Fallback>
+</Avatar>
+```
+
+## Anatomy
+
+- `Avatar` - Root container with size context
+- `Avatar.Image` - Profile image with loading states
+- `Avatar.Fallback` - Fallback content (typically initials)
+- `Avatar.Badge` - Status indicator badge
+- `Avatar.Group` - Container for multiple avatars
+- `Avatar.GroupCount` - Count indicator for overflow avatars
+
+## Props
+
+### Avatar
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="md">
+  Controls the avatar size:
+  
+  - `xs` - Size 5 (20px)
+  - `sm` - Size 6 (24px)
+  - `md` - Size 8 (32px)
+  - `lg` - Size 10 (40px)
+  - `xl` - Size 11 (44px)
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Avatar.Image
+
+<ParamField path="src" type="string" required>
+  The image source URL.
+</ParamField>
+
+<ParamField path="alt" type="string" required>
+  Alternative text for the image.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Avatar.Fallback
+
+<ParamField path="children" type="ReactNode" required>
+  Fallback content, typically user initials.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Avatar.Badge
+
+<ParamField path="variant" type="string">
+  Status variant for the badge.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Avatar.Group
+
+<ParamField path="max" type="number">
+  Maximum number of avatars to show before using count indicator.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Avatar.GroupCount
+
+<ParamField path="count" type="number" required>
+  Number of overflow avatars.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Examples
+
+### With image
+
+```tsx
+<Avatar size="md">
+  <Avatar.Image src="/avatars/sarah.jpg" alt="Sarah Chen" />
+  <Avatar.Fallback>SC</Avatar.Fallback>
+</Avatar>
+```
+
+### Fallback only
+
+When no image is provided or loading fails:
+
+```tsx
+<Avatar size="md">
+  <Avatar.Fallback>JD</Avatar.Fallback>
+</Avatar>
+```
+
+### With status badge
+
+```tsx
+<Avatar size="md">
+  <Avatar.Image src="/user.jpg" alt="User" />
+  <Avatar.Fallback>U</Avatar.Fallback>
+  <Avatar.Badge variant="success" />
+</Avatar>
+```
+
+### Different sizes
+
+```tsx
+<div className="flex items-center gap-2">
+  <Avatar size="xs">
+    <Avatar.Fallback>XS</Avatar.Fallback>
+  </Avatar>
+  <Avatar size="sm">
+    <Avatar.Fallback>SM</Avatar.Fallback>
+  </Avatar>
+  <Avatar size="md">
+    <Avatar.Fallback>MD</Avatar.Fallback>
+  </Avatar>
+  <Avatar size="lg">
+    <Avatar.Fallback>LG</Avatar.Fallback>
+  </Avatar>
+  <Avatar size="xl">
+    <Avatar.Fallback>XL</Avatar.Fallback>
+  </Avatar>
+</div>
+```
+
+### Avatar group
+
+Display multiple avatars in a stacked layout:
+
+```tsx
+<Avatar.Group>
+  <Avatar size="md">
+    <Avatar.Image src="/user1.jpg" alt="User 1" />
+    <Avatar.Fallback>U1</Avatar.Fallback>
+  </Avatar>
+  <Avatar size="md">
+    <Avatar.Image src="/user2.jpg" alt="User 2" />
+    <Avatar.Fallback>U2</Avatar.Fallback>
+  </Avatar>
+  <Avatar size="md">
+    <Avatar.Image src="/user3.jpg" alt="User 3" />
+    <Avatar.Fallback>U3</Avatar.Fallback>
+  </Avatar>
+  <Avatar.GroupCount count={5} />
+</Avatar.Group>
+```
+
+### Clickable avatars
+
+```tsx
+<button type="button" onClick={() => console.log("View profile")}>
+  <Avatar size="md">
+    <Avatar.Image src="/user.jpg" alt="User" />
+    <Avatar.Fallback>U</Avatar.Fallback>
+  </Avatar>
+</button>
+```
+
+## Data Attributes
+
+- `[data-size]` - Reflects the current size
+- `[data-slot]` - Component identifier (avatar, avatar-image, avatar-fallback)
+- `[data-state]` - Image loading state (loading, loaded, error)
+
+## Accessibility
+
+- Avatar.Image requires `alt` text for screen readers
+- Fallback content is announced when image fails
+- Sufficient color contrast in fallback backgrounds
+- Border ring provides visual separation
+- Interactive avatars should be wrapped in button/link elements
+
+## Base UI Integration
+
+Avatar uses Base UI's Avatar primitive for:
+
+- Automatic image loading states
+- Fallback content when image fails or is loading
+- Proper ARIA attributes
+- State management for image lifecycle
+
+The component automatically shows fallback content while the image loads and when loading fails.

@@ -1,0 +1,366 @@
+---
+title: Provider API
+description: Global provider and context APIs for configuring Kuzenbo components
+---
+
+## Overview
+
+The `KuzenboProvider` is the root configuration context for all Kuzenbo components. It provides global defaults for sizing, theming, motion preferences, and component-specific configurations.
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+## Basic Usage
+
+```tsx
+import { KuzenboProvider } from "@kuzenbo/core/provider";
+
+export default function App({ children }) {
+  return (
+    <KuzenboProvider
+      defaultSize="md"
+      defaultRadius="0.625rem"
+      reducedMotion={false}
+    >
+      {children}
+    </KuzenboProvider>
+  );
+}
+```
+
+## KuzenboProvider
+
+The root provider component that establishes global configuration context.
+
+### Props
+
+<ParamField path="children" type="ReactNode" required>
+  The application tree to wrap with Kuzenbo context.
+</ParamField>
+
+<ParamField path="defaultSize" type="UISize">
+  Global default size for all size-aware components. Valid values: `"xs"`, `"sm"`, `"md"`, `"lg"`, `"xl"`. Defaults to `"md"`.
+
+  ```tsx
+  <KuzenboProvider defaultSize="lg">
+    <Button>Large by default</Button>
+  </KuzenboProvider>
+  ```
+</ParamField>
+
+<ParamField path="defaultRadius" type="number | string">
+  Global border radius applied via CSS variable `--kb-radius`. Accepts pixel values (number) or CSS strings.
+
+  ```tsx
+  <KuzenboProvider defaultRadius="0.75rem">
+    {children}
+  </KuzenboProvider>
+  ```
+</ParamField>
+
+<ParamField path="reducedMotion" type="boolean" default="false">
+  Enable reduced motion mode globally. Sets `data-kb-motion="reduce"` on the provider wrapper.
+</ParamField>
+
+<ParamField path="env" type="KuzenboEnv" default="default">
+  Environment mode. Valid values: `"default"` or `"test"`. Sets `data-kb-env` attribute.
+</ParamField>
+
+<ParamField path="inherit" type="boolean" default="true">
+  Whether to inherit configuration from parent `KuzenboProvider` instances. Enables nested provider composition.
+</ParamField>
+
+<ParamField path="components" type="KuzenboComponentsConfig">
+  Component-specific default props. Allows overriding defaults for individual component families.
+
+  ```tsx
+  <KuzenboProvider
+    components={{
+      Input: {
+        defaultProps: {
+          size: "sm",
+          variant: "outline",
+        },
+      },
+      Button: {
+        defaultProps: {
+          size: "lg",
+        },
+      },
+    }}
+  >
+    {children}
+  </KuzenboProvider>
+  ```
+</ParamField>
+
+## Hooks
+
+### useKuzenboContext
+
+Access the full Kuzenbo context. Throws an error if called outside `KuzenboProvider`.
+
+```tsx
+import { useKuzenboContext } from "@kuzenbo/core/provider";
+
+function MyComponent() {
+  const context = useKuzenboContext();
+  // context.defaultSize, context.defaultRadius, etc.
+}
+```
+
+**Returns:** `KuzenboContextValue`
+
+<ParamField path="defaultSize" type="UISize | undefined">
+  The global default size setting.
+</ParamField>
+
+<ParamField path="defaultRadius" type="number | string | undefined">
+  The global default border radius.
+</ParamField>
+
+<ParamField path="reducedMotion" type="boolean">
+  Whether reduced motion mode is enabled.
+</ParamField>
+
+<ParamField path="env" type="KuzenboEnv">
+  The current environment mode.
+</ParamField>
+
+<ParamField path="components" type="KuzenboComponentsConfig">
+  Component-specific configuration map.
+</ParamField>
+
+### useOptionalKuzenboContext
+
+Safely access Kuzenbo context. Returns `null` if called outside provider instead of throwing.
+
+```tsx
+import { useOptionalKuzenboContext } from "@kuzenbo/core/provider";
+
+function MyComponent() {
+  const context = useOptionalKuzenboContext();
+  if (!context) {
+    return <div>No provider found</div>;
+  }
+  return <div>Size: {context.defaultSize}</div>;
+}
+```
+
+**Returns:** `KuzenboContextValue | null`
+
+### useGlobalUISize
+
+Get the global default size from the provider.
+
+```tsx
+import { useGlobalUISize } from "@kuzenbo/core/provider";
+
+function MyComponent() {
+  const globalSize = useGlobalUISize();
+  return <div>Global size: {globalSize ?? "not set"}</div>;
+}
+```
+
+**Returns:** `UISize | undefined`
+
+### useComponentSize
+
+Resolve the effective size for a component using the size precedence chain.
+
+```tsx
+import { useComponentSize } from "@kuzenbo/core/provider";
+
+function MyButton({ size }: { size?: UISize }) {
+  // Resolves: explicit size → global size → "md"
+  const resolvedSize = useComponentSize(size);
+  return <button data-size={resolvedSize}>Button</button>;
+}
+```
+
+**Parameters:**
+- `...candidates`: Variable number of size candidates (UISize | undefined | null)
+
+**Returns:** `UISize` (always resolves to a valid size)
+
+**Precedence:** First non-null/undefined candidate → global provider size → `"md"`
+
+### useKuzenboEnv
+
+Get the current environment mode.
+
+```tsx
+import { useKuzenboEnv } from "@kuzenbo/core/provider";
+
+function MyComponent() {
+  const env = useKuzenboEnv();
+  if (env === "test") {
+    return <div>Test mode active</div>;
+  }
+  return <div>Production mode</div>;
+}
+```
+
+**Returns:** `KuzenboEnv` (`"default"` or `"test"`)
+
+### useKuzenboReducedMotion
+
+Check if reduced motion mode is enabled.
+
+```tsx
+import { useKuzenboReducedMotion } from "@kuzenbo/core/provider";
+
+function AnimatedComponent() {
+  const reducedMotion = useKuzenboReducedMotion();
+  const duration = reducedMotion ? 0 : 300;
+  return <div style={{ transitionDuration: `${duration}ms` }}>Content</div>;
+}
+```
+
+**Returns:** `boolean`
+
+### useKuzenboComponentDefaults
+
+Access component-specific default props from the provider configuration.
+
+```tsx
+import { useKuzenboComponentDefaults } from "@kuzenbo/core/provider";
+
+function MyButton(props: ButtonProps) {
+  const defaults = useKuzenboComponentDefaults<ButtonProps>("Button");
+  // Merge with provided props
+  const finalProps = { ...defaults, ...props };
+  return <button {...finalProps} />;
+}
+```
+
+**Parameters:**
+- `componentName`: `string` - The component identifier
+
+**Returns:** `Partial<T>` - Component-specific defaults
+
+### useComponentDefaultProps
+
+Merge component defaults with actual props using proper precedence.
+
+```tsx
+import { useComponentDefaultProps } from "@kuzenbo/core/provider";
+
+function MyInput(props: InputProps) {
+  const mergedProps = useComponentDefaultProps(
+    "Input",
+    { size: "md", variant: "outline" }, // component defaults
+    props // actual props
+  );
+  // Precedence: props > provider config > component defaults
+  return <input {...mergedProps} />;
+}
+```
+
+**Parameters:**
+- `componentName`: `string` - Component identifier
+- `defaultProps`: `Partial<T>` - Built-in component defaults
+- `props`: `T` - Actual props passed to component
+
+**Returns:** `T` - Merged props with correct precedence
+
+**Precedence:** `props` > provider `components[name].defaultProps` > `defaultProps`
+
+## TypeScript Interfaces
+
+### KuzenboProviderProps
+
+```typescript
+interface KuzenboProviderProps {
+  children: ReactNode;
+  components?: KuzenboComponentsConfig;
+  defaultRadius?: number | string;
+  defaultSize?: UISize;
+  env?: KuzenboEnv;
+  inherit?: boolean;
+  reducedMotion?: boolean;
+}
+```
+
+### KuzenboContextValue
+
+```typescript
+interface KuzenboContextValue {
+  components: KuzenboComponentsConfig;
+  defaultRadius?: number | string;
+  defaultSize?: UISize;
+  env: KuzenboEnv;
+  reducedMotion: boolean;
+}
+```
+
+### KuzenboComponentsConfig
+
+```typescript
+type KuzenboComponentsConfig = Record<
+  string,
+  KuzenboComponentConfig | undefined
+>;
+
+interface KuzenboComponentConfig {
+  defaultProps?: Record<string, unknown>;
+}
+```
+
+### KuzenboEnv
+
+```typescript
+type KuzenboEnv = "default" | "test";
+```
+
+## Complete Example
+
+```tsx
+import { KuzenboProvider } from "@kuzenbo/core/provider";
+import { Button } from "@kuzenbo/core/ui/button";
+import { Input } from "@kuzenbo/core/ui/input";
+
+export default function App() {
+  return (
+    <KuzenboProvider
+      defaultSize="lg"
+      defaultRadius="0.75rem"
+      reducedMotion={false}
+      components={{
+        Input: {
+          defaultProps: {
+            size: "sm",
+          },
+        },
+      }}
+    >
+      {/* Inherits lg size */}
+      <Button>Submit</Button>
+      
+      {/* Uses sm from component config */}
+      <Input placeholder="Email" />
+      
+      {/* Explicit override wins */}
+      <Input size="xl" placeholder="Large input" />
+    </KuzenboProvider>
+  );
+}
+```
+
+## Error Handling
+
+If you use Kuzenbo hooks outside of a `KuzenboProvider`, you'll get a descriptive error:
+
+```
+[@kuzenbo/core] KuzenboProvider was not found in tree. Wrap app root with <KuzenboProvider>.
+```
+
+**Exception:** In test environments, you can set the global flag to allow missing provider:
+
+```typescript
+// In test setup
+globalThis.__KUZENBO_ALLOW_MISSING_PROVIDER__ = true;
+```

@@ -1,0 +1,366 @@
+---
+title: '@kuzenbo/theme'
+description: 'Theme tokens, runtime, and prebuilt themes for Kuzenbo'
+icon: 'palette'
+---
+
+## Overview
+
+The `@kuzenbo/theme` package provides theming infrastructure for Kuzenbo, including CSS custom properties, theme switching, and prebuilt color schemes. Build light/dark mode support and custom themes with full TypeScript support.
+
+<Note>
+Version 0.0.7 is currently published on npm. This package is production-ready.
+</Note>
+
+## Installation
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/theme react react-dom
+```
+
+```bash yarn
+yarn add @kuzenbo/theme react react-dom
+```
+
+```bash pnpm
+pnpm add @kuzenbo/theme react react-dom
+```
+
+```bash bun
+bun add @kuzenbo/theme react react-dom
+```
+</CodeGroup>
+
+## Setup
+
+### Import Default Theme
+
+Import the default theme CSS in your root layout:
+
+```tsx
+import '@kuzenbo/theme/default.css';
+```
+
+### Theme Provider
+
+Wrap your app with the ThemeProvider:
+
+```tsx
+import { ThemeProvider } from '@kuzenbo/theme/theme-provider';
+
+export function App({ children }) {
+  return (
+    <ThemeProvider
+      defaultTheme="system"
+      attribute="data-theme"
+      enableSystem
+    >
+      {children}
+    </ThemeProvider>
+  );
+}
+```
+
+### Next.js Setup
+
+For Next.js applications:
+
+```tsx
+// app/layout.tsx
+import { ThemeProvider } from '@kuzenbo/theme/theme-provider';
+import { ThemeBootstrapScript } from '@kuzenbo/theme';
+import '@kuzenbo/theme/default.css';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeBootstrapScript />
+      </head>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+## Theme Modes
+
+### Light and Dark Mode
+
+```tsx
+import { ThemeProvider } from '@kuzenbo/theme/theme-provider';
+import { useTheme } from 'next-themes';
+import { Button } from '@kuzenbo/core/ui/button';
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <Button
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      variant="ghost"
+    >
+      {theme === 'dark' ? '☀️' : '🌙'}
+    </Button>
+  );
+}
+
+export function App({ children }) {
+  return (
+    <ThemeProvider defaultTheme="system">
+      <ThemeToggle />
+      {children}
+    </ThemeProvider>
+  );
+}
+```
+
+## Prebuilt Themes
+
+Kuzenbo includes several prebuilt color schemes:
+
+```tsx
+// Import a prebuilt theme
+import '@kuzenbo/theme/prebuilt/blue.css';
+import '@kuzenbo/theme/prebuilt/green.css';
+import '@kuzenbo/theme/prebuilt/purple.css';
+import '@kuzenbo/theme/prebuilt/orange.css';
+```
+
+### Available Themes
+
+- `default.css` - Default blue theme
+- `blue.css` - Blue accent
+- `green.css` - Green accent
+- `purple.css` - Purple accent
+- `orange.css` - Orange accent
+- `red.css` - Red accent
+- `slate.css` - Neutral slate
+
+## Custom Theme
+
+Create your own theme by defining CSS custom properties:
+
+```css
+/* custom-theme.css */
+:root {
+  /* Light mode colors */
+  --kb-background: 0 0% 100%;
+  --kb-foreground: 0 0% 3.9%;
+  --kb-primary: 221.2 83.2% 53.3%;
+  --kb-primary-foreground: 210 40% 98%;
+  --kb-secondary: 210 40% 96.1%;
+  --kb-secondary-foreground: 222.2 47.4% 11.2%;
+  --kb-accent: 210 40% 96.1%;
+  --kb-accent-foreground: 222.2 47.4% 11.2%;
+  --kb-muted: 210 40% 96.1%;
+  --kb-muted-foreground: 215.4 16.3% 46.9%;
+  --kb-border: 214.3 31.8% 91.4%;
+  --kb-input: 214.3 31.8% 91.4%;
+  --kb-ring: 221.2 83.2% 53.3%;
+  --kb-radius: 0.5rem;
+}
+
+[data-theme="dark"] {
+  /* Dark mode colors */
+  --kb-background: 222.2 84% 4.9%;
+  --kb-foreground: 210 40% 98%;
+  --kb-primary: 217.2 91.2% 59.8%;
+  --kb-primary-foreground: 222.2 47.4% 11.2%;
+  /* ... other dark mode tokens */
+}
+```
+
+## Theme Tokens
+
+Access theme values in your components:
+
+```tsx
+// Using Tailwind classes
+<div className="bg-background text-foreground">
+  <h1 className="text-primary">Heading</h1>
+  <p className="text-muted-foreground">Description</p>
+</div>
+
+// Using CSS custom properties
+<div style={{ backgroundColor: 'hsl(var(--kb-background))' }}>
+  Content
+</div>
+```
+
+## Color Scale
+
+Kuzenbo provides semantic color tokens:
+
+<CardGroup cols={2}>
+  <Card title="Layout" icon="layout">
+    `background`, `foreground`, `border`, `input`, `ring`
+  </Card>
+  <Card title="Brand" icon="palette">
+    `primary`, `secondary`, `accent`
+  </Card>
+  <Card title="Feedback" icon="circle-exclamation">
+    `success`, `warning`, `danger`, `info`
+  </Card>
+  <Card title="Neutral" icon="circle">
+    `muted`, `muted-foreground`
+  </Card>
+</CardGroup>
+
+## Usage in Components
+
+```tsx
+import { Button } from '@kuzenbo/core/ui/button';
+
+// Components automatically use theme tokens
+<Button variant="solid">Primary Action</Button>
+<Button variant="outline">Secondary Action</Button>
+
+// Severity variants use semantic colors
+<Button severity="danger">Delete</Button>
+<Button severity="success">Confirm</Button>
+```
+
+## Server-Side Rendering
+
+### Prevent Flash of Unstyled Content
+
+```tsx
+import { ThemeBootstrapScript } from '@kuzenbo/theme';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeBootstrapScript />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+### Theme Persistence
+
+Themes are automatically persisted to localStorage and cookies:
+
+```tsx
+import { ThemeProvider } from '@kuzenbo/theme/theme-provider';
+
+<ThemeProvider
+  storageKey="kuzenbo-theme" // localStorage key
+  enableSystem // Use system preference
+  defaultTheme="system"
+>
+  {children}
+</ThemeProvider>
+```
+
+## Theme Utilities
+
+### Apply Theme to Element
+
+```tsx
+import { applyThemeToRootElement } from '@kuzenbo/theme';
+
+// Programmatically apply theme
+applyThemeToRootElement('dark');
+```
+
+### Read Theme Preference
+
+```tsx
+import { parseThemePreference } from '@kuzenbo/theme';
+
+const theme = parseThemePreference();
+console.log('Current theme:', theme);
+```
+
+### Resolve Default Theme
+
+```tsx
+import { resolveDefaultThemePreference } from '@kuzenbo/theme';
+
+const defaultTheme = resolveDefaultThemePreference({
+  systemPreference: 'dark',
+  storageValue: 'light',
+});
+```
+
+## TypeScript
+
+Fully typed theme utilities:
+
+```tsx
+import type {
+  ThemePreference,
+  ThemeSetting,
+  ThemeProviderProps,
+} from '@kuzenbo/theme';
+
+const preference: ThemePreference = 'dark';
+const setting: ThemeSetting = 'system';
+```
+
+## Dependencies
+
+- `tailwindcss` - CSS framework
+- `tw-animate-css` - Animation utilities
+
+## Peer Dependencies
+
+```json
+{
+  "next-themes": "^0.4.6" // optional
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0"
+}
+```
+
+<Note>
+`next-themes` is optional and only required if you use the ThemeProvider component.
+</Note>
+
+## CSS Variables Reference
+
+### Core Variables
+
+```css
+--kb-background: /* HSL color */;
+--kb-foreground: /* HSL color */;
+--kb-border: /* HSL color */;
+--kb-input: /* HSL color */;
+--kb-ring: /* HSL color */;
+--kb-radius: /* border radius */;
+```
+
+### Semantic Colors
+
+```css
+--kb-primary: /* HSL color */;
+--kb-primary-foreground: /* HSL color */;
+--kb-secondary: /* HSL color */;
+--kb-secondary-foreground: /* HSL color */;
+--kb-accent: /* HSL color */;
+--kb-accent-foreground: /* HSL color */;
+--kb-success: /* HSL color */;
+--kb-warning: /* HSL color */;
+--kb-danger: /* HSL color */;
+--kb-info: /* HSL color */;
+--kb-muted: /* HSL color */;
+--kb-muted-foreground: /* HSL color */;
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Core Components" icon="box" href="/packages/core">
+    Use themes with components
+  </Card>
+  <Card title="Styles" icon="paintbrush" href="/packages/styles">
+    Global baseline styles
+  </Card>
+</CardGroup>

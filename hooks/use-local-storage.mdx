@@ -1,0 +1,197 @@
+---
+title: useLocalStorage
+description: Persist state in localStorage with React state synchronization
+---
+
+Persists state in `localStorage` using a shared storage abstraction. The hook keeps React state in sync with the storage value and supports cross-tab synchronization.
+
+## Usage
+
+```tsx
+import { useLocalStorage } from '@kuzenbo/hooks';
+
+function Demo() {
+  const [value, setValue, removeValue] = useLocalStorage({
+    key: 'my-key',
+    defaultValue: 'default value',
+  });
+
+  return (
+    <div>
+      <p>Value: {value}</p>
+      <button onClick={() => setValue('new value')}>Set Value</button>
+      <button onClick={removeValue}>Remove Value</button>
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useLocalStorage<T = string>(
+  props: UseStorageOptions<T>
+): UseStorageReturnValue<T>
+
+type UseStorageReturnValue<T> = [
+  T,
+  (val: T | ((prevState: T) => T)) => void,
+  () => void,
+]
+```
+
+## Parameters
+
+<ParamField path="props" type="UseStorageOptions<T>" required>
+  Storage options such as key, default value, and serialization behavior.
+
+  <ParamField path="props.key" type="string" required>
+    Storage key under which the value will be saved.
+  </ParamField>
+
+  <ParamField path="props.defaultValue" type="T" optional>
+    Default value that will be set if no value is found in storage.
+  </ParamField>
+
+  <ParamField path="props.getInitialValueInEffect" type="boolean" optional>
+    If `true`, value will be updated in useEffect after mount. Defaults to `true`.
+  </ParamField>
+
+  <ParamField path="props.sync" type="boolean" optional>
+    Determines whether the value must be synced between browser tabs. Defaults to `true`.
+  </ParamField>
+
+  <ParamField path="props.serialize" type="(value: T) => string" optional>
+    Function to serialize value into string to be saved in storage.
+  </ParamField>
+
+  <ParamField path="props.deserialize" type="(value: string | undefined) => T" optional>
+    Function to deserialize string value from storage to value.
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+Returns a tuple with three elements:
+
+<ResponseField name="[0]" type="T">
+  Current value from localStorage.
+</ResponseField>
+
+<ResponseField name="[1]" type="(val: T | ((prevState: T) => T)) => void">
+  Callback to set value in storage. Supports updater function pattern.
+</ResponseField>
+
+<ResponseField name="[2]" type="() => void">
+  Callback to remove value from storage.
+</ResponseField>
+
+## Examples
+
+### Basic Usage
+
+```tsx
+import { useLocalStorage } from '@kuzenbo/hooks';
+
+function BasicExample() {
+  const [name, setName] = useLocalStorage({
+    key: 'user-name',
+    defaultValue: 'Guest',
+  });
+
+  return (
+    <div>
+      <p>Hello, {name}!</p>
+      <input value={name} onChange={(e) => setName(e.target.value)} />
+    </div>
+  );
+}
+```
+
+### With Complex Objects
+
+```tsx
+import { useLocalStorage } from '@kuzenbo/hooks';
+
+interface User {
+  name: string;
+  email: string;
+}
+
+function ObjectStorageExample() {
+  const [user, setUser] = useLocalStorage<User>({
+    key: 'user-data',
+    defaultValue: { name: '', email: '' },
+  });
+
+  return (
+    <div>
+      <input
+        value={user.name}
+        onChange={(e) => setUser({ ...user, name: e.target.value })}
+        placeholder="Name"
+      />
+      <input
+        value={user.email}
+        onChange={(e) => setUser({ ...user, email: e.target.value })}
+        placeholder="Email"
+      />
+    </div>
+  );
+}
+```
+
+### Updater Function Pattern
+
+```tsx
+import { useLocalStorage } from '@kuzenbo/hooks';
+
+function CounterExample() {
+  const [count, setCount, removeCount] = useLocalStorage({
+    key: 'counter',
+    defaultValue: 0,
+  });
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount((prev) => prev + 1)}>Increment</button>
+      <button onClick={() => setCount((prev) => prev - 1)}>Decrement</button>
+      <button onClick={removeCount}>Reset</button>
+    </div>
+  );
+}
+```
+
+### Without Cross-Tab Sync
+
+```tsx
+import { useLocalStorage } from '@kuzenbo/hooks';
+
+function NoSyncExample() {
+  const [value, setValue] = useLocalStorage({
+    key: 'no-sync-value',
+    defaultValue: 'data',
+    sync: false,
+  });
+
+  return (
+    <input value={value} onChange={(e) => setValue(e.target.value)} />
+  );
+}
+```
+
+## Utility Function
+
+### readLocalStorageValue
+
+Read a value from localStorage without using the hook:
+
+```tsx
+import { readLocalStorageValue } from '@kuzenbo/hooks';
+
+const value = readLocalStorageValue({
+  key: 'my-key',
+  defaultValue: 'default',
+});
+```

@@ -1,0 +1,98 @@
+---
+title: 'useClickOutside'
+description: 'Detect clicks outside a referenced element'
+---
+
+`useClickOutside` calls a handler when pointer interactions happen outside the tracked element or outside a provided list of elements.
+
+## Usage
+
+```tsx
+import { useClickOutside } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [visible, setVisible] = useState(false);
+  const ref = useClickOutside<HTMLDivElement>(() => {
+    console.log('clicked outside');
+    setVisible(false);
+  });
+
+  return (
+    <div>
+      {visible && (
+        <div ref={ref} style={{ padding: 40, background: 'orange' }}>
+          Click outside this box
+        </div>
+      )}
+      <button onClick={() => setVisible(true)}>Show box</button>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Parameters
+
+<ParamField path="onOutsideClick" type="(event: MouseEvent | TouchEvent) => void" required>
+  Callback invoked for outside `mousedown` or `touchstart` events.
+</ParamField>
+
+<ParamField path="events" type="string[] | null" default="['mousedown', 'touchstart']">
+  Document event names to listen to. Pass `null` to use the default events.
+</ParamField>
+
+<ParamField path="nodes" type="(HTMLElement | null)[]">
+  Optional list of elements to treat as "inside". When provided, these nodes are checked instead of the returned ref.
+</ParamField>
+
+### Returns
+
+<ResponseField name="ref" type="RefObject<T>">
+  A ref object to attach to the element you want to track clicks outside of.
+</ResponseField>
+
+## Multiple Elements
+
+You can provide multiple elements to treat as "inside" using the `nodes` parameter:
+
+```tsx
+import { useClickOutside } from '@kuzenbo/hooks';
+import { useRef } from 'react';
+
+function Demo() {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(
+    () => console.log('clicked outside both elements'),
+    null,
+    [buttonRef.current, dropdownRef.current]
+  );
+
+  return (
+    <>
+      <button ref={buttonRef}>Toggle</button>
+      <div ref={dropdownRef}>Dropdown content</div>
+    </>
+  );
+}
+```
+
+## Custom Events
+
+Customize which events trigger the outside click handler:
+
+```tsx
+import { useClickOutside } from '@kuzenbo/hooks';
+
+function Demo() {
+  const ref = useClickOutside(
+    () => console.log('clicked outside'),
+    ['mousedown'] // Only listen to mousedown, not touchstart
+  );
+
+  return <div ref={ref}>Content</div>;
+}
+```

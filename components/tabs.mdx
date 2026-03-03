@@ -1,0 +1,241 @@
+---
+title: "Tabs"
+description: "Switch between related content panels with default, line, and pill list variants on the unified UISize scale."
+---
+
+## Overview
+
+`Tabs` is a Base UI-powered tab system with Kuzenbo styling and compound subcomponents.
+It supports horizontal and vertical orientation, className callbacks, and optional animated indicator composition.
+
+Use tabs when users should switch between sibling content panels without route changes.
+
+## Installation
+
+```npm
+npm i @kuzenbo/core
+```
+
+## Import
+
+```tsx
+import {
+  Tabs,
+  TabsContent,
+  TabsIndicator,
+  TabsList,
+  TabsTrigger,
+} from "@kuzenbo/core/ui/tabs";
+```
+
+## Basic Usage
+
+```tsx
+import { Tabs } from "@kuzenbo/core/ui/tabs";
+
+export function TabsBasicExample() {
+  return (
+    <Tabs defaultValue="overview">
+      <Tabs.List variant="default">
+        <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+        <Tabs.Trigger value="projects">Projects</Tabs.Trigger>
+        <Tabs.Trigger value="account">Account</Tabs.Trigger>
+        <Tabs.Indicator />
+      </Tabs.List>
+
+      <Tabs.Content value="overview">Overview panel content.</Tabs.Content>
+      <Tabs.Content value="projects">Projects panel content.</Tabs.Content>
+      <Tabs.Content value="account">Account panel content.</Tabs.Content>
+    </Tabs>
+  );
+}
+```
+
+## Full-Width Tabs
+
+```tsx
+import { Tabs } from "@kuzenbo/core/ui/tabs";
+
+export function TabsFullWidthExample() {
+  return (
+    <Tabs defaultValue="overview">
+      <Tabs.List fullWidth variant="line">
+        <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+        <Tabs.Trigger value="projects">Projects</Tabs.Trigger>
+        <Tabs.Trigger value="account">Account</Tabs.Trigger>
+      </Tabs.List>
+
+      <Tabs.Content value="overview">Overview panel content.</Tabs.Content>
+      <Tabs.Content value="projects">Projects panel content.</Tabs.Content>
+      <Tabs.Content value="account">Account panel content.</Tabs.Content>
+    </Tabs>
+  );
+}
+```
+
+## Advanced Usage
+
+```tsx
+import { Tabs } from "@kuzenbo/core/ui/tabs";
+
+export function TabsAdvancedExample() {
+  return (
+    <Tabs
+      className="rounded-md border border-border p-2"
+      defaultValue="overview"
+    >
+      <Tabs.List activateOnFocus variant="line">
+        <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+        <Tabs.Trigger value="projects">Projects</Tabs.Trigger>
+        <Tabs.Trigger value="account">Account</Tabs.Trigger>
+      </Tabs.List>
+
+      <Tabs.Content value="overview">Overview panel content.</Tabs.Content>
+      <Tabs.Content value="projects">Projects panel content.</Tabs.Content>
+      <Tabs.Content value="account">Account panel content.</Tabs.Content>
+    </Tabs>
+  );
+}
+```
+
+## Unified Size Contract
+
+`Tabs.List` uses shared `UISize` tokens:
+
+- `xs | sm | md | lg | xl`
+- default is `md`
+
+Family-specific metrics for tab surfaces:
+
+- List minimum row height per token.
+- Trigger height/padding/text density per token.
+- Indicator radius/density follows the same token.
+
+Precedence rule:
+
+`Tabs.Trigger/Tabs.Indicator size ?? Tabs.List size ?? "md"`
+
+`Tabs.Trigger` and `Tabs.Indicator` inherit from `Tabs.List`; size is set at list level.
+
+```tsx
+import { Tabs } from "@kuzenbo/core/ui/tabs";
+
+export function TabsVariantsAndSizes() {
+  return (
+    <Tabs
+      className="rounded-md border border-border p-2"
+      defaultValue="overview"
+    >
+      <Tabs.List size="lg" variant="pill">
+        <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+        <Tabs.Trigger value="projects">Projects</Tabs.Trigger>
+        <Tabs.Trigger value="account">Account</Tabs.Trigger>
+      </Tabs.List>
+
+      <Tabs.Content value="overview">Overview panel content.</Tabs.Content>
+      <Tabs.Content value="projects">Projects panel content.</Tabs.Content>
+      <Tabs.Content value="account">Account panel content.</Tabs.Content>
+    </Tabs>
+  );
+}
+```
+
+## API Reference
+
+### Tabs
+
+Root tabs container built on Base UI Tabs.
+
+<ParamField path="defaultValue" type="string">
+  Initial tab value (uncontrolled).
+</ParamField>
+
+<ParamField path="value" type="string">
+  Current tab value (controlled).
+</ParamField>
+
+<ParamField path="onValueChange" type="(value: string) => void">
+  Callback when tab changes.
+</ParamField>
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="horizontal">
+  Tab layout direction.
+</ParamField>
+
+### TabsList
+
+Container for tab triggers with variant styles.
+
+<ParamField path="variant" type="'default' | 'line' | 'pill'" default="default">
+  Visual style variant.
+</ParamField>
+
+<ParamField path="size" type="TabsListSize" default="md">
+  Size of the tab list: `xs | sm | md | lg | xl`.
+</ParamField>
+
+<ParamField path="fullWidth" type="boolean" default={false}>
+  Whether triggers should expand to fill available width.
+</ParamField>
+
+<ParamField path="activateOnFocus" type="boolean" default={false}>
+  Whether to activate tabs when focused via keyboard.
+</ParamField>
+
+### TabsTrigger
+
+Interactive tab button.
+
+<ParamField path="value" type="string" required>
+  Unique identifier for this tab.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  Whether the tab is disabled.
+</ParamField>
+
+### TabsContent
+
+Panel content for a specific tab.
+
+<ParamField path="value" type="string" required>
+  Tab value this content corresponds to.
+</ParamField>
+
+### TabsIndicator
+
+Animated active tab indicator (mainly for `default` variant).
+
+<ParamField path="className" type="string">
+  Custom styles for the indicator.
+</ParamField>
+
+## Accessibility
+
+- Base UI handles ARIA tabs semantics (`tablist`, `tab`, `tabpanel`).
+- Keep trigger labels concise and unique.
+- Disabled triggers should remain visibly disabled and excluded from activation flow.
+
+## SSR and RSC
+
+- Tabs interactions are client-side.
+- `TabsIndicator` uses `renderBeforeHydration` to reduce hydration mismatch risk for indicator position.
+
+## Styling and Tokens
+
+- Tabs list/trigger defaults are tokenized (`bg-muted`, `text-muted-foreground`, `text-foreground`, `border-border`).
+- Keep custom tab surfaces on semantic tokens and avoid raw palette classes.
+- For vertical tabs, use layout classes on root and wrap content in a flexible container.
+
+## Troubleshooting
+
+- Panel does not render: ensure every `Tabs.Content` value matches an existing trigger value.
+- Indicator not visible in default variant: include `<Tabs.Indicator />` inside `Tabs.List`.
+- Arrow keys move focus but do not activate: set `activateOnFocus` on `Tabs.List`.
+- Disabled tab still switching: verify `disabled` is applied on `Tabs.Trigger`.
+
+## Related Docs
+
+- [Accordion](/components/accordion)
+- [Collapsible](/components/collapsible)
+- [Radio Group](/components/radio-group)

@@ -1,0 +1,208 @@
+---
+title: useInputState
+description: Manages input-like state with a smart setter that handles events and values
+---
+
+## Overview
+
+Manages input-like state with a setter that accepts raw values, updater functions, or input change events from text/select/textarea/checkbox fields.
+
+## Import
+
+```tsx
+import { useInputState } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useInputState<T>(
+  initialState: T
+): UseInputStateReturnValue<T>;
+```
+
+## Parameters
+
+<ParamField path="initialState" type="T" required>
+  Initial value for the controlled state
+</ParamField>
+
+## Return Value
+
+<ResponseField name="[value, setValue]" type="UseInputStateReturnValue<T>">
+  A tuple containing the current value and setter function
+  
+  <ResponseField name="value" type="T">
+    Current state value
+  </ResponseField>
+  
+  <ResponseField name="setValue" type="(value: InputOnChange<T>) => void">
+    Setter that accepts a value, updater function, or change event
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Text Input
+
+```tsx
+import { useInputState } from '@kuzenbo/hooks';
+
+function TextInput() {
+  const [value, setValue] = useInputState('');
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={value}
+        onChange={setValue}
+        placeholder="Enter text"
+      />
+      <p>Value: {value}</p>
+    </div>
+  );
+}
+```
+
+### Textarea
+
+```tsx
+import { useInputState } from '@kuzenbo/hooks';
+
+function TextArea() {
+  const [comment, setComment] = useInputState('');
+
+  return (
+    <div>
+      <textarea
+        value={comment}
+        onChange={setComment}
+        rows={4}
+        placeholder="Enter your comment"
+      />
+      <p>Characters: {comment.length}</p>
+    </div>
+  );
+}
+```
+
+### Select Dropdown
+
+```tsx
+import { useInputState } from '@kuzenbo/hooks';
+
+function SelectInput() {
+  const [country, setCountry] = useInputState('usa');
+
+  return (
+    <div>
+      <select value={country} onChange={setCountry}>
+        <option value="usa">United States</option>
+        <option value="canada">Canada</option>
+        <option value="mexico">Mexico</option>
+      </select>
+      <p>Selected: {country}</p>
+    </div>
+  );
+}
+```
+
+### Checkbox
+
+```tsx
+import { useInputState } from '@kuzenbo/hooks';
+
+function CheckboxInput() {
+  const [checked, setChecked] = useInputState(false);
+
+  return (
+    <label>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={setChecked}
+      />
+      {checked ? 'Checked' : 'Unchecked'}
+    </label>
+  );
+}
+```
+
+### Direct Value Setting
+
+```tsx
+import { useInputState } from '@kuzenbo/hooks';
+
+function DirectValueInput() {
+  const [value, setValue] = useInputState('initial');
+
+  return (
+    <div>
+      <input type="text" value={value} onChange={setValue} />
+      <button onClick={() => setValue('reset')}>Reset</button>
+      <button onClick={() => setValue((current) => current.toUpperCase())}>
+        Uppercase
+      </button>
+    </div>
+  );
+}
+```
+
+### Form Example
+
+```tsx
+import { useInputState } from '@kuzenbo/hooks';
+
+function ContactForm() {
+  const [name, setName] = useInputState('');
+  const [email, setEmail] = useInputState('');
+  const [subscribe, setSubscribe] = useInputState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({ name, email, subscribe });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={name}
+        onChange={setName}
+        placeholder="Name"
+      />
+      <input
+        type="email"
+        value={email}
+        onChange={setEmail}
+        placeholder="Email"
+      />
+      <label>
+        <input
+          type="checkbox"
+          checked={subscribe}
+          onChange={setSubscribe}
+        />
+        Subscribe to newsletter
+      </label>
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+type InputValue<T> = T;
+type InputChangeEvent = ChangeEvent<
+  HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+>;
+type InputOnChange<T> = InputValue<T> | InputChangeEvent | ((current: T) => T);
+
+export type UseInputStateReturnValue<T> = [
+  T,
+  (value: InputOnChange<T>) => void,
+];
+```

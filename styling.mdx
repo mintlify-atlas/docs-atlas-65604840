@@ -1,0 +1,339 @@
+---
+title: Styling
+description: Learn how Kuzenbo's styling system works, including Tailwind Variants, class composition, size system, and customization patterns.
+---
+
+# Styling
+
+Kuzenbo uses a token-first styling approach with Tailwind CSS and Tailwind Variants for predictable, customizable components.
+
+## Styling system overview
+
+Kuzenbo's styling is built on:
+
+- **Semantic tokens** - CSS variables for colors, spacing, and other design tokens
+- **Tailwind Variants** - Type-safe variant system for component styling
+- **Base UI** - Accessible primitive components with render composition
+- **Class composition** - Flexible class override patterns
+
+## Semantic color tokens
+
+All Kuzenbo components use semantic color tokens instead of raw Tailwind palette classes:
+
+```tsx
+// ✅ Good: Use semantic tokens
+<div className="bg-background text-foreground border-border">
+  Content
+</div>
+
+// ❌ Avoid: Raw palette classes
+<div className="bg-slate-50 text-slate-900 border-slate-200">
+  Content
+</div>
+```
+
+### Available semantic tokens
+
+<Tabs>
+  <Tab title="Background">
+    - `bg-background` - Main app background
+    - `bg-foreground` - Inverted background
+    - `bg-card` - Card/panel background
+    - `bg-popover` - Popover/dropdown background
+    - `bg-muted` - Subtle background
+    - `bg-accent` - Accent background
+    - `bg-primary` - Primary brand color
+    - `bg-secondary` - Secondary color
+  </Tab>
+  <Tab title="Text">
+    - `text-foreground` - Primary text
+    - `text-muted-foreground` - Secondary/muted text
+    - `text-card-foreground` - Card text
+    - `text-popover-foreground` - Popover text
+    - `text-primary-foreground` - Text on primary bg
+    - `text-secondary-foreground` - Text on secondary bg
+    - `text-accent-foreground` - Text on accent bg
+  </Tab>
+  <Tab title="Border">
+    - `border-border` - Default border
+    - `border-input` - Input border
+    - `border-ring` - Focus ring
+    - `border-primary` - Primary border
+    - `border-danger-border` - Danger border
+    - `border-warning-border` - Warning border
+    - `border-success-border` - Success border
+    - `border-info-border` - Info border
+  </Tab>
+  <Tab title="Status">
+    - `bg-danger` / `text-danger-foreground` - Danger state
+    - `bg-warning` / `text-warning-foreground` - Warning state
+    - `bg-success` / `text-success-foreground` - Success state
+    - `bg-info` / `text-info-foreground` - Info state
+  </Tab>
+</Tabs>
+
+<Tip>
+Semantic tokens automatically adapt to light and dark mode without any code changes.
+</Tip>
+
+## Component variants
+
+Kuzenbo uses Tailwind Variants for type-safe component styling. Here's how the Button component defines variants:
+
+```typescript
+import { tv } from "tailwind-variants";
+
+const buttonVariants = tv({
+  base: "inline-flex items-center justify-center rounded-md font-medium transition-colors",
+  variants: {
+    variant: {
+      default: "bg-primary text-primary-foreground hover:bg-primary/90",
+      outline: "border border-input bg-transparent hover:bg-accent",
+      ghost: "hover:bg-accent hover:text-accent-foreground",
+      destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+    },
+    size: {
+      xs: "h-6 px-2 text-xs",
+      sm: "h-8 px-2.5 text-sm",
+      md: "h-9 px-2.5 text-sm",
+      lg: "h-10 px-3 text-base",
+      xl: "h-11 px-4 text-base",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+    size: "md",
+  },
+});
+```
+
+## Size system
+
+Kuzenbo uses a consistent size system across all components:
+
+### Size scale
+
+All components support five size variants:
+
+- `xs` - Extra small (compact UIs, dense tables)
+- `sm` - Small (tight layouts, mobile-first)
+- `md` - Medium (default, balanced)
+- `lg` - Large (comfortable, accessible)
+- `xl` - Extra large (prominent CTAs, hero sections)
+
+### Using sizes
+
+```tsx
+import { Button } from "@kuzenbo/core/ui/button";
+import { Input } from "@kuzenbo/core/ui/input";
+import { Card } from "@kuzenbo/core/ui/card";
+
+// Component-level sizes
+<Button size="sm">Small</Button>
+<Button size="md">Medium</Button>
+<Button size="lg">Large</Button>
+
+<Input size="sm" />
+<Card size="lg" />
+```
+
+### Global size provider
+
+Set a default size for all components using `KuzenboProvider`:
+
+```tsx
+import { KuzenboProvider } from "@kuzenbo/core/provider";
+
+export default function App() {
+  return (
+    <KuzenboProvider defaultSize="lg">
+      {/* All components use size="lg" by default */}
+      <Button>Large by default</Button>
+      <Input placeholder="Large input" />
+
+      {/* Override with component prop */}
+      <Button size="sm">Small override</Button>
+    </KuzenboProvider>
+  );
+}
+```
+
+<Note>
+The size system follows a precedence order: component prop → context provider → component default → global default.
+</Note>
+
+## Class composition
+
+Kuzenbo components accept a `className` prop for customization:
+
+```tsx
+import { Button } from "@kuzenbo/core/ui/button";
+
+<Button className="w-full shadow-lg">
+  Custom Button
+</Button>
+```
+
+### Class merging
+
+Kuzenbo uses `tailwind-merge` to intelligently merge classes:
+
+```tsx
+// Component has: "bg-primary text-sm"
+// You add: "bg-secondary text-base"
+// Result: "bg-secondary text-base" (your classes win)
+
+<Button className="bg-secondary text-base">
+  Overridden
+</Button>
+```
+
+### Composition patterns
+
+You can compose components with wrapper classes:
+
+```tsx
+import { Card } from "@kuzenbo/core/ui/card";
+
+<Card className="p-6">
+  <h2 className="text-xl font-semibold">Title</h2>
+  <p className="text-muted-foreground mt-2">Description</p>
+</Card>
+```
+
+## Baseline styles
+
+The optional `@kuzenbo/styles` package provides recommended global CSS:
+
+```tsx
+import "@kuzenbo/styles/recommended.css";
+```
+
+This includes:
+
+- **Scrollbar styling** - Firefox thin scrollbars and WebKit custom scrollbars
+- **Focus rings** - Consistent `:focus-visible` outlines using semantic tokens
+- **Text selection** - Custom selection colors using semantic tokens
+- **Smooth scrolling** - Respects `prefers-reduced-motion`
+- **Scroll anchoring** - Hash links work with sticky headers
+- **Font smoothing** - Antialiased text on macOS/iOS
+
+<Tip>
+The baseline styles are optional but recommended for a polished user experience.
+</Tip>
+
+## Custom component defaults
+
+Set default props for specific components using `KuzenboProvider`:
+
+```tsx
+import { KuzenboProvider } from "@kuzenbo/core/provider";
+
+export default function App() {
+  return (
+    <KuzenboProvider
+      components={{
+        Button: {
+          defaultProps: {
+            variant: "outline",
+            size: "lg",
+          },
+        },
+        Input: {
+          defaultProps: {
+            size: "lg",
+          },
+        },
+      }}
+    >
+      {/* All Buttons are outline/lg by default */}
+      <Button>Outlined Large</Button>
+
+      {/* Override individual props */}
+      <Button variant="default">Solid Large</Button>
+    </KuzenboProvider>
+  );
+}
+```
+
+## Cursor primitives
+
+Use the `cursor-clickable` token for interactive elements instead of raw `cursor-pointer`:
+
+```tsx
+// ✅ Good: Use cursor-clickable token
+<div className="cursor-clickable" onClick={handleClick}>
+  Interactive
+</div>
+
+// ❌ Avoid: Raw cursor-pointer
+<div className="cursor-pointer" onClick={handleClick}>
+  Interactive
+</div>
+```
+
+The `cursor-clickable` token uses the `--kb-cursor` CSS variable for consistent interactive styling.
+
+## Responsive variants
+
+Use Tailwind's responsive modifiers with component classes:
+
+```tsx
+<Button className="w-full md:w-auto" size="lg">
+  Full width on mobile, auto on desktop
+</Button>
+
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <Card size="sm" className="md:p-6" />
+  <Card size="sm" className="md:p-6" />
+  <Card size="sm" className="md:p-6" />
+</div>
+```
+
+## Dark mode
+
+Use the `dark:` modifier for dark mode styles:
+
+```tsx
+<div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+  Light and dark mode
+</div>
+```
+
+<Note>
+Prefer semantic tokens over manual `dark:` modifiers. Tokens automatically adapt to the theme.
+</Note>
+
+## Global radius control
+
+Customize border radius globally using `KuzenboProvider`:
+
+```tsx
+import { KuzenboProvider } from "@kuzenbo/core/provider";
+
+export default function App() {
+  return (
+    <KuzenboProvider defaultRadius="0.5rem">
+      {/* All components use this radius via --kb-radius variable */}
+    </KuzenboProvider>
+  );
+}
+```
+
+The `defaultRadius` prop accepts:
+- Number (pixels): `8`
+- String (CSS units): `"0.5rem"`, `"8px"`, `"0"`
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="Components" icon="grid" href="/components/button">
+    Explore all available components.
+  </Card>
+  <Card title="Theme runtime" icon="palette" href="/foundations/theme-runtime">
+    Deep dive into theme customization.
+  </Card>
+  <Card title="Styles baseline" icon="file" href="/foundations/styles-baseline">
+    Learn about global baseline styles.
+  </Card>
+</CardGroup>

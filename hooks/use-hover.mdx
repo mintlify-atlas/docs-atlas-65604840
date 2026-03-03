@@ -1,0 +1,82 @@
+---
+title: 'useHover'
+description: 'Track whether an element is currently hovered'
+---
+
+`useHover` tracks whether a referenced element is currently hovered by the pointer.
+
+## Usage
+
+```tsx
+import { useHover } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { hovered, ref } = useHover<HTMLDivElement>();
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        padding: 40,
+        background: hovered ? 'orange' : 'cyan',
+      }}
+    >
+      {hovered ? 'Hovered' : 'Not hovered'}
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Parameters
+
+This hook takes no parameters.
+
+### Returns
+
+<ResponseField name="hovered" type="boolean">
+  `true` when the element is currently being hovered, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="ref" type="RefCallback<T>">
+  A ref callback to attach to the element you want to track hover state for.
+</ResponseField>
+
+## With Dynamic Styling
+
+```tsx
+import { useHover } from '@kuzenbo/hooks';
+
+function Card() {
+  const { hovered, ref } = useHover();
+
+  return (
+    <div
+      ref={ref}
+      className={hovered ? 'card-hovered' : 'card'}
+    >
+      <h3>Card Title</h3>
+      <p>Card content</p>
+    </div>
+  );
+}
+```
+
+## TypeScript
+
+You can specify the element type using a generic:
+
+```tsx
+import { useHover } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { hovered, ref } = useHover<HTMLButtonElement>();
+
+  return (
+    <button ref={ref}>
+      {hovered ? 'Release to click' : 'Hover me'}
+    </button>
+  );
+}
+```

@@ -1,0 +1,302 @@
+---
+title: useValidatedState
+description: Stores a value together with validation metadata
+---
+
+## Overview
+
+Stores a value together with validation metadata. The hook keeps the current value, tracks whether it is valid, and preserves the last value that passed validation.
+
+## Import
+
+```tsx
+import { useValidatedState } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useValidatedState<T>(
+  initialValue: T,
+  validate: (value: T) => boolean,
+  initialValidationState?: boolean
+): UseValidatedStateReturnValue<T>;
+```
+
+## Parameters
+
+<ParamField path="initialValue" type="T" required>
+  Initial value used to seed state
+</ParamField>
+
+<ParamField path="validate" type="(value: T) => boolean" required>
+  Validation function used for every update
+</ParamField>
+
+<ParamField path="initialValidationState" type="boolean">
+  Optional initial validity override
+</ParamField>
+
+## Return Value
+
+<ResponseField name="[state, setValue]" type="UseValidatedStateReturnValue<T>">
+  A tuple containing the validation state object and setter function
+  
+  <ResponseField name="state" type="UseValidatedStateValue<T>">
+    Object containing current value and validation metadata
+    
+    <ResponseField name="state.value" type="T">
+      Current value
+    </ResponseField>
+    
+    <ResponseField name="state.lastValidValue" type="T | undefined">
+      Last value that passed validation
+    </ResponseField>
+    
+    <ResponseField name="state.valid" type="boolean">
+      True if the current value is valid, false otherwise
+    </ResponseField>
+  </ResponseField>
+  
+  <ResponseField name="setValue" type="(value: T) => void">
+    Setter function that updates value and runs validation
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Email Input Validation
+
+```tsx
+import { useValidatedState } from '@kuzenbo/hooks';
+
+function EmailInput() {
+  const [{ value, valid, lastValidValue }, setValue] = useValidatedState(
+    '',
+    (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+  );
+
+  return (
+    <div>
+      <input
+        type="email"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        className={!valid && value ? 'invalid' : ''}
+      />
+      {!valid && value && <span className="error">Invalid email</span>}
+      {lastValidValue && (
+        <p>Last valid email: {lastValidValue}</p>
+      )}
+    </div>
+  );
+}
+```
+
+### Numeric Range Validation
+
+```tsx
+import { useValidatedState } from '@kuzenbo/hooks';
+
+function AgeInput() {
+  const [{ value, valid }, setValue] = useValidatedState(
+    0,
+    (age) => age >= 18 && age <= 120,
+    false
+  );
+
+  return (
+    <div>
+      <input
+        type="number"
+        value={value}
+        onChange={(e) => setValue(parseInt(e.target.value) || 0)}
+      />
+      {!valid && (
+        <span className="error">Age must be between 18 and 120</span>
+      )}
+      <button disabled={!valid}>Submit</button>
+    </div>
+  );
+}
+```
+
+### Password Strength Validation
+
+```tsx
+import { useValidatedState } from '@kuzenbo/hooks';
+
+function PasswordInput() {
+  const validatePassword = (password: string) => {
+    return (
+      password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      /[0-9]/.test(password)
+    );
+  };
+
+  const [{ value, valid }, setValue] = useValidatedState(
+    '',
+    validatePassword
+  );
+
+  return (
+    <div>
+      <input
+        type="password"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <div className="password-requirements">
+        <p className={value.length >= 8 ? 'valid' : 'invalid'}>
+          At least 8 characters
+        </p>
+        <p className={/[A-Z]/.test(value) ? 'valid' : 'invalid'}>
+          Contains uppercase letter
+        </p>
+        <p className={/[a-z]/.test(value) ? 'valid' : 'invalid'}>
+          Contains lowercase letter
+        </p>
+        <p className={/[0-9]/.test(value) ? 'valid' : 'invalid'}>
+          Contains number
+        </p>
+      </div>
+      <p>Password is {valid ? 'strong' : 'weak'}</p>
+    </div>
+  );
+}
+```
+
+### Form Field with Fallback
+
+```tsx
+import { useValidatedState } from '@kuzenbo/hooks';
+
+function URLInput() {
+  const validateURL = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const [{ value, valid, lastValidValue }, setValue] = useValidatedState(
+    'https://example.com',
+    validateURL
+  );
+
+  const handleSubmit = () => {
+    // Use the last valid value if current is invalid
+    const urlToSubmit = valid ? value : lastValidValue;
+    console.log('Submitting:', urlToSubmit);
+  };
+
+  return (
+    <div>
+      <input
+        type="url"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      {!valid && <span className="error">Invalid URL</span>}
+      <button onClick={handleSubmit}>
+        Submit {!valid && '(will use last valid URL)'}
+      </button>
+    </div>
+  );
+}
+```
+
+### Complex Object Validation
+
+```tsx
+import { useValidatedState } from '@kuzenbo/hooks';
+
+interface UserProfile {
+  username: string;
+  bio: string;
+  age: number;
+}
+
+function ProfileEditor() {
+  const validateProfile = (profile: UserProfile) => {
+    return (
+      profile.username.length >= 3 &&
+      profile.bio.length <= 200 &&
+      profile.age >= 13
+    );
+  };
+
+  const [{ value, valid, lastValidValue }, setValue] = useValidatedState<UserProfile>(
+    { username: '', bio: '', age: 0 },
+    validateProfile,
+    false
+  );
+
+  const updateField = <K extends keyof UserProfile>(
+    field: K,
+    fieldValue: UserProfile[K]
+  ) => {
+    setValue({ ...value, [field]: fieldValue });
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={value.username}
+        onChange={(e) => updateField('username', e.target.value)}
+        placeholder="Username (min 3 chars)"
+      />
+      <textarea
+        value={value.bio}
+        onChange={(e) => updateField('bio', e.target.value)}
+        placeholder="Bio (max 200 chars)"
+        maxLength={200}
+      />
+      <input
+        type="number"
+        value={value.age}
+        onChange={(e) => updateField('age', parseInt(e.target.value) || 0)}
+        placeholder="Age (min 13)"
+      />
+      
+      <div className="validation-status">
+        <p>Profile is {valid ? 'valid' : 'invalid'}</p>
+        {lastValidValue && !valid && (
+          <button onClick={() => setValue(lastValidValue)}>
+            Restore Last Valid State
+          </button>
+        )}
+      </div>
+      
+      <button disabled={!valid}>Save Profile</button>
+    </div>
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+export interface UseValidatedStateValue<T> {
+  /** Current value */
+  value: T;
+
+  /** Last valid value */
+  lastValidValue: T | undefined;
+
+  /** True if the current value is valid, false otherwise */
+  valid: boolean;
+}
+
+export type UseValidatedStateReturnValue<T> = [
+  /** Current value */
+  UseValidatedStateValue<T>,
+  /** Handler to update the state, passes `value` and `payload` to `onChange` */
+  (value: T) => void,
+];
+```

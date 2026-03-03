@@ -1,0 +1,336 @@
+---
+title: InputOTP
+description: A one-time password input component for entering verification codes with individual character slots.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme input-otp
+```
+
+## Usage
+
+```tsx
+import { InputOTP } from "@kuzenbo/core";
+
+function App() {
+  return (
+    <InputOTP maxLength={6}>
+      <InputOTP.Group>
+        <InputOTP.Slot index={0} />
+        <InputOTP.Slot index={1} />
+        <InputOTP.Slot index={2} />
+        <InputOTP.Slot index={3} />
+        <InputOTP.Slot index={4} />
+        <InputOTP.Slot index={5} />
+      </InputOTP.Group>
+    </InputOTP>
+  );
+}
+```
+
+## Examples
+
+### Basic OTP Input
+
+A 6-digit OTP input.
+
+```tsx
+import { InputOTP } from "@kuzenbo/core";
+
+function BasicExample() {
+  return (
+    <InputOTP maxLength={6}>
+      <InputOTP.Group>
+        <InputOTP.Slot index={0} />
+        <InputOTP.Slot index={1} />
+        <InputOTP.Slot index={2} />
+        <InputOTP.Slot index={3} />
+        <InputOTP.Slot index={4} />
+        <InputOTP.Slot index={5} />
+      </InputOTP.Group>
+    </InputOTP>
+  );
+}
+```
+
+### With Separator
+
+Visually group digits with a separator.
+
+```tsx
+import { InputOTP } from "@kuzenbo/core";
+
+function SeparatorExample() {
+  return (
+    <InputOTP maxLength={6}>
+      <InputOTP.Group>
+        <InputOTP.Slot index={0} />
+        <InputOTP.Slot index={1} />
+        <InputOTP.Slot index={2} />
+      </InputOTP.Group>
+      <InputOTP.Separator />
+      <InputOTP.Group>
+        <InputOTP.Slot index={3} />
+        <InputOTP.Slot index={4} />
+        <InputOTP.Slot index={5} />
+      </InputOTP.Group>
+    </InputOTP>
+  );
+}
+```
+
+### Controlled Value
+
+Manage the OTP value with React state.
+
+```tsx
+import { InputOTP } from "@kuzenbo/core";
+import { useState } from "react";
+
+function ControlledExample() {
+  const [value, setValue] = useState("");
+
+  return (
+    <div className="grid gap-2">
+      <InputOTP
+        maxLength={6}
+        value={value}
+        onChange={setValue}
+      >
+        <InputOTP.Group>
+          <InputOTP.Slot index={0} />
+          <InputOTP.Slot index={1} />
+          <InputOTP.Slot index={2} />
+          <InputOTP.Slot index={3} />
+          <InputOTP.Slot index={4} />
+          <InputOTP.Slot index={5} />
+        </InputOTP.Group>
+      </InputOTP>
+      <p className="text-muted-foreground text-sm">
+        Value: {value || "(empty)"}
+      </p>
+    </div>
+  );
+}
+```
+
+### Sizes
+
+InputOTP supports size variants.
+
+```tsx
+import { InputOTP } from "@kuzenbo/core";
+
+function SizesExample() {
+  return (
+    <div className="grid gap-3">
+      <InputOTP maxLength={6} size="xs">
+        <InputOTP.Group>
+          <InputOTP.Slot index={0} />
+          <InputOTP.Slot index={1} />
+          <InputOTP.Slot index={2} />
+        </InputOTP.Group>
+        <InputOTP.Separator />
+        <InputOTP.Group>
+          <InputOTP.Slot index={3} />
+          <InputOTP.Slot index={4} />
+          <InputOTP.Slot index={5} />
+        </InputOTP.Group>
+      </InputOTP>
+
+      <InputOTP maxLength={6} size="sm">
+        <InputOTP.Group>
+          <InputOTP.Slot index={0} />
+          <InputOTP.Slot index={1} />
+          <InputOTP.Slot index={2} />
+        </InputOTP.Group>
+        <InputOTP.Separator />
+        <InputOTP.Group>
+          <InputOTP.Slot index={3} />
+          <InputOTP.Slot index={4} />
+          <InputOTP.Slot index={5} />
+        </InputOTP.Group>
+      </InputOTP>
+
+      <InputOTP maxLength={6} size="md">
+        <InputOTP.Group>
+          <InputOTP.Slot index={0} />
+          <InputOTP.Slot index={1} />
+          <InputOTP.Slot index={2} />
+        </InputOTP.Group>
+        <InputOTP.Separator />
+        <InputOTP.Group>
+          <InputOTP.Slot index={3} />
+          <InputOTP.Slot index={4} />
+          <InputOTP.Slot index={5} />
+        </InputOTP.Group>
+      </InputOTP>
+
+      <InputOTP maxLength={6} size="lg">
+        <InputOTP.Group>
+          <InputOTP.Slot index={0} />
+          <InputOTP.Slot index={1} />
+          <InputOTP.Slot index={2} />
+        </InputOTP.Group>
+        <InputOTP.Separator />
+        <InputOTP.Group>
+          <InputOTP.Slot index={3} />
+          <InputOTP.Slot index={4} />
+          <InputOTP.Slot index={5} />
+        </InputOTP.Group>
+      </InputOTP>
+
+      <InputOTP maxLength={6} size="xl">
+        <InputOTP.Group>
+          <InputOTP.Slot index={0} />
+          <InputOTP.Slot index={1} />
+          <InputOTP.Slot index={2} />
+        </InputOTP.Group>
+        <InputOTP.Separator />
+        <InputOTP.Group>
+          <InputOTP.Slot index={3} />
+          <InputOTP.Slot index={4} />
+          <InputOTP.Slot index={5} />
+        </InputOTP.Group>
+      </InputOTP>
+    </div>
+  );
+}
+```
+
+### Pattern Validation
+
+Restrict input to specific character patterns.
+
+```tsx
+import { InputOTP } from "@kuzenbo/core";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+
+function PatternExample() {
+  return (
+    <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS}>
+      <InputOTP.Group>
+        <InputOTP.Slot index={0} />
+        <InputOTP.Slot index={1} />
+        <InputOTP.Slot index={2} />
+        <InputOTP.Slot index={3} />
+        <InputOTP.Slot index={4} />
+        <InputOTP.Slot index={5} />
+      </InputOTP.Group>
+    </InputOTP>
+  );
+}
+```
+
+## Props
+
+### InputOTP
+
+InputOTP extends input-otp OTPInput props.
+
+<ParamField path="maxLength" type="number" required>
+  Maximum number of characters (number of slots).
+</ParamField>
+
+<ParamField path="value" type="string">
+  Controlled value of the OTP input.
+</ParamField>
+
+<ParamField path="onChange" type="(value: string) => void">
+  Callback fired when the value changes.
+</ParamField>
+
+<ParamField path="onComplete" type="(value: string) => void">
+  Callback fired when all slots are filled.
+</ParamField>
+
+<ParamField path="pattern" type="string">
+  Regular expression pattern to restrict allowed characters.
+</ParamField>
+
+<ParamField path="size" type="string" default="md">
+  Size variant of the OTP input.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the OTP input.
+</ParamField>
+
+<ParamField path="autoFocus" type="boolean" default="false">
+  When true, automatically focuses the first slot on mount.
+</ParamField>
+
+<ParamField path="pushPasswordManagerStrategy" type="string">
+  Strategy for handling password manager autofill.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes for the input element.
+</ParamField>
+
+<ParamField path="containerClassName" type="string">
+  Additional CSS classes for the container.
+</ParamField>
+
+<ParamField path="children" type="ReactNode" required>
+  InputOTP.Group and InputOTP.Separator components.
+</ParamField>
+
+## Subcomponents
+
+### InputOTP.Group
+
+Container for a group of OTP slots.
+
+```tsx
+<InputOTP.Group>
+  <InputOTP.Slot index={0} />
+  <InputOTP.Slot index={1} />
+  <InputOTP.Slot index={2} />
+</InputOTP.Group>
+```
+
+### InputOTP.Slot
+
+An individual character slot.
+
+<ParamField path="index" type="number" required>
+  Zero-based index of this slot.
+</ParamField>
+
+### InputOTP.Separator
+
+A visual separator between groups.
+
+```tsx
+<InputOTP.Separator />
+```
+
+## TypeScript
+
+```tsx
+import type {
+  InputOTPProps,
+  InputOTPGroupProps,
+  InputOTPSlotProps,
+  InputOTPSeparatorProps,
+} from "@kuzenbo/core";
+
+const CustomInputOTP = (props: InputOTPProps) => {
+  return <InputOTP {...props} />;
+};
+```
+
+## Accessibility
+
+- InputOTP uses semantic input elements
+- Supports keyboard navigation between slots
+- Auto-advances to next slot on input
+- Backspace moves to previous slot
+- Paste support for filling multiple slots
+- Disabled state prevents all interactions
+- Properly announces to screen readers

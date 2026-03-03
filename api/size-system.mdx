@@ -1,0 +1,367 @@
+---
+title: UISize System
+description: Unified size scale and density metrics for consistent component sizing
+---
+
+## Overview
+
+The UISize system provides a unified `xs | sm | md | lg | xl` scale across all Kuzenbo components, ensuring consistent density and spacing throughout your application.
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## UISize Type
+
+```typescript
+type UISize = "xs" | "sm" | "md" | "lg" | "xl";
+```
+
+All size-aware components use this canonical scale with `"md"` as the default.
+
+## Size Constants
+
+### UI_SIZE_ORDER
+
+The canonical ordering of size tokens.
+
+```typescript
+import { UI_SIZE_ORDER } from "@kuzenbo/core/size";
+
+const sizes: readonly UISize[] = ["xs", "sm", "md", "lg", "xl"];
+console.log(UI_SIZE_ORDER); // ["xs", "sm", "md", "lg", "xl"]
+```
+
+### DEFAULT_UI_SIZE
+
+The baseline size when no explicit size is provided.
+
+```typescript
+import { DEFAULT_UI_SIZE } from "@kuzenbo/core/size";
+
+console.log(DEFAULT_UI_SIZE); // "md"
+```
+
+## Size Resolution
+
+### resolveSize
+
+Resolves the first non-null/undefined size from a list of candidates.
+
+```typescript
+import { resolveSize } from "@kuzenbo/core/size";
+
+const size1 = resolveSize(undefined, "lg", "sm"); // "lg"
+const size2 = resolveSize(null, null, "xs"); // "xs"
+const size3 = resolveSize(); // "md" (default)
+```
+
+**Parameters:**
+- `...candidates`: `(UISize | undefined | null)[]`
+
+**Returns:** `UISize` (never undefined)
+
+## Size Precedence
+
+Components follow this resolution order:
+
+1. **Explicit child size** - Direct prop on the component
+2. **Container/context size** - From parent wrapper or context
+3. **Component default** - Built-in component default
+4. **Global provider size** - From `KuzenboProvider.defaultSize`
+5. **System default** - Falls back to `"md"`
+
+```tsx
+import { KuzenboProvider } from "@kuzenbo/core/provider";
+import { InputGroup } from "@kuzenbo/core/ui/input-group";
+
+<KuzenboProvider defaultSize="lg">
+  <InputGroup size="sm">
+    {/* Inherits sm from InputGroup */}
+    <InputGroup.Input placeholder="Small" />
+    
+    {/* Explicit xl overrides container */}
+    <InputGroup.Button size="xl">Go</InputGroup.Button>
+  </InputGroup>
+</KuzenboProvider>
+```
+
+## Size Context
+
+### createSizeContext
+
+Create a size context for container components that need to propagate size to descendants.
+
+```typescript
+import { createSizeContext } from "@kuzenbo/core/size";
+import type { UISize } from "@kuzenbo/core/size";
+
+const { SizeContext, useResolvedSize } = createSizeContext("md");
+
+function Container({ size, children }: { size?: UISize; children: ReactNode }) {
+  return (
+    <SizeContext.Provider value={{ size }}>
+      {children}
+    </SizeContext.Provider>
+  );
+}
+
+function Child({ size }: { size?: UISize }) {
+  const resolvedSize = useResolvedSize(size);
+  return <div data-size={resolvedSize}>Child</div>;
+}
+```
+
+**Parameters:**
+- `defaultSize`: `UISize` - Fallback when no size is provided (default: `"md"`)
+
+**Returns:**
+- `SizeContext`: React Context for size propagation
+- `useResolvedSize`: Hook that resolves size using precedence chain
+
+## Metric Families
+
+Kuzenbo provides shared sizing utilities for consistent density across component families.
+
+### Field Height
+
+For input-like controls and buttons.
+
+```typescript
+import { resolveFieldHeightClassBySize } from "@kuzenbo/core/size";
+
+const className = resolveFieldHeightClassBySize("lg"); // "h-10"
+```
+
+| Size | Class   | Height  |
+|------|---------|--------|
+| xs   | `h-6`   | 1.5rem |
+| sm   | `h-8`   | 2rem   |
+| md   | `h-9`   | 2.25rem|
+| lg   | `h-10`  | 2.5rem |
+| xl   | `h-11`  | 2.75rem|
+
+**Typical use:** Input, Button, Select triggers
+
+### Row Height
+
+For tabs, toggles, menu items, and list rows.
+
+```typescript
+import { resolveRowHeightClassBySize } from "@kuzenbo/core/size";
+
+const className = resolveRowHeightClassBySize("md"); // "h-8"
+```
+
+| Size | Class   | Height  |
+|------|---------|--------|
+| xs   | `h-6`   | 1.5rem |
+| sm   | `h-7`   | 1.75rem|
+| md   | `h-8`   | 2rem   |
+| lg   | `h-9`   | 2.25rem|
+| xl   | `h-10`  | 2.5rem |
+
+**Typical use:** Tabs, Toggle, Menu items, List rows
+
+### Compact Visual
+
+For checkbox, radio, and switch visual surfaces.
+
+```typescript
+import { resolveCompactVisualClassBySize } from "@kuzenbo/core/size";
+
+const className = resolveCompactVisualClassBySize("md"); // "size-4"
+```
+
+| Size | Class          | Size     |
+|------|----------------|----------|
+| xs   | `size-3`       | 0.75rem  |
+| sm   | `size-3.5`     | 0.875rem |
+| md   | `size-4`       | 1rem     |
+| lg   | `size-[18px]`  | 18px     |
+| xl   | `size-5`       | 1.25rem  |
+
+**Typical use:** Checkbox, Radio, Switch indicators
+
+### Compact Target Size
+
+Accessible tap/click target sizes for compact controls.
+
+```typescript
+import { COMPACT_TARGET_SIZE_BY_SIZE } from "@kuzenbo/core/size";
+
+const targetSize = COMPACT_TARGET_SIZE_BY_SIZE["md"]; // 32
+```
+
+| Size | Pixels |
+|------|--------|
+| xs   | 24     |
+| sm   | 28     |
+| md   | 32     |
+| lg   | 36     |
+| xl   | 40     |
+
+**Typical use:** Invisible hit area expansion for small interactive elements
+
+### Surface Spacing
+
+For card, dialog, and container padding/gap.
+
+```typescript
+import { resolveSurfaceSpacingClassBySize } from "@kuzenbo/core/size";
+
+const className = resolveSurfaceSpacingClassBySize("lg"); // "p-5 gap-3.5"
+```
+
+| Size | Class           | Padding | Gap     |
+|------|-----------------|---------|--------|
+| xs   | `p-2 gap-1.5`   | 0.5rem  | 0.375rem|
+| sm   | `p-3 gap-2`     | 0.75rem | 0.5rem  |
+| md   | `p-4 gap-3`     | 1rem    | 0.75rem |
+| lg   | `p-5 gap-3.5`   | 1.25rem | 0.875rem|
+| xl   | `p-6 gap-4`     | 1.5rem  | 1rem    |
+
+**Typical use:** Card, Dialog, Item interior spacing
+
+### Field Text
+
+Text sizing for input-like controls.
+
+```typescript
+import { resolveFieldTextClassBySize } from "@kuzenbo/core/size";
+
+const className = resolveFieldTextClassBySize("xl"); // "text-base"
+```
+
+| Size | Class       | Size      |
+|------|-------------|----------|
+| xs   | `text-xs`   | 0.75rem  |
+| sm   | `text-sm`   | 0.875rem |
+| md   | `text-sm`   | 0.875rem |
+| lg   | `text-sm`   | 0.875rem |
+| xl   | `text-base` | 1rem     |
+
+**Typical use:** Input, Textarea, Select
+
+### Row Text
+
+Text sizing for row/list/tab labels.
+
+```typescript
+import { resolveRowTextClassBySize } from "@kuzenbo/core/size";
+
+const className = resolveRowTextClassBySize("sm"); // "text-xs"
+```
+
+| Size | Class       | Size      |
+|------|-------------|----------|
+| xs   | `text-xs`   | 0.75rem  |
+| sm   | `text-xs`   | 0.75rem  |
+| md   | `text-sm`   | 0.875rem |
+| lg   | `text-sm`   | 0.875rem |
+| xl   | `text-base` | 1rem     |
+
+**Typical use:** Tab labels, Toggle labels, Menu items
+
+### Icon Sizing
+
+Default icon size within controls.
+
+```typescript
+import { 
+  resolveDefaultIconClassBySize,
+  resolveDefaultNestedIconClassBySize 
+} from "@kuzenbo/core/size";
+
+const iconClass = resolveDefaultIconClassBySize("lg"); // "size-4"
+const nestedClass = resolveDefaultNestedIconClassBySize("lg");
+// "[&_svg:not([class*='size-'])]:size-4"
+```
+
+| Size | Class        | Size     |
+|------|--------------|----------|
+| xs   | `size-3`     | 0.75rem  |
+| sm   | `size-3.5`   | 0.875rem |
+| md   | `size-4`     | 1rem     |
+| lg   | `size-4`     | 1rem     |
+| xl   | `size-5`     | 1.25rem  |
+
+**Typical use:** Icons in buttons, inputs, controls
+
+## Complete Example
+
+```tsx
+import { KuzenboProvider } from "@kuzenbo/core/provider";
+import { Button } from "@kuzenbo/core/ui/button";
+import { Input } from "@kuzenbo/core/ui/input";
+import { Card } from "@kuzenbo/core/ui/card";
+import type { UISize } from "@kuzenbo/core/size";
+
+export default function SizingDemo() {
+  const [appSize, setAppSize] = useState<UISize>("md");
+  
+  return (
+    <KuzenboProvider defaultSize={appSize}>
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          {["xs", "sm", "md", "lg", "xl"].map((size) => (
+            <Button
+              key={size}
+              size={size as UISize}
+              onClick={() => setAppSize(size as UISize)}
+            >
+              {size}
+            </Button>
+          ))}
+        </div>
+        
+        {/* All inherit from provider */}
+        <Card>
+          <Card.Header>
+            <Card.Title>Form</Card.Title>
+          </Card.Header>
+          <Card.Content>
+            <Input placeholder="Email" />
+            <Button>Submit</Button>
+          </Card.Content>
+        </Card>
+      </div>
+    </KuzenboProvider>
+  );
+}
+```
+
+## TypeScript Reference
+
+```typescript
+// Size type
+export type UISize = "xs" | "sm" | "md" | "lg" | "xl";
+
+// Constants
+export const UI_SIZE_ORDER: readonly UISize[];
+export const DEFAULT_UI_SIZE: UISize;
+export const COMPACT_TARGET_SIZE_BY_SIZE: Record<UISize, number>;
+
+// Resolution
+export function resolveSize(
+  ...candidates: (UISize | undefined | null)[]
+): UISize;
+
+// Context creation
+export function createSizeContext(defaultSize?: UISize): {
+  SizeContext: React.Context<SizeContextValue>;
+  useResolvedSize: (...candidates: (UISize | undefined | null)[]) => UISize;
+};
+
+// Metric resolvers
+export function resolveFieldHeightClassBySize(size: UISize): string;
+export function resolveRowHeightClassBySize(size: UISize): string;
+export function resolveCompactVisualClassBySize(size: UISize): string;
+export function resolveSurfaceSpacingClassBySize(size: UISize): string;
+export function resolveFieldTextClassBySize(size: UISize): string;
+export function resolveRowTextClassBySize(size: UISize): string;
+export function resolveDefaultIconClassBySize(size: UISize): string;
+export function resolveDefaultNestedIconClassBySize(size: UISize): string;
+```

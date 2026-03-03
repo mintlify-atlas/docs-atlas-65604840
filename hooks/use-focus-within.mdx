@@ -1,0 +1,128 @@
+---
+title: 'useFocusWithin'
+description: 'Track whether focus is inside an element'
+---
+
+`useFocusWithin` tracks whether focus is currently inside an element and exposes enter/leave callbacks for that focus region. Focus is considered left only when blur moves to a target outside the tracked container.
+
+## Usage
+
+```tsx
+import { useFocusWithin } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { focused, ref } = useFocusWithin();
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        padding: 40,
+        background: focused ? 'orange' : 'cyan',
+      }}
+    >
+      <input placeholder="Focus me" />
+      <input placeholder="Or me" />
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Parameters
+
+<ParamField path="options" type="UseFocusWithinOptions">
+  Optional configuration object.
+</ParamField>
+
+<ParamField path="options.onFocus" type="(event: FocusEvent) => void">
+  Callback fired when focus enters the container subtree.
+</ParamField>
+
+<ParamField path="options.onBlur" type="(event: FocusEvent) => void">
+  Callback fired when focus leaves the container subtree.
+</ParamField>
+
+### Returns
+
+<ResponseField name="focused" type="boolean">
+  `true` when focus is inside the tracked element or any of its descendants.
+</ResponseField>
+
+<ResponseField name="ref" type="RefCallback<T>">
+  A ref callback to attach to the container element you want to track focus within.
+</ResponseField>
+
+## With Callbacks
+
+```tsx
+import { useFocusWithin } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Form() {
+  const [focusCount, setFocusCount] = useState(0);
+  const [blurCount, setBlurCount] = useState(0);
+
+  const { focused, ref } = useFocusWithin({
+    onFocus: () => setFocusCount((c) => c + 1),
+    onBlur: () => setBlurCount((c) => c + 1),
+  });
+
+  return (
+    <div>
+      <p>Focus events: {focusCount}</p>
+      <p>Blur events: {blurCount}</p>
+      <p>Currently focused: {focused ? 'Yes' : 'No'}</p>
+      <form ref={ref} style={{ border: '2px solid gray', padding: 20 }}>
+        <input type="text" placeholder="First name" />
+        <input type="text" placeholder="Last name" />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+}
+```
+
+## Styling Form Focus
+
+```tsx
+import { useFocusWithin } from '@kuzenbo/hooks';
+
+function Card() {
+  const { focused, ref } = useFocusWithin();
+
+  return (
+    <div
+      ref={ref}
+      className={focused ? 'card-focused' : 'card'}
+    >
+      <label>
+        Email
+        <input type="email" />
+      </label>
+      <label>
+        Password
+        <input type="password" />
+      </label>
+    </div>
+  );
+}
+```
+
+## TypeScript
+
+```tsx
+import { useFocusWithin, UseFocusWithinOptions } from '@kuzenbo/hooks';
+
+function Demo() {
+  const options: UseFocusWithinOptions = {
+    onFocus: (event) => console.log('Focused', event),
+    onBlur: (event) => console.log('Blurred', event),
+  };
+
+  const { focused, ref } = useFocusWithin<HTMLDivElement>(options);
+
+  return <div ref={ref}>Content</div>;
+}
+```

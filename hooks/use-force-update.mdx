@@ -1,0 +1,74 @@
+---
+title: useForceUpdate
+description: Forces a component re-render by incrementing an internal reducer value
+---
+
+## Usage
+
+Forces a component re-render by incrementing an internal reducer value. This is useful when you need to manually trigger a re-render without changing state.
+
+```tsx
+import { useForceUpdate } from '@kuzenbo/hooks';
+
+function Demo() {
+  const forceUpdate = useForceUpdate();
+
+  return (
+    <div>
+      <p>Random: {Math.random()}</p>
+      <button onClick={forceUpdate}>Force Update</button>
+    </div>
+  );
+}
+```
+
+## With external state
+
+Force updates when external state changes that React doesn't track:
+
+```tsx
+import { useForceUpdate } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+const externalStore = {
+  value: 0,
+  listeners: new Set<() => void>(),
+  subscribe(callback: () => void) {
+    this.listeners.add(callback);
+    return () => this.listeners.delete(callback);
+  },
+  setValue(value: number) {
+    this.value = value;
+    this.listeners.forEach((cb) => cb());
+  },
+};
+
+function Demo() {
+  const forceUpdate = useForceUpdate();
+
+  useEffect(() => {
+    return externalStore.subscribe(forceUpdate);
+  }, [forceUpdate]);
+
+  return (
+    <div>
+      <p>External value: {externalStore.value}</p>
+      <button onClick={() => externalStore.setValue(externalStore.value + 1)}>
+        Increment External
+      </button>
+    </div>
+  );
+}
+```
+
+## Definition
+
+```tsx
+function useForceUpdate(): () => void
+```
+
+### Returns
+
+<ResponseField name="forceUpdate" type="() => void">
+  A function that triggers a component re-render when called
+</ResponseField>

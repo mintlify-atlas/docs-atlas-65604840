@@ -1,0 +1,92 @@
+---
+title: useWindowEvent
+description: Register window event listeners with automatic cleanup
+---
+
+## Overview
+
+Registers a window event listener and automatically removes it when dependencies change or the component unmounts. This hook is ideal for global window events like resize, scroll, or custom events.
+
+## Function Signature
+
+```typescript
+function useWindowEvent<K extends string>(
+  type: K,
+  listener: WindowEventListener<K>,
+  options?: boolean | AddEventListenerOptions
+): void
+```
+
+### Type Definitions
+
+```typescript
+type WindowEventListener<K extends string> = K extends keyof WindowEventMap
+  ? (this: Window, ev: WindowEventMap[K]) => void
+  : (this: Window, ev: CustomEvent) => void;
+```
+
+## Parameters
+
+<ParamField path="type" type="K extends string" required>
+  Window event name to subscribe to. Can be a standard window event like `"resize"`, `"scroll"`, `"focus"`, or a custom event name.
+</ParamField>
+
+<ParamField path="listener" type="WindowEventListener<K>" required>
+  Listener function called when the event fires. The function receives the event object as a parameter.
+</ParamField>
+
+<ParamField path="options" type="boolean | AddEventListenerOptions">
+  Optional listener options passed to `addEventListener`, such as `capture`, `once`, or `passive`.
+</ParamField>
+
+## Return Value
+
+This hook returns `void`. It manages the event listener internally and cleans up automatically.
+
+## Usage Example
+
+```tsx
+import { useCallback, useState } from "react";
+import { useWindowEvent } from "@kuzenbo/hooks";
+
+function Example() {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const handleResize = useCallback(() => {
+    setWindowWidth(window.innerWidth);
+  }, []);
+
+  useWindowEvent("resize", handleResize);
+
+  return (
+    <div>
+      <p>Current window width: {windowWidth}px</p>
+    </div>
+  );
+}
+```
+
+## Custom Events Example
+
+```tsx
+import { useCallback } from "react";
+import { useWindowEvent } from "@kuzenbo/hooks";
+
+function Example() {
+  const handleCustomEvent = useCallback((event: CustomEvent) => {
+    console.log("Custom event received:", event.detail);
+  }, []);
+
+  useWindowEvent("my-custom-event", handleCustomEvent);
+
+  return <div>Listening for custom events...</div>;
+}
+```
+
+## Features
+
+- Automatic cleanup on component unmount
+- Re-registers listener when dependencies change
+- Type-safe for standard window events
+- Supports custom events with `CustomEvent` type
+- Accepts all native `addEventListener` options

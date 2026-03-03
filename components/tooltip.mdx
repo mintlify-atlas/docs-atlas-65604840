@@ -1,0 +1,244 @@
+---
+title: Tooltip
+description: A brief informational message that appears when hovering over or focusing an element.
+---
+
+A tooltip component that displays contextual information when users hover or focus on an element.
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { Tooltip, Button } from "@kuzenbo/core";
+
+export default function TooltipExample() {
+  return (
+    <Tooltip>
+      <Tooltip.Trigger render={<Button variant="outline" />}>
+        Copy API key
+      </Tooltip.Trigger>
+      <Tooltip.Content>Copied to clipboard</Tooltip.Content>
+    </Tooltip>
+  );
+}
+```
+
+### Different Sides
+
+```tsx
+import { Tooltip, Button } from "@kuzenbo/core";
+
+export default function TooltipSides() {
+  return (
+    <div className="flex gap-4">
+      <Tooltip>
+        <Tooltip.Trigger render={<Button variant="outline" />}>
+          Top
+        </Tooltip.Trigger>
+        <Tooltip.Content side="top">
+          Tooltip on top
+        </Tooltip.Content>
+      </Tooltip>
+
+      <Tooltip>
+        <Tooltip.Trigger render={<Button variant="outline" />}>
+          Bottom
+        </Tooltip.Trigger>
+        <Tooltip.Content side="bottom">
+          Tooltip on bottom
+        </Tooltip.Content>
+      </Tooltip>
+
+      <Tooltip>
+        <Tooltip.Trigger render={<Button variant="outline" />}>
+          Left
+        </Tooltip.Trigger>
+        <Tooltip.Content side="left">
+          Tooltip on left
+        </Tooltip.Content>
+      </Tooltip>
+
+      <Tooltip>
+        <Tooltip.Trigger render={<Button variant="outline" />}>
+          Right
+        </Tooltip.Trigger>
+        <Tooltip.Content side="right">
+          Tooltip on right
+        </Tooltip.Content>
+      </Tooltip>
+    </div>
+  );
+}
+```
+
+### With Sizes
+
+```tsx
+import { Tooltip, Button } from "@kuzenbo/core";
+
+export default function TooltipSizes() {
+  return (
+    <div className="flex gap-2">
+      <Tooltip size="xs">
+        <Tooltip.Trigger render={<Button variant="outline" />}>
+          XS
+        </Tooltip.Trigger>
+        <Tooltip.Content>Extra small tooltip</Tooltip.Content>
+      </Tooltip>
+
+      <Tooltip size="lg">
+        <Tooltip.Trigger render={<Button variant="outline" />}>
+          LG
+        </Tooltip.Trigger>
+        <Tooltip.Content>Large tooltip</Tooltip.Content>
+      </Tooltip>
+    </div>
+  );
+}
+```
+
+### Composed Anatomy
+
+```tsx
+import { Tooltip, Button } from "@kuzenbo/core";
+
+export default function ComposedTooltip() {
+  return (
+    <Tooltip>
+      <Tooltip.Trigger render={<Button variant="outline" />}>
+        Hover me
+      </Tooltip.Trigger>
+      <Tooltip.Portal>
+        <Tooltip.Positioner side="top" sideOffset={8}>
+          <Tooltip.Popup>
+            <Tooltip.Viewport>
+              Custom tooltip with arrow
+            </Tooltip.Viewport>
+            <Tooltip.Arrow />
+          </Tooltip.Popup>
+        </Tooltip.Positioner>
+      </Tooltip.Portal>
+    </Tooltip>
+  );
+}
+```
+
+## API Reference
+
+### Tooltip (Root)
+
+<ParamField path="defaultOpen" type="boolean">
+  The initial open state when uncontrolled.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  The controlled open state of the tooltip.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback fired when the open state changes.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size variant for the tooltip.
+</ParamField>
+
+<ParamField path="openDelay" type="number">
+  The delay in milliseconds before the tooltip opens on hover.
+</ParamField>
+
+<ParamField path="closeDelay" type="number">
+  The delay in milliseconds before the tooltip closes.
+</ParamField>
+
+### Tooltip.Content
+
+<ParamField path="side" type="'top' | 'right' | 'bottom' | 'left'" default="'top'">
+  The preferred side of the trigger to render against.
+</ParamField>
+
+<ParamField path="sideOffset" type="number" default="4">
+  The distance in pixels from the trigger.
+</ParamField>
+
+<ParamField path="align" type="'start' | 'center' | 'end'" default="'center'">
+  The alignment of the tooltip relative to the trigger.
+</ParamField>
+
+<ParamField path="alignOffset" type="number" default="0">
+  The offset in pixels from the alignment axis.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the root size for this content.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Tooltip.Popup
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the root size for this popup.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Tooltip.Positioner
+
+<ParamField path="side" type="'top' | 'right' | 'bottom' | 'left'">
+  The preferred side of the trigger to render against.
+</ParamField>
+
+<ParamField path="sideOffset" type="number">
+  The distance in pixels from the trigger.
+</ParamField>
+
+<ParamField path="align" type="'start' | 'center' | 'end'">
+  The alignment relative to the trigger.
+</ParamField>
+
+<ParamField path="alignOffset" type="number">
+  The offset in pixels from the alignment axis.
+</ParamField>
+
+### Tooltip.Trigger
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the trigger.
+</ParamField>
+
+### Tooltip.Arrow
+
+Renders a visual arrow pointing to the trigger. Automatically included in `Tooltip.Content`.
+
+## Component Parts
+
+- `Tooltip` - Root component that manages state and timing
+- `Tooltip.Trigger` - Opens the tooltip on hover/focus
+- `Tooltip.Portal` - Portals the tooltip content
+- `Tooltip.Positioner` - Positions the tooltip relative to trigger
+- `Tooltip.Popup` - The tooltip container
+- `Tooltip.Viewport` - Content viewport
+- `Tooltip.Content` - Convenience wrapper that includes Portal, Positioner, Popup, Viewport, and Arrow
+- `Tooltip.Arrow` - Visual arrow indicator
+- `Tooltip.Provider` - Provider for shared tooltip settings
+
+## Accessibility
+
+- Tooltip implements ARIA tooltip pattern
+- Automatically associates tooltip content with trigger using `aria-describedby`
+- Supports keyboard navigation (focus to show)
+- Supports hover and focus triggers
+- Tooltips are dismissed when pressing Escape
+- Content is announced to screen readers

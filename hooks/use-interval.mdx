@@ -1,0 +1,166 @@
+---
+title: 'useInterval'
+description: 'Runs a callback on a managed interval with imperative controls'
+icon: 'repeat'
+---
+
+Runs a callback on a managed interval and exposes imperative controls. The callback reference stays fresh across renders without restarting the interval.
+
+## Signature
+
+```typescript
+function useInterval(
+  fn: () => void,
+  interval: number,
+  options?: UseIntervalOptions
+): UseIntervalReturnValue
+```
+
+## Parameters
+
+<ParamField path="fn" type="() => void" required>
+  Callback to execute on each tick.
+</ParamField>
+
+<ParamField path="interval" type="number" required>
+  Tick interval in milliseconds.
+</ParamField>
+
+<ParamField path="options" type="UseIntervalOptions">
+  Optional behavior flags.
+  
+  <Expandable title="UseIntervalOptions">
+    <ResponseField name="autoInvoke" type="boolean" default="false">
+      If set, the interval will start automatically when the component is mounted.
+    </ResponseField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+<ResponseField name="controls" type="UseIntervalReturnValue">
+  An object with interval control methods and state.
+  
+  <Expandable title="Properties">
+    <ResponseField name="start" type="() => void">
+      Starts the interval.
+    </ResponseField>
+    <ResponseField name="stop" type="() => void">
+      Stops the interval.
+    </ResponseField>
+    <ResponseField name="toggle" type="() => void">
+      Toggles the interval between active and inactive states.
+    </ResponseField>
+    <ResponseField name="active" type="boolean">
+      Indicates if the interval is currently active.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Usage
+
+### Basic counter
+
+```tsx
+import { useInterval } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  const { start, stop, active } = useInterval(() => {
+    setCount((c) => c + 1);
+  }, 1000);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={start} disabled={active}>Start</button>
+      <button onClick={stop} disabled={!active}>Stop</button>
+    </div>
+  );
+}
+```
+
+### Auto-start interval
+
+```tsx
+import { useInterval } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Clock() {
+  const [time, setTime] = useState(new Date());
+
+  const { stop } = useInterval(
+    () => setTime(new Date()),
+    1000,
+    { autoInvoke: true }
+  );
+
+  return (
+    <div>
+      <p>{time.toLocaleTimeString()}</p>
+      <button onClick={stop}>Stop clock</button>
+    </div>
+  );
+}
+```
+
+### Toggle interval
+
+```tsx
+import { useInterval } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Blinker() {
+  const [visible, setVisible] = useState(true);
+  const { toggle, active } = useInterval(() => {
+    setVisible((v) => !v);
+  }, 500);
+
+  return (
+    <div>
+      <div style={{ opacity: visible ? 1 : 0 }}>Blinking text</div>
+      <button onClick={toggle}>
+        {active ? 'Stop' : 'Start'} blinking
+      </button>
+    </div>
+  );
+}
+```
+
+### Data polling
+
+```tsx
+import { useInterval } from '@kuzenbo/hooks';
+import { useState, useCallback } from 'react';
+
+function LiveData() {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await fetch('/api/data');
+      const json = await response.json();
+      setData(json);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    }
+  }, []);
+
+  const { start, stop, active } = useInterval(fetchData, 5000, {
+    autoInvoke: true
+  });
+
+  return (
+    <div>
+      {error && <p>Error: {error}</p>}
+      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+      <button onClick={active ? stop : start}>
+        {active ? 'Stop' : 'Start'} polling
+      </button>
+    </div>
+  );
+}
+```

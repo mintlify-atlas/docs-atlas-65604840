@@ -1,0 +1,297 @@
+---
+title: "useScroller"
+description: "Manage horizontal scrolling with directional controls, drag-to-scroll, and edge detection for carousels and scrollable lists."
+---
+
+## Overview
+
+`useScroller` manages horizontal scrolling state and interactions for a scrollable container. Provides directional scroll helpers, edge availability flags, and optional drag-to-scroll handlers.
+
+## Installation
+
+```npm
+npm i @kuzenbo/hooks
+```
+
+## Import
+
+```tsx
+import { useScroller } from "@kuzenbo/hooks";
+```
+
+## Usage
+
+### Basic Horizontal Scroller
+
+```tsx
+import { useScroller } from "@kuzenbo/hooks";
+
+export function HorizontalScroller() {
+  const { ref, canScrollStart, canScrollEnd, scrollStart, scrollEnd } = useScroller();
+
+  return (
+    <div className="relative">
+      <div className="flex gap-2 mb-2">
+        <button
+          onClick={scrollStart}
+          disabled={!canScrollStart}
+          className="px-3 py-1 bg-primary text-primary-foreground rounded disabled:opacity-50"
+        >
+          ← Scroll Left
+        </button>
+        <button
+          onClick={scrollEnd}
+          disabled={!canScrollEnd}
+          className="px-3 py-1 bg-primary text-primary-foreground rounded disabled:opacity-50"
+        >
+          Scroll Right →
+        </button>
+      </div>
+
+      <div
+        ref={ref}
+        className="flex gap-4 overflow-x-auto scrollbar-hide"
+      >
+        {Array.from({ length: 20 }, (_, i) => (
+          <div
+            key={i}
+            className="flex-shrink-0 w-48 h-32 bg-muted rounded-lg flex items-center justify-center"
+          >
+            Item {i + 1}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### With Drag to Scroll
+
+```tsx
+import { useScroller } from "@kuzenbo/hooks";
+
+export function DraggableScroller() {
+  const { ref, dragHandlers, isDragging } = useScroller({
+    draggable: true,
+    scrollAmount: 300,
+  });
+
+  return (
+    <div>
+      <p className="mb-2 text-sm text-muted-foreground">
+        {isDragging ? "Dragging..." : "Click and drag to scroll"}
+      </p>
+      <div
+        ref={ref}
+        {...dragHandlers}
+        className="flex gap-4 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
+      >
+        {Array.from({ length: 15 }, (_, i) => (
+          <div
+            key={i}
+            className="flex-shrink-0 w-64 h-40 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-semibold"
+          >
+            Card {i + 1}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### Scroll State Callback
+
+```tsx
+import { useScroller } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function ScrollerWithCallback() {
+  const [scrollState, setScrollState] = useState({ canScrollStart: false, canScrollEnd: true });
+  
+  const { ref, scrollStart, scrollEnd } = useScroller({
+    scrollAmount: 250,
+    onScrollStateChange: (state) => setScrollState(state),
+  });
+
+  return (
+    <div>
+      <div className="mb-4 p-4 bg-muted rounded-lg">
+        <p className="text-sm">Scroll State:</p>
+        <p className="text-xs text-muted-foreground">
+          Can scroll left: {scrollState.canScrollStart ? "Yes" : "No"}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Can scroll right: {scrollState.canScrollEnd ? "Yes" : "No"}
+        </p>
+      </div>
+
+      <div className="flex gap-2 mb-2">
+        <button onClick={scrollStart} className="px-3 py-1 bg-muted rounded">←</button>
+        <button onClick={scrollEnd} className="px-3 py-1 bg-muted rounded">→</button>
+      </div>
+
+      <div
+        ref={ref}
+        className="flex gap-4 overflow-x-auto scrollbar-hide"
+      >
+        {Array.from({ length: 12 }, (_, i) => (
+          <div key={i} className="flex-shrink-0 w-56 h-36 bg-muted rounded-lg" />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### RTL Support
+
+```tsx
+import { useScroller } from "@kuzenbo/hooks";
+
+export function RTLScroller() {
+  const { ref, canScrollStart, canScrollEnd, scrollStart, scrollEnd } = useScroller();
+
+  return (
+    <div dir="rtl">
+      <div className="flex gap-2 mb-2">
+        <button
+          onClick={scrollStart}
+          disabled={!canScrollStart}
+          className="px-3 py-1 bg-primary text-primary-foreground rounded"
+        >
+          → Scroll Right
+        </button>
+        <button
+          onClick={scrollEnd}
+          disabled={!canScrollEnd}
+          className="px-3 py-1 bg-primary text-primary-foreground rounded"
+        >
+          ← Scroll Left
+        </button>
+      </div>
+
+      <div
+        ref={ref}
+        className="flex gap-4 overflow-x-auto scrollbar-hide"
+      >
+        {Array.from({ length: 15 }, (_, i) => (
+          <div key={i} className="flex-shrink-0 w-48 h-32 bg-muted rounded-lg" />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+```tsx
+function useScroller<T extends HTMLElement = HTMLDivElement>(
+  options?: UseScrollerOptions
+): UseScrollerReturnValue<T>
+```
+
+<ParamField path="options" type="UseScrollerOptions">
+  Scroller behavior configuration
+
+  <ParamField path="options.scrollAmount" type="number" default={200}>
+    Pixel distance used by `scrollStart` and `scrollEnd`
+  </ParamField>
+
+  <ParamField path="options.draggable" type="boolean" default={true}>
+    Enables mouse drag scrolling when `true`
+  </ParamField>
+
+  <ParamField path="options.onScrollStateChange" type="(state: UseScrollerScrollState) => void">
+    Called whenever `canScrollStart` or `canScrollEnd` changes
+  </ParamField>
+</ParamField>
+
+<ResponseField name="ref" type="RefCallback<T | null>">
+  Ref callback to attach to the scrollable container element
+</ResponseField>
+
+<ResponseField name="canScrollStart" type="boolean">
+  Whether content can be scrolled towards the start (left in LTR, right in RTL)
+</ResponseField>
+
+<ResponseField name="canScrollEnd" type="boolean">
+  Whether content can be scrolled towards the end (right in LTR, left in RTL)
+</ResponseField>
+
+<ResponseField name="scrollStart" type="() => void">
+  Scrolls towards the start direction
+</ResponseField>
+
+<ResponseField name="scrollEnd" type="() => void">
+  Scrolls towards the end direction
+</ResponseField>
+
+<ResponseField name="isDragging" type="boolean">
+  `true` if the user is currently dragging the content
+</ResponseField>
+
+<ResponseField name="dragHandlers" type="object">
+  Props to spread on the scrollable container for drag functionality
+
+  <ResponseField name="onMouseDown" type="(e: React.MouseEvent) => void">
+    Mouse down handler
+  </ResponseField>
+
+  <ResponseField name="onMouseMove" type="(e: React.MouseEvent) => void">
+    Mouse move handler
+  </ResponseField>
+
+  <ResponseField name="onMouseUp" type="() => void">
+    Mouse up handler
+  </ResponseField>
+
+  <ResponseField name="onMouseLeave" type="() => void">
+    Mouse leave handler
+  </ResponseField>
+</ResponseField>
+
+## Type Definitions
+
+```tsx
+interface UseScrollerOptions {
+  scrollAmount?: number;
+  draggable?: boolean;
+  onScrollStateChange?: (state: UseScrollerScrollState) => void;
+}
+
+interface UseScrollerScrollState {
+  canScrollStart: boolean;
+  canScrollEnd: boolean;
+}
+
+interface UseScrollerReturnValue<T extends HTMLElement = HTMLDivElement> {
+  ref: RefCallback<T | null>;
+  canScrollStart: boolean;
+  canScrollEnd: boolean;
+  scrollStart: () => void;
+  scrollEnd: () => void;
+  isDragging: boolean;
+  dragHandlers: {
+    onMouseDown: (e: React.MouseEvent) => void;
+    onMouseMove: (e: React.MouseEvent) => void;
+    onMouseUp: () => void;
+    onMouseLeave: () => void;
+  };
+}
+```
+
+## Caveats
+
+- Automatically detects RTL direction from computed styles
+- Uses `scrollBy` with smooth behavior for scroll functions
+- Drag-to-scroll suppresses click events when dragging distance exceeds 5px
+- Sets `cursor: grabbing` and `user-select: none` during drag
+- Updates scroll state on resize using `useResizeObserver`
+
+## SSR and RSC Notes
+
+- Use this hook in Client Components only
+- Do not call it from React Server Components

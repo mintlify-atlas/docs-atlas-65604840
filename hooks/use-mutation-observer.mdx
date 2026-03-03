@@ -1,0 +1,163 @@
+---
+title: useMutationObserver
+description: Observe DOM mutations with the MutationObserver API
+---
+
+## Overview
+
+Observes DOM mutations on the element attached through the returned ref. The observer is recreated when dependencies change and is disconnected during cleanup.
+
+## Function Signature
+
+```typescript
+function useMutationObserver<T extends HTMLElement = HTMLElement>(
+  callback: MutationCallback,
+  options: MutationObserverInit
+): RefCallback<T | null>
+```
+
+## Parameters
+
+<ParamField path="callback" type="MutationCallback" required>
+  Mutation observer callback invoked with mutation records. Receives two arguments:
+  - `mutations`: Array of `MutationRecord` objects describing changes
+  - `observer`: The `MutationObserver` instance itself
+</ParamField>
+
+<ParamField path="options" type="MutationObserverInit" required>
+  Native `MutationObserver` options for what to observe. Must include at least one of:
+  - `childList`: Set to `true` to observe additions/removals of child nodes
+  - `attributes`: Set to `true` to observe attribute changes
+  - `characterData`: Set to `true` to observe text content changes
+  - `subtree`: Set to `true` to observe descendants in addition to target
+  - `attributeOldValue`: Set to `true` to record attribute's previous value
+  - `characterDataOldValue`: Set to `true` to record character data's previous value
+  - `attributeFilter`: Array of attribute names to observe (if `attributes` is true)
+</ParamField>
+
+## Return Value
+
+<ResponseField name="refCallback" type="RefCallback<T | null>">
+  A ref callback function to attach to your React element. The mutation observer will monitor the element according to the provided options.
+</ResponseField>
+
+## Usage Example
+
+```tsx
+import { useCallback, useState } from "react";
+import { useMutationObserver } from "@kuzenbo/hooks";
+
+function Example() {
+  const [mutations, setMutations] = useState<MutationRecord[]>([]);
+  const [content, setContent] = useState("Initial content");
+
+  const handleMutation = useCallback((mutationsList: MutationRecord[]) => {
+    setMutations(mutationsList);
+    console.log("DOM mutations detected:", mutationsList);
+  }, []);
+
+  const ref = useMutationObserver(handleMutation, {
+    childList: true,
+    attributes: true,
+    characterData: true,
+    subtree: true,
+  });
+
+  return (
+    <div>
+      <div ref={ref} style={{ border: "1px solid", padding: "1rem" }}>
+        {content}
+      </div>
+      <button onClick={() => setContent(`Updated: ${Date.now()}`)}>Update Content</button>
+      <p>Mutations detected: {mutations.length}</p>
+    </div>
+  );
+}
+```
+
+## Observing Attributes
+
+```tsx
+import { useCallback } from "react";
+import { useMutationObserver } from "@kuzenbo/hooks";
+
+function Example() {
+  const handleAttributeChange = useCallback((mutationsList: MutationRecord[]) => {
+    mutationsList.forEach((mutation) => {
+      if (mutation.type === "attributes") {
+        console.log(`Attribute ${mutation.attributeName} changed`);
+      }
+    });
+  }, []);
+
+  const ref = useMutationObserver(handleAttributeChange, {
+    attributes: true,
+    attributeFilter: ["class", "data-state"],
+  });
+
+  return <div ref={ref}>Monitored element</div>;
+}
+```
+
+## useMutationObserverTarget
+
+Observes DOM mutations for a specific target element without using a ref.
+
+### Function Signature
+
+```typescript
+function useMutationObserverTarget(
+  callback: MutationCallback,
+  options: MutationObserverInit,
+  target?: HTMLElement | (() => HTMLElement) | null
+): void
+```
+
+### Parameters
+
+<ParamField path="callback" type="MutationCallback" required>
+  Mutation observer callback invoked with mutation records.
+</ParamField>
+
+<ParamField path="options" type="MutationObserverInit" required>
+  Native `MutationObserver` options for what to observe.
+</ParamField>
+
+<ParamField path="target" type="HTMLElement | (() => HTMLElement) | null">
+  Target element (or target resolver function) to observe. If a function, it will be called to get the target element.
+</ParamField>
+
+### Usage Example
+
+```tsx
+import { useCallback, useEffect, useState } from "react";
+import { useMutationObserverTarget } from "@kuzenbo/hooks";
+
+function Example() {
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+
+  const handleMutation = useCallback((mutationsList: MutationRecord[]) => {
+    console.log("Mutations:", mutationsList);
+  }, []);
+
+  useMutationObserverTarget(
+    handleMutation,
+    { childList: true, subtree: true },
+    target
+  );
+
+  useEffect(() => {
+    setTarget(document.getElementById("external-element"));
+  }, []);
+
+  return <div>Observing external element</div>;
+}
+```
+
+## Features
+
+- Uses native `MutationObserver` API for efficient DOM monitoring
+- Automatic observer cleanup when element changes or component unmounts
+- Supports all `MutationObserver` configuration options
+- Alternative hook for observing specific targets without refs
+- Type-safe mutation callbacks

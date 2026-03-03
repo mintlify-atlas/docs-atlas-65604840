@@ -1,0 +1,187 @@
+---
+title: useCounter
+description: Stores a numeric counter value with bounded update handlers
+---
+
+## Overview
+
+Stores a numeric counter value and exposes bounded update handlers. All updates are clamped to the configured `min` and `max` values.
+
+## Import
+
+```tsx
+import { useCounter } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useCounter(
+  initialValue?: number,
+  options?: UseCounterOptions
+): UseCounterReturnValue;
+```
+
+## Parameters
+
+<ParamField path="initialValue" type="number" default="0">
+  Initial counter value
+</ParamField>
+
+<ParamField path="options" type="UseCounterOptions">
+  Optional numeric bounds for clamping updates
+  
+  <ParamField path="options.min" type="number" default="-Infinity">
+    Minimum allowed value
+  </ParamField>
+  
+  <ParamField path="options.max" type="number" default="Infinity">
+    Maximum allowed value
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+<ResponseField name="[count, handlers]" type="UseCounterReturnValue">
+  A tuple containing the current count and handler functions
+  
+  <ResponseField name="count" type="number">
+    Current counter value
+  </ResponseField>
+  
+  <ResponseField name="handlers" type="UseCounterHandlers">
+    Object containing handler functions
+    
+    <ResponseField name="handlers.increment" type="() => void">
+      Increments the counter by 1 (clamped to max)
+    </ResponseField>
+    
+    <ResponseField name="handlers.decrement" type="() => void">
+      Decrements the counter by 1 (clamped to min)
+    </ResponseField>
+    
+    <ResponseField name="handlers.set" type="(value: number) => void">
+      Sets the counter to a specific value (clamped to min/max)
+    </ResponseField>
+    
+    <ResponseField name="handlers.reset" type="() => void">
+      Resets the counter to the initial value
+    </ResponseField>
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Basic Counter
+
+```tsx
+import { useCounter } from '@kuzenbo/hooks';
+
+function BasicCounter() {
+  const [count, { increment, decrement, reset }] = useCounter();
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>+1</button>
+      <button onClick={decrement}>-1</button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
+```
+
+### Bounded Counter
+
+```tsx
+import { useCounter } from '@kuzenbo/hooks';
+
+function BoundedCounter() {
+  const [count, { increment, decrement, set }] = useCounter(5, {
+    min: 0,
+    max: 10,
+  });
+
+  return (
+    <div>
+      <p>Count: {count} / 10</p>
+      <button onClick={increment} disabled={count >= 10}>
+        Increment
+      </button>
+      <button onClick={decrement} disabled={count <= 0}>
+        Decrement
+      </button>
+      <button onClick={() => set(10)}>Set to Max</button>
+    </div>
+  );
+}
+```
+
+### Quantity Selector
+
+```tsx
+import { useCounter } from '@kuzenbo/hooks';
+
+function QuantitySelector() {
+  const [quantity, { increment, decrement, set }] = useCounter(1, {
+    min: 1,
+    max: 99,
+  });
+
+  return (
+    <div>
+      <button onClick={decrement}>-</button>
+      <input
+        type="number"
+        value={quantity}
+        onChange={(e) => set(parseInt(e.target.value) || 1)}
+        min={1}
+        max={99}
+      />
+      <button onClick={increment}>+</button>
+    </div>
+  );
+}
+```
+
+### Progress Tracker
+
+```tsx
+import { useCounter } from '@kuzenbo/hooks';
+
+function ProgressTracker() {
+  const [progress, { increment, reset }] = useCounter(0, {
+    min: 0,
+    max: 100,
+  });
+
+  return (
+    <div>
+      <div className="progress-bar">
+        <div style={{ width: `${progress}%` }} />
+      </div>
+      <p>{progress}% Complete</p>
+      <button onClick={() => increment()}>+10%</button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+export interface UseCounterOptions {
+  min?: number;
+  max?: number;
+}
+
+export interface UseCounterHandlers {
+  increment: () => void;
+  decrement: () => void;
+  set: (value: number) => void;
+  reset: () => void;
+}
+
+export type UseCounterReturnValue = [number, UseCounterHandlers];
+```

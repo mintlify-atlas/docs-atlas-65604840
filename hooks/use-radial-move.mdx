@@ -1,0 +1,194 @@
+---
+title: "useRadialMove"
+description: "Track mouse or touch dragging around an element as angle values for circular controls like color wheels and knobs."
+---
+
+## Overview
+
+`useRadialMove` tracks mouse/touch dragging around an element and reports the current angle as a snapped value. The computed angle is normalized to the `0..360` range, with `360` wrapped to `0`.
+
+## Installation
+
+```npm
+npm i @kuzenbo/hooks
+```
+
+## Import
+
+```tsx
+import { useRadialMove } from "@kuzenbo/hooks";
+```
+
+## Usage
+
+### Basic Knob
+
+```tsx
+import { useRadialMove } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function RadialKnob() {
+  const [value, setValue] = useState(0);
+  const { ref, active } = useRadialMove(setValue);
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <div
+        ref={ref}
+        className="relative h-32 w-32 rounded-full bg-muted border-4 border-primary cursor-pointer"
+      >
+        <div
+          className="absolute top-2 left-1/2 h-4 w-1 bg-foreground transform -translate-x-1/2 origin-bottom"
+          style={{
+            transform: `translateX(-50%) rotate(${value}deg)`,
+            transformOrigin: 'center 60px',
+          }}
+        />
+      </div>
+      <p className="text-sm">
+        Angle: {value}° {active && "(dragging)"}
+      </p>
+    </div>
+  );
+}
+```
+
+### Custom Step Size
+
+```tsx
+import { useRadialMove } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function SteppedKnob() {
+  const [value, setValue] = useState(0);
+  const { ref } = useRadialMove(setValue, { step: 15 });
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <div
+        ref={ref}
+        className="relative h-32 w-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 cursor-pointer"
+      >
+        <div
+          className="absolute top-2 left-1/2 h-6 w-1 bg-white transform -translate-x-1/2"
+          style={{
+            transform: `translateX(-50%) rotate(${value}deg)`,
+            transformOrigin: 'center 60px',
+          }}
+        />
+      </div>
+      <p className="text-sm">Value: {value}° (15° steps)</p>
+    </div>
+  );
+}
+```
+
+### With Callbacks
+
+```tsx
+import { useRadialMove } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function KnobWithCallbacks() {
+  const [value, setValue] = useState(0);
+  const [finalValue, setFinalValue] = useState(0);
+
+  const { ref, active } = useRadialMove(setValue, {
+    step: 1,
+    onChangeEnd: (val) => setFinalValue(val),
+    onScrubStart: () => console.log("Started"),
+    onScrubEnd: () => console.log("Ended"),
+  });
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <div
+        ref={ref}
+        className="relative h-40 w-40 rounded-full bg-muted border-4 border-primary cursor-pointer"
+      >
+        <div
+          className="absolute top-4 left-1/2 h-8 w-2 bg-primary rounded transform -translate-x-1/2"
+          style={{
+            transform: `translateX(-50%) rotate(${value}deg)`,
+            transformOrigin: 'center 72px',
+          }}
+        />
+      </div>
+      <div className="text-center">
+        <p className="text-sm">Current: {value}°</p>
+        <p className="text-sm text-muted-foreground">Final: {finalValue}°</p>
+        {active && <p className="text-xs text-primary">Dragging...</p>}
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+```tsx
+function useRadialMove<T extends HTMLElement = HTMLElement>(
+  onChange: (value: number) => void,
+  options?: UseRadialMoveOptions
+): UseRadialMoveReturnValue<T>
+```
+
+<ParamField path="onChange" type="(value: number) => void" required>
+  Called on every pointer move with the normalized radial value (0-360)
+</ParamField>
+
+<ParamField path="options" type="UseRadialMoveOptions">
+  Hook configuration
+
+  <ParamField path="options.step" type="number" default={0.01}>
+    Snap increment used to round the computed angle
+  </ParamField>
+
+  <ParamField path="options.onChangeEnd" type="(value: number) => void">
+    Called once when scrubbing ends with the final value
+  </ParamField>
+
+  <ParamField path="options.onScrubStart" type="() => void">
+    Called when scrubbing starts
+  </ParamField>
+
+  <ParamField path="options.onScrubEnd" type="() => void">
+    Called when scrubbing stops
+  </ParamField>
+</ParamField>
+
+<ResponseField name="ref" type="RefCallback<T | null>">
+  Ref callback to attach to the element that should be used for radial move
+</ResponseField>
+
+<ResponseField name="active" type="boolean">
+  `true` when the radial move is active (user is dragging)
+</ResponseField>
+
+## Type Definitions
+
+```tsx
+interface UseRadialMoveOptions {
+  step?: number;
+  onChangeEnd?: (value: number) => void;
+  onScrubStart?: () => void;
+  onScrubEnd?: () => void;
+}
+
+interface UseRadialMoveReturnValue<T extends HTMLElement = HTMLElement> {
+  ref: RefCallback<T | null>;
+  active: boolean;
+}
+```
+
+## Caveats
+
+- Angle is computed from element center using `atan2`
+- Values are normalized to 0-360 range (360 wraps to 0)
+- Step snapping uses ceiling for high values and rounding for low values
+- Sets `user-select: none` on the element during dragging
+
+## SSR and RSC Notes
+
+- Use this hook in Client Components only
+- Do not call it from React Server Components

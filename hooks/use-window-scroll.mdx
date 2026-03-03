@@ -1,0 +1,171 @@
+---
+title: "useWindowScroll"
+description: "Track window scroll position and programmatically scroll with smooth behavior."
+---
+
+## Overview
+
+`useWindowScroll` tracks the current window scroll position and provides a helper to scroll the window with smooth behavior. Position is refreshed on scroll and resize, then initialized after mount.
+
+## Installation
+
+```npm
+npm i @kuzenbo/hooks
+```
+
+## Import
+
+```tsx
+import { useWindowScroll } from "@kuzenbo/hooks";
+```
+
+## Usage
+
+### Basic Scroll Tracking
+
+```tsx
+import { useWindowScroll } from "@kuzenbo/hooks";
+
+export function ScrollTracker() {
+  const [{ x, y }, scrollTo] = useWindowScroll();
+
+  return (
+    <div className="fixed top-4 right-4 bg-background border rounded-lg p-4 shadow-lg">
+      <p className="text-sm font-medium">Scroll Position</p>
+      <p className="text-xs text-muted-foreground">
+        x: {x}, y: {y}
+      </p>
+    </div>
+  );
+}
+```
+
+### Scroll to Top Button
+
+```tsx
+import { useWindowScroll } from "@kuzenbo/hooks";
+
+export function ScrollToTopButton() {
+  const [{ y }, scrollTo] = useWindowScroll();
+
+  return (
+    <button
+      onClick={() => scrollTo({ y: 0 })}
+      className="fixed bottom-4 right-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg shadow-lg"
+      style={{ display: y > 100 ? 'block' : 'none' }}
+    >
+      Scroll to top
+    </button>
+  );
+}
+```
+
+### Horizontal Scrolling
+
+```tsx
+import { useWindowScroll } from "@kuzenbo/hooks";
+
+export function HorizontalScrollControls() {
+  const [{ x }, scrollTo] = useWindowScroll();
+
+  return (
+    <div className="fixed bottom-4 left-4 flex gap-2">
+      <button
+        onClick={() => scrollTo({ x: x - 500 })}
+        className="px-4 py-2 bg-muted rounded-lg"
+      >
+        ← Scroll Left
+      </button>
+      <button
+        onClick={() => scrollTo({ x: x + 500 })}
+        className="px-4 py-2 bg-muted rounded-lg"
+      >
+        Scroll Right →
+      </button>
+    </div>
+  );
+}
+```
+
+### Scroll Progress Indicator
+
+```tsx
+import { useWindowScroll } from "@kuzenbo/hooks";
+
+export function ScrollProgressBar() {
+  const [{ y }] = useWindowScroll();
+  
+  const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (y / scrollHeight) * 100;
+
+  return (
+    <div className="fixed top-0 left-0 right-0 h-1 bg-muted">
+      <div
+        className="h-full bg-primary transition-all"
+        style={{ width: `${progress}%` }}
+      />
+    </div>
+  );
+}
+```
+
+## API Reference
+
+```tsx
+function useWindowScroll(): [
+  UseWindowScrollPosition,
+  UseWindowScrollTo
+]
+```
+
+<ResponseField name="[0]" type="UseWindowScrollPosition">
+  Current scroll position object
+
+  <ResponseField name="x" type="number">
+    Horizontal scroll position (window.scrollX)
+  </ResponseField>
+
+  <ResponseField name="y" type="number">
+    Vertical scroll position (window.scrollY)
+  </ResponseField>
+</ResponseField>
+
+<ResponseField name="[1]" type="UseWindowScrollTo">
+  Function to scroll the window smoothly
+
+  ```tsx
+  (position: Partial<UseWindowScrollPosition>) => void
+  ```
+
+  Accepts partial position with `x` and/or `y` properties
+</ResponseField>
+
+## Type Definitions
+
+```tsx
+interface UseWindowScrollPosition {
+  x: number;
+  y: number;
+}
+
+type UseWindowScrollTo = (
+  position: Partial<UseWindowScrollPosition>
+) => void;
+
+type UseWindowScrollReturnValue = [
+  UseWindowScrollPosition,
+  UseWindowScrollTo
+];
+```
+
+## Caveats
+
+- Returns `{ x: 0, y: 0 }` in SSR/SSG contexts where `window` is undefined
+- Scroll function uses `behavior: 'smooth'` by default
+- Position updates on both `scroll` and `resize` events
+
+## SSR and RSC Notes
+
+- Use this hook in Client Components only
+- Do not call it from React Server Components
+- Safe to use in SSR contexts (returns zero values until hydration)

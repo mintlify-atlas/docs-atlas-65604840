@@ -1,0 +1,189 @@
+---
+title: Toolbar
+description: A container for grouping a set of controls, such as buttons or dropdown menus.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Toolbar } from "@kuzenbo/core";
+import { BoldIcon, ItalicIcon, UnderlineIcon } from "lucide-react";
+
+function Example() {
+  return (
+    <Toolbar>
+      <Toolbar.Button aria-label="Bold">
+        <BoldIcon />
+      </Toolbar.Button>
+      <Toolbar.Button aria-label="Italic">
+        <ItalicIcon />
+      </Toolbar.Button>
+      <Toolbar.Separator />
+      <Toolbar.Button aria-label="Underline">
+        <UnderlineIcon />
+      </Toolbar.Button>
+    </Toolbar>
+  );
+}
+```
+
+## Props
+
+### Toolbar
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the toolbar and its children.
+</ParamField>
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="'horizontal'">
+  The orientation of the toolbar.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Toolbar.Button
+
+<ParamField path="disabled" type="boolean">
+  Whether the button is disabled.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Toolbar.Link
+
+<ParamField path="href" type="string" required>
+  The URL the link points to.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Toolbar.Group
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Toolbar.Separator
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Toolbar.Input
+
+<ParamField path="placeholder" type="string">
+  Placeholder text.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Examples
+
+### Text Editor Toolbar
+
+```tsx
+<Toolbar>
+  <Toolbar.Group>
+    <Toolbar.Button aria-label="Bold">
+      <BoldIcon />
+    </Toolbar.Button>
+    <Toolbar.Button aria-label="Italic">
+      <ItalicIcon />
+    </Toolbar.Button>
+    <Toolbar.Button aria-label="Underline">
+      <UnderlineIcon />
+    </Toolbar.Button>
+  </Toolbar.Group>
+  <Toolbar.Separator />
+  <Toolbar.Group>
+    <Toolbar.Button aria-label="Align left">
+      <AlignLeftIcon />
+    </Toolbar.Button>
+    <Toolbar.Button aria-label="Align center">
+      <AlignCenterIcon />
+    </Toolbar.Button>
+    <Toolbar.Button aria-label="Align right">
+      <AlignRightIcon />
+    </Toolbar.Button>
+  </Toolbar.Group>
+</Toolbar>
+```
+
+### With Dropdown Menu
+
+```tsx
+import { DropdownMenu } from "@kuzenbo/core";
+
+<Toolbar>
+  <Toolbar.Button>Action</Toolbar.Button>
+  <Toolbar.Separator />
+  <DropdownMenu>
+    <Toolbar.Button asChild>
+      <DropdownMenu.Trigger>
+        More
+        <ChevronDownIcon />
+      </DropdownMenu.Trigger>
+    </Toolbar.Button>
+    <DropdownMenu.Content>
+      <DropdownMenu.Item>Option 1</DropdownMenu.Item>
+      <DropdownMenu.Item>Option 2</DropdownMenu.Item>
+    </DropdownMenu.Content>
+  </DropdownMenu>
+</Toolbar>
+```
+
+### With Input
+
+```tsx
+<Toolbar>
+  <Toolbar.Input placeholder="Search..." className="w-64" />
+  <Toolbar.Separator />
+  <Toolbar.Button>Search</Toolbar.Button>
+</Toolbar>
+```
+
+### Different Sizes
+
+```tsx
+<div className="space-y-4">
+  <Toolbar size="sm">
+    <Toolbar.Button>Small</Toolbar.Button>
+  </Toolbar>
+  <Toolbar size="md">
+    <Toolbar.Button>Medium</Toolbar.Button>
+  </Toolbar>
+  <Toolbar size="lg">
+    <Toolbar.Button>Large</Toolbar.Button>
+  </Toolbar>
+</div>
+```
+
+### Vertical Orientation
+
+```tsx
+<Toolbar orientation="vertical">
+  <Toolbar.Button aria-label="Cut">
+    <ScissorsIcon />
+  </Toolbar.Button>
+  <Toolbar.Button aria-label="Copy">
+    <CopyIcon />
+  </Toolbar.Button>
+  <Toolbar.Button aria-label="Paste">
+    <ClipboardIcon />
+  </Toolbar.Button>
+</Toolbar>
+```

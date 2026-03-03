@@ -1,0 +1,114 @@
+---
+title: 'useFocusReturn'
+description: 'Restore focus when a surface closes'
+---
+
+`useFocusReturn` stores the currently focused element when a surface opens and restores focus when it closes. The returned callback can also be called manually to restore focus on demand.
+
+## Usage
+
+```tsx
+import { useFocusReturn } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Modal() {
+  const [opened, setOpened] = useState(false);
+  const returnFocus = useFocusReturn({ opened });
+
+  return (
+    <>
+      <button onClick={() => setOpened(true)}>Open Modal</button>
+      {opened && (
+        <div role="dialog">
+          <h2>Modal Title</h2>
+          <button onClick={() => setOpened(false)}>Close</button>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+## API Reference
+
+### Parameters
+
+<ParamField path="input" type="UseFocusReturnInput" required>
+  Focus return configuration object.
+</ParamField>
+
+<ParamField path="input.opened" type="boolean" required>
+  Whether the controlled surface is currently open.
+</ParamField>
+
+<ParamField path="input.shouldReturnFocus" type="boolean" default="true">
+  Whether focus should automatically return when `opened` becomes `false`.
+</ParamField>
+
+### Returns
+
+<ResponseField name="returnFocus" type="() => void">
+  A function that manually restores focus to the previously focused element.
+</ResponseField>
+
+## Manual Focus Return
+
+```tsx
+import { useFocusReturn } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Popover() {
+  const [opened, setOpened] = useState(false);
+  const returnFocus = useFocusReturn({ opened, shouldReturnFocus: false });
+
+  const handleClose = () => {
+    setOpened(false);
+    // Manually return focus after some async operation
+    setTimeout(() => {
+      returnFocus();
+    }, 100);
+  };
+
+  return (
+    <>
+      <button onClick={() => setOpened(true)}>Open</button>
+      {opened && (
+        <div>
+          <p>Popover content</p>
+          <button onClick={handleClose}>Close</button>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+## Disable Auto Return
+
+```tsx
+import { useFocusReturn } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Dialog() {
+  const [opened, setOpened] = useState(false);
+  
+  // Focus won't automatically return when closed
+  useFocusReturn({ opened, shouldReturnFocus: false });
+
+  return (
+    <>
+      <button onClick={() => setOpened(true)}>Open Dialog</button>
+      {opened && (
+        <div>
+          <h2>Dialog</h2>
+          <button onClick={() => setOpened(false)}>Close</button>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+## Accessibility
+
+Returning focus is critical for keyboard accessibility. When a modal or dialog closes, returning focus to the element that triggered it ensures keyboard users maintain their place in the document.

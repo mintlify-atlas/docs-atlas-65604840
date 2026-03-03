@@ -1,0 +1,214 @@
+---
+title: Range Slider
+description: Allow users to select a range of values with dual thumbs.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { RangeSlider } from "@kuzenbo/core";
+import { useState } from "react";
+
+function Example() {
+  const [value, setValue] = useState<[number, number]>([25, 75]);
+
+  return (
+    <RangeSlider
+      value={value}
+      onChange={setValue}
+      min={0}
+      max={100}
+    />
+  );
+}
+```
+
+## Props
+
+<ParamField path="value" type="[number, number]">
+  The controlled value.
+</ParamField>
+
+<ParamField path="defaultValue" type="[number, number]">
+  The default value (uncontrolled mode).
+</ParamField>
+
+<ParamField path="onChange" type="(value: [number, number]) => void">
+  Callback when value changes.
+</ParamField>
+
+<ParamField path="onChangeEnd" type="(value: [number, number]) => void">
+  Callback when the user finishes changing the value.
+</ParamField>
+
+<ParamField path="min" type="number" default="0">
+  Minimum value.
+</ParamField>
+
+<ParamField path="max" type="number" default="100">
+  Maximum value.
+</ParamField>
+
+<ParamField path="step" type="number" default="1">
+  Step increment.
+</ParamField>
+
+<ParamField path="minRange" type="number" default="10">
+  Minimum distance between thumbs.
+</ParamField>
+
+<ParamField path="maxRange" type="number" default="Infinity">
+  Maximum distance between thumbs.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the slider is disabled.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the slider.
+</ParamField>
+
+<ParamField path="label" type="SliderLabel">
+  Function or format string for thumb labels.
+</ParamField>
+
+<ParamField path="labelAlwaysOn" type="boolean" default="false">
+  Whether to always show labels.
+</ParamField>
+
+<ParamField path="showLabelOnHover" type="boolean" default="true">
+  Whether to show labels on hover.
+</ParamField>
+
+<ParamField path="marks" type="SliderMark[]">
+  Array of marks to display on the track.
+</ParamField>
+
+<ParamField path="thumbFromLabel" type="string">
+  Accessible label for the start thumb.
+</ParamField>
+
+<ParamField path="thumbToLabel" type="string">
+  Accessible label for the end thumb.
+</ParamField>
+
+<ParamField path="pushOnOverlap" type="boolean" default="true">
+  Whether thumbs push each other when overlapping.
+</ParamField>
+
+<ParamField path="inverted" type="boolean" default="false">
+  Whether to invert the slider direction.
+</ParamField>
+
+## Examples
+
+### Basic Range
+
+```tsx
+const [range, setRange] = useState<[number, number]>([20, 80]);
+
+<RangeSlider value={range} onChange={setRange} />
+```
+
+### Price Range
+
+```tsx
+const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+
+<div className="space-y-2">
+  <div className="flex justify-between text-sm">
+    <span>${priceRange[0]}</span>
+    <span>${priceRange[1]}</span>
+  </div>
+  <RangeSlider
+    value={priceRange}
+    onChange={setPriceRange}
+    min={0}
+    max={1000}
+    step={10}
+    label={(value) => `$${value}`}
+  />
+</div>
+```
+
+### With Marks
+
+```tsx
+<RangeSlider
+  defaultValue={[25, 75]}
+  marks={[
+    { value: 0, label: "0%" },
+    { value: 25, label: "25%" },
+    { value: 50, label: "50%" },
+    { value: 75, label: "75%" },
+    { value: 100, label: "100%" },
+  ]}
+/>
+```
+
+### Always Show Labels
+
+```tsx
+<RangeSlider
+  defaultValue={[30, 70]}
+  labelAlwaysOn
+/>
+```
+
+### Custom Min/Max Range
+
+```tsx
+<RangeSlider
+  defaultValue={[40, 60]}
+  minRange={5}  // Minimum 5 units apart
+  maxRange={30} // Maximum 30 units apart
+/>
+```
+
+### Vertical Orientation
+
+```tsx
+<div className="h-64">
+  <RangeSlider
+    orientation="vertical"
+    defaultValue={[25, 75]}
+  />
+</div>
+```
+
+### Custom Step
+
+```tsx
+<RangeSlider
+  min={0}
+  max={100}
+  step={5}
+  defaultValue={[20, 80]}
+/>
+```
+
+### Different Sizes
+
+```tsx
+<div className="space-y-8">
+  <RangeSlider size="sm" defaultValue={[25, 75]} />
+  <RangeSlider size="md" defaultValue={[25, 75]} />
+  <RangeSlider size="lg" defaultValue={[25, 75]} />
+</div>
+```
+
+### With Color
+
+```tsx
+<RangeSlider
+  defaultValue={[25, 75]}
+  color="oklch(0.6 0.2 250)"
+/>
+```

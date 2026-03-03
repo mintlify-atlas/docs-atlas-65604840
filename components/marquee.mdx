@@ -1,0 +1,155 @@
+---
+title: Marquee
+description: Infinitely scrolling content for displaying logos, testimonials, or announcements.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Marquee } from "@kuzenbo/core";
+
+function Example() {
+  const items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"];
+
+  return (
+    <Marquee>
+      <Marquee.Content>
+        {items.map((item, i) => (
+          <Marquee.Item key={i}>
+            <div className="px-4">{item}</div>
+          </Marquee.Item>
+        ))}
+      </Marquee.Content>
+    </Marquee>
+  );
+}
+```
+
+## Props
+
+### Marquee
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the container.
+</ParamField>
+
+### Marquee.Content
+
+<ParamField path="speed" type="number" default="40">
+  Animation speed in seconds.
+</ParamField>
+
+<ParamField path="direction" type="'left' | 'right'" default="'left'">
+  Direction of scrolling.
+</ParamField>
+
+<ParamField path="pauseOnHover" type="boolean" default="false">
+  Whether to pause animation on hover.
+</ParamField>
+
+<ParamField path="reverse" type="boolean" default="false">
+  Whether to reverse the animation direction.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Marquee.Item
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to each item.
+</ParamField>
+
+### Marquee.Fade
+
+<ParamField path="className" type="string">
+  Additional CSS classes for fade effect.
+</ParamField>
+
+## Examples
+
+### Logo Showcase
+
+```tsx
+const logos = [
+  { name: "Company 1", url: "/logo1.svg" },
+  { name: "Company 2", url: "/logo2.svg" },
+  { name: "Company 3", url: "/logo3.svg" },
+];
+
+<Marquee>
+  <Marquee.Content>
+    {logos.map((logo) => (
+      <Marquee.Item key={logo.name}>
+        <img src={logo.url} alt={logo.name} className="h-12" />
+      </Marquee.Item>
+    ))}
+  </Marquee.Content>
+  <Marquee.Fade />
+</Marquee>
+```
+
+### Pause on Hover
+
+```tsx
+<Marquee>
+  <Marquee.Content pauseOnHover>
+    {items.map((item, i) => (
+      <Marquee.Item key={i}>
+        {item}
+      </Marquee.Item>
+    ))}
+  </Marquee.Content>
+</Marquee>
+```
+
+### Reverse Direction
+
+```tsx
+<Marquee>
+  <Marquee.Content direction="right">
+    {items.map((item, i) => (
+      <Marquee.Item key={i}>
+        {item}
+      </Marquee.Item>
+    ))}
+  </Marquee.Content>
+</Marquee>
+```
+
+### Custom Speed
+
+```tsx
+<Marquee>
+  <Marquee.Content speed={20}>
+    {/* Faster animation (20 seconds) */}
+    {items.map((item, i) => (
+      <Marquee.Item key={i}>
+        {item}
+      </Marquee.Item>
+    ))}
+  </Marquee.Content>
+</Marquee>
+```
+
+### With Fade Effect
+
+```tsx
+<Marquee className="relative">
+  <Marquee.Content>
+    {items.map((item, i) => (
+      <Marquee.Item key={i}>
+        {item}
+      </Marquee.Item>
+    ))}
+  </Marquee.Content>
+  <Marquee.Fade />
+</Marquee>
+```

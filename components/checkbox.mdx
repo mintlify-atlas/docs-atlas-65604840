@@ -1,0 +1,248 @@
+---
+title: Checkbox
+description: A checkbox input for toggling boolean states with support for indeterminate state.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+## Usage
+
+```tsx
+import { Checkbox } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function App() {
+  return (
+    <Label className="flex items-center gap-2">
+      <Checkbox />
+      Accept terms and conditions
+    </Label>
+  );
+}
+```
+
+## Examples
+
+### Controlled Checkbox
+
+Manage checkbox state with React.
+
+```tsx
+import { Checkbox } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useState } from "react";
+
+function ControlledExample() {
+  const [approved, setApproved] = useState(false);
+
+  return (
+    <div className="grid gap-2">
+      <Label className="flex items-center gap-2" htmlFor="finance-approval">
+        <Checkbox
+          checked={approved}
+          id="finance-approval"
+          onCheckedChange={setApproved}
+        />
+        Finance can release supplier payouts.
+      </Label>
+      <p className="text-muted-foreground text-sm">
+        {approved
+          ? "Payout workflow unlocked for this quarter."
+          : "Enable this to allow releases above $25,000."}
+      </p>
+    </div>
+  );
+}
+```
+
+### Indeterminate State
+
+Use indeterminate state for partial selection scenarios.
+
+```tsx
+import { Checkbox } from "@kuzenbo/core";
+import { CheckboxGroup } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useState } from "react";
+
+function IndeterminateExample() {
+  const items = ["invoice-1007", "invoice-1012", "invoice-1019"];
+  const [selectedItems, setSelectedItems] = useState(["invoice-1007", "invoice-1012"]);
+
+  const allSelected = selectedItems.length === items.length;
+  const someSelected = selectedItems.length > 0 && !allSelected;
+
+  return (
+    <div className="grid gap-3">
+      <Label className="flex items-center gap-2">
+        <Checkbox
+          checked={allSelected}
+          indeterminate={someSelected}
+          onCheckedChange={(checked) =>
+            setSelectedItems(checked ? items : [])
+          }
+        />
+        Select all invoices
+      </Label>
+      <CheckboxGroup value={selectedItems} onValueChange={setSelectedItems}>
+        {items.map((item) => (
+          <Label key={item} className="flex items-center gap-2">
+            <Checkbox value={item} />
+            {item}
+          </Label>
+        ))}
+      </CheckboxGroup>
+    </div>
+  );
+}
+```
+
+### Sizes
+
+Checkboxes are available in five size variants.
+
+```tsx
+import { Checkbox } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function SizesExample() {
+  return (
+    <div className="grid gap-2">
+      <Label className="flex items-center gap-2">
+        <Checkbox size="xs" defaultChecked />
+        XS approval toggle
+      </Label>
+      <Label className="flex items-center gap-2">
+        <Checkbox size="sm" defaultChecked />
+        SM approval toggle
+      </Label>
+      <Label className="flex items-center gap-2">
+        <Checkbox size="md" defaultChecked />
+        MD approval toggle
+      </Label>
+      <Label className="flex items-center gap-2">
+        <Checkbox size="lg" defaultChecked />
+        LG approval toggle
+      </Label>
+      <Label className="flex items-center gap-2">
+        <Checkbox size="xl" defaultChecked />
+        XL approval toggle
+      </Label>
+    </div>
+  );
+}
+```
+
+### Disabled
+
+Disabled checkboxes are non-interactive and visually muted.
+
+```tsx
+import { Checkbox } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function DisabledExample() {
+  return (
+    <Label className="flex items-center gap-2">
+      <Checkbox disabled />
+      Require owner approval for vendor changes
+    </Label>
+  );
+}
+```
+
+### Custom Indicator
+
+Customize the checkbox indicator content.
+
+```tsx
+import { Checkbox } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function CustomIndicatorExample() {
+  return (
+    <Label className="flex items-center gap-2">
+      <Checkbox defaultChecked>
+        <Checkbox.Indicator>
+          <span aria-hidden="true">OK</span>
+        </Checkbox.Indicator>
+      </Checkbox>
+      Custom indicator text
+    </Label>
+  );
+}
+```
+
+## Props
+
+Checkbox extends Base UI Checkbox.Root props.
+
+<ParamField path="size" type="string" default="md">
+  Size variant of the checkbox.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="checked" type="boolean">
+  Controlled checked state of the checkbox.
+</ParamField>
+
+<ParamField path="defaultChecked" type="boolean" default="false">
+  Default checked state for uncontrolled usage.
+</ParamField>
+
+<ParamField path="indeterminate" type="boolean" default="false">
+  When true, displays the indeterminate state (partial selection).
+</ParamField>
+
+<ParamField path="onCheckedChange" type="(checked: boolean) => void">
+  Callback fired when the checked state changes.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the checkbox and makes it non-interactive.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the checkbox.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Custom indicator content. Defaults to check icon or minus icon for indeterminate.
+</ParamField>
+
+## Subcomponents
+
+### Checkbox.Indicator
+
+The visual indicator shown when the checkbox is checked or indeterminate.
+
+```tsx
+<Checkbox>
+  <Checkbox.Indicator size="xs">
+    <CustomCheckIcon />
+  </Checkbox.Indicator>
+</Checkbox>
+```
+
+## TypeScript
+
+```tsx
+import type { CheckboxProps, CheckboxIndicatorProps } from "@kuzenbo/core";
+
+const CustomCheckbox = (props: CheckboxProps) => {
+  return <Checkbox {...props} />;
+};
+```
+
+## Accessibility
+
+- Checkbox uses semantic ARIA checkbox role
+- Supports keyboard navigation with Space to toggle
+- Properly indicates checked, unchecked, and indeterminate states
+- Works with CheckboxGroup for managing multiple selections
+- Disabled state prevents all interactions

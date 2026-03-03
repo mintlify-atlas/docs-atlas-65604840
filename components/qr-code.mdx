@@ -1,0 +1,108 @@
+---
+title: QR Code
+description: Display QR codes with customizable colors.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { QRCode } from "@kuzenbo/core";
+
+function Example() {
+  return (
+    <div className="w-48 h-48">
+      <QRCode data="https://kuzenbo.dev" />
+    </div>
+  );
+}
+```
+
+## Props
+
+<ParamField path="data" type="string" required>
+  The data to encode in the QR code.
+</ParamField>
+
+<ParamField path="foreground" type="string">
+  The foreground color (dark modules). Defaults to theme foreground color.
+</ParamField>
+
+<ParamField path="background" type="string">
+  The background color (light modules). Defaults to theme background color.
+</ParamField>
+
+<ParamField path="robustness" type="'L' | 'M' | 'Q' | 'H'" default="'M'">
+  Error correction level:
+  - L: ~7% damage recovery
+  - M: ~15% damage recovery
+  - Q: ~25% damage recovery
+  - H: ~30% damage recovery
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Examples
+
+### Basic QR Code
+
+```tsx
+<div className="w-64 h-64">
+  <QRCode data="https://example.com" />
+</div>
+```
+
+### Custom Colors
+
+```tsx
+<div className="w-64 h-64">
+  <QRCode
+    data="https://example.com"
+    foreground="oklch(0.5 0.2 250)"
+    background="oklch(0.95 0 0)"
+  />
+</div>
+```
+
+### High Error Correction
+
+```tsx
+<div className="w-64 h-64">
+  <QRCode
+    data="https://example.com"
+    robustness="H"
+  />
+</div>
+```
+
+### Contact Information
+
+```tsx
+const vCardData = `BEGIN:VCARD
+VERSION:3.0
+FN:John Doe
+TEL:+1-234-567-8900
+EMAIL:john@example.com
+END:VCARD`;
+
+<div className="w-64 h-64">
+  <QRCode data={vCardData} />
+</div>
+```
+
+### WiFi Configuration
+
+```tsx
+const wifiData = "WIFI:T:WPA;S:NetworkName;P:password123;;";
+
+<div className="w-64 h-64">
+  <QRCode data={wifiData} />
+</div>
+```

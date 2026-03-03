@@ -1,0 +1,215 @@
+---
+title: useSessionStorage
+description: Persist state in sessionStorage with React state synchronization
+---
+
+Persists state in `sessionStorage` under a given key and keeps React state in sync. Values are scoped to the current browser tab/session and follow the shared storage hook contract.
+
+## Usage
+
+```tsx
+import { useSessionStorage } from '@kuzenbo/hooks';
+
+function Demo() {
+  const [value, setValue, removeValue] = useSessionStorage({
+    key: 'session-key',
+    defaultValue: 'default value',
+  });
+
+  return (
+    <div>
+      <p>Value: {value}</p>
+      <button onClick={() => setValue('new value')}>Set Value</button>
+      <button onClick={removeValue}>Remove Value</button>
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useSessionStorage<T = string>(
+  props: UseStorageOptions<T>
+): UseStorageReturnValue<T>
+
+type UseStorageReturnValue<T> = [
+  T,
+  (val: T | ((prevState: T) => T)) => void,
+  () => void,
+]
+```
+
+## Parameters
+
+<ParamField path="props" type="UseStorageOptions<T>" required>
+  Storage options such as key, default value, sync behavior, and serializers.
+
+  <ParamField path="props.key" type="string" required>
+    Storage key under which the value will be saved.
+  </ParamField>
+
+  <ParamField path="props.defaultValue" type="T" optional>
+    Default value that will be set if no value is found in storage.
+  </ParamField>
+
+  <ParamField path="props.getInitialValueInEffect" type="boolean" optional>
+    If `true`, value will be updated in useEffect after mount. Defaults to `true`.
+  </ParamField>
+
+  <ParamField path="props.sync" type="boolean" optional>
+    Determines whether the value must be synced between browser tabs. Defaults to `true`.
+  </ParamField>
+
+  <ParamField path="props.serialize" type="(value: T) => string" optional>
+    Function to serialize value into string to be saved in storage.
+  </ParamField>
+
+  <ParamField path="props.deserialize" type="(value: string | undefined) => T" optional>
+    Function to deserialize string value from storage to value.
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+Returns a tuple with three elements:
+
+<ResponseField name="[0]" type="T">
+  Current value from sessionStorage.
+</ResponseField>
+
+<ResponseField name="[1]" type="(val: T | ((prevState: T) => T)) => void">
+  Callback to set value in storage. Supports updater function pattern.
+</ResponseField>
+
+<ResponseField name="[2]" type="() => void">
+  Callback to remove value from storage.
+</ResponseField>
+
+## Examples
+
+### Basic Usage
+
+```tsx
+import { useSessionStorage } from '@kuzenbo/hooks';
+
+function FormExample() {
+  const [formData, setFormData] = useSessionStorage({
+    key: 'form-draft',
+    defaultValue: '',
+  });
+
+  return (
+    <div>
+      <textarea
+        value={formData}
+        onChange={(e) => setFormData(e.target.value)}
+        placeholder="Your draft is saved in this tab session"
+      />
+    </div>
+  );
+}
+```
+
+### With Complex Objects
+
+```tsx
+import { useSessionStorage } from '@kuzenbo/hooks';
+
+interface FormState {
+  step: number;
+  data: Record<string, string>;
+}
+
+function MultiStepForm() {
+  const [formState, setFormState] = useSessionStorage<FormState>({
+    key: 'multi-step-form',
+    defaultValue: { step: 1, data: {} },
+  });
+
+  return (
+    <div>
+      <p>Current Step: {formState.step}</p>
+      <button onClick={() => setFormState({ ...formState, step: formState.step + 1 })}>
+        Next Step
+      </button>
+    </div>
+  );
+}
+```
+
+### Tab-Specific Counter
+
+```tsx
+import { useSessionStorage } from '@kuzenbo/hooks';
+
+function TabCounter() {
+  const [count, setCount, removeCount] = useSessionStorage({
+    key: 'tab-counter',
+    defaultValue: 0,
+  });
+
+  return (
+    <div>
+      <p>This tab's count: {count}</p>
+      <button onClick={() => setCount((prev) => prev + 1)}>Increment</button>
+      <button onClick={removeCount}>Reset</button>
+    </div>
+  );
+}
+```
+
+### Wizard State Persistence
+
+```tsx
+import { useSessionStorage } from '@kuzenbo/hooks';
+
+interface WizardState {
+  currentStep: number;
+  completedSteps: number[];
+  userData: Record<string, unknown>;
+}
+
+function Wizard() {
+  const [wizardState, setWizardState] = useSessionStorage<WizardState>({
+    key: 'wizard-progress',
+    defaultValue: {
+      currentStep: 0,
+      completedSteps: [],
+      userData: {},
+    },
+  });
+
+  const completeStep = (step: number) => {
+    setWizardState((prev) => ({
+      ...prev,
+      completedSteps: [...prev.completedSteps, step],
+      currentStep: step + 1,
+    }));
+  };
+
+  return <div>{/* Wizard UI */}</div>;
+}
+```
+
+## Utility Function
+
+### readSessionStorageValue
+
+Read a value from sessionStorage without using the hook:
+
+```tsx
+import { readSessionStorageValue } from '@kuzenbo/hooks';
+
+const value = readSessionStorageValue({
+  key: 'my-session-key',
+  defaultValue: 'default',
+});
+```
+
+## Differences from useLocalStorage
+
+- Values persist only for the current tab/window session
+- Data is cleared when the tab/window is closed
+- Perfect for temporary state like form drafts or wizard progress
+- Does not persist across browser restarts

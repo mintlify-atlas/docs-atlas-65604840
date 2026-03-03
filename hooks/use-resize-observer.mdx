@@ -1,0 +1,150 @@
+---
+title: useResizeObserver
+description: Observe element size changes with ResizeObserver API
+---
+
+## Overview
+
+Observes size changes of a target element and returns its latest layout rectangle. Observation updates are scheduled in `requestAnimationFrame` to avoid excessive React updates.
+
+## Function Signature
+
+```typescript
+function useResizeObserver<T extends HTMLElement = HTMLElement>(
+  options?: ResizeObserverOptions
+): UseResizeObserverReturnValue<T>
+```
+
+### Type Definitions
+
+```typescript
+type UseResizeObserverReturnValue<T extends HTMLElement = HTMLElement> = [
+  RefCallback<T | null>,
+  ObserverRect
+];
+
+type ObserverRect = Omit<DOMRectReadOnly, "toJSON">;
+
+// ObserverRect shape:
+{
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  top: number;
+  left: number;
+  bottom: number;
+  right: number;
+}
+```
+
+## Parameters
+
+<ParamField path="options" type="ResizeObserverOptions">
+  Options forwarded to `ResizeObserver.observe`. Can include `box` property to specify which box model to observe (`"content-box"`, `"border-box"`, or `"device-pixel-content-box"`).
+</ParamField>
+
+## Return Value
+
+<ResponseField name="[0]" type="RefCallback<T | null>">
+  A ref callback to attach to the element you want to observe.
+</ResponseField>
+
+<ResponseField name="[1]" type="ObserverRect">
+  An object containing the element's dimensions and position:
+  - `width`: Element width in pixels
+  - `height`: Element height in pixels
+  - `x`, `y`: Position relative to viewport
+  - `top`, `left`, `bottom`, `right`: Edges relative to viewport
+</ResponseField>
+
+## Usage Example
+
+```tsx
+import { useResizeObserver } from "@kuzenbo/hooks";
+
+function Example() {
+  const [ref, rect] = useResizeObserver();
+
+  return (
+    <div>
+      <div
+        ref={ref}
+        style={{
+          border: "1px solid black",
+          width: "80%",
+          maxHeight: "300px",
+          display: "flex",
+          writingMode: "vertical-lr",
+        }}
+      >
+        <div style={{ border: "3px solid blue", margin: "10px", flex: 1 }}>
+          1
+        </div>
+        <div style={{ border: "3px solid blue", margin: "10px", flex: 1 }}>
+          2
+        </div>
+        <div style={{ border: "3px solid blue", margin: "10px", flex: 1 }}>
+          3
+        </div>
+        <div style={{ border: "3px solid blue", margin: "10px", flex: 1 }}>
+          4
+        </div>
+      </div>
+      <div style={{ marginTop: "20px" }}>
+        <div>Width: {rect?.width}</div>
+        <div>Height: {rect?.height}</div>
+      </div>
+    </div>
+  );
+}
+```
+
+## useElementSize
+
+A convenience wrapper around `useResizeObserver` that exposes only `width` and `height`.
+
+### Function Signature
+
+```typescript
+function useElementSize<T extends HTMLElement = HTMLElement>(
+  options?: ResizeObserverOptions
+): UseElementSizeReturnValue<T>
+```
+
+### Type Definitions
+
+```typescript
+interface UseElementSizeReturnValue<T extends HTMLElement = HTMLElement> {
+  ref: RefCallback<T | null>;
+  width: number;
+  height: number;
+}
+```
+
+### Usage Example
+
+```tsx
+import { useElementSize } from "@kuzenbo/hooks";
+
+function Example() {
+  const { ref, width, height } = useElementSize();
+
+  return (
+    <div>
+      <div ref={ref} style={{ resize: "both", overflow: "auto", border: "1px solid" }}>
+        Resize me!
+      </div>
+      <p>Size: {width} x {height}</p>
+    </div>
+  );
+}
+```
+
+## Features
+
+- Uses native `ResizeObserver` API for efficient size tracking
+- Throttles updates with `requestAnimationFrame` to prevent layout thrashing
+- Automatic cleanup when element is removed
+- Supports all `ResizeObserver` box models
+- Convenience `useElementSize` wrapper for simple width/height needs

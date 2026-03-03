@@ -1,0 +1,279 @@
+---
+title: "useScrollIntoView"
+description: "Animate scrolling to bring a target element into view within a scroll container with customizable easing and alignment."
+---
+
+## Overview
+
+`useScrollIntoView` animates scrolling so a target element becomes visible inside a scroll container or the page. Supports axis selection, custom easing, offsets, and canceling on user interaction.
+
+## Installation
+
+```npm
+npm i @kuzenbo/hooks
+```
+
+## Import
+
+```tsx
+import { useScrollIntoView } from "@kuzenbo/hooks";
+```
+
+## Usage
+
+### Basic Scroll to Element
+
+```tsx
+import { useScrollIntoView } from "@kuzenbo/hooks";
+
+export function ScrollToExample() {
+  const { scrollIntoView, targetRef } = useScrollIntoView();
+
+  return (
+    <div>
+      <button
+        onClick={() => scrollIntoView({ alignment: "center" })}
+        className="px-4 py-2 bg-primary text-primary-foreground rounded"
+      >
+        Scroll to target
+      </button>
+
+      <div className="h-[100vh]" />
+
+      <div
+        ref={targetRef}
+        className="p-8 bg-primary/10 border-2 border-primary rounded-lg"
+      >
+        Target element
+      </div>
+
+      <div className="h-[100vh]" />
+    </div>
+  );
+}
+```
+
+### Scroll Container
+
+```tsx
+import { useScrollIntoView } from "@kuzenbo/hooks";
+
+export function ScrollContainerExample() {
+  const { scrollIntoView, targetRef, scrollableRef } = useScrollIntoView();
+
+  return (
+    <div>
+      <button
+        onClick={() => scrollIntoView({ alignment: "start" })}
+        className="mb-4 px-4 py-2 bg-primary text-primary-foreground rounded"
+      >
+        Scroll to target
+      </button>
+
+      <div
+        ref={scrollableRef}
+        className="h-64 overflow-auto border rounded-lg"
+      >
+        <div className="h-96" />
+        <div
+          ref={targetRef}
+          className="p-4 bg-primary/10 border border-primary rounded"
+        >
+          Target element in container
+        </div>
+        <div className="h-96" />
+      </div>
+    </div>
+  );
+}
+```
+
+### Custom Duration and Easing
+
+```tsx
+import { useScrollIntoView } from "@kuzenbo/hooks";
+
+export function CustomAnimationExample() {
+  const { scrollIntoView, targetRef } = useScrollIntoView({
+    duration: 2000,
+    easing: (t) => t * t, // quadratic easing
+    onScrollFinish: () => console.log("Scroll finished!"),
+  });
+
+  return (
+    <div>
+      <button
+        onClick={() => scrollIntoView({ alignment: "center" })}
+        className="px-4 py-2 bg-primary text-primary-foreground rounded"
+      >
+        Smooth scroll (2s)
+      </button>
+
+      <div className="h-[150vh]" />
+
+      <div
+        ref={targetRef}
+        className="p-8 bg-accent border rounded-lg"
+      >
+        Target with custom animation
+      </div>
+    </div>
+  );
+}
+```
+
+### List Navigation
+
+```tsx
+import { useScrollIntoView } from "@kuzenbo/hooks";
+import { useRef, useState } from "react";
+
+const items = Array.from({ length: 20 }, (_, i) => `Item ${i + 1}`);
+
+export function ListNavigationExample() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const { scrollIntoView, scrollableRef } = useScrollIntoView({
+    offset: 10,
+    isList: true,
+  });
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const scrollToItem = (index: number) => {
+    setActiveIndex(index);
+    const targetRef = { current: itemRefs.current[index] };
+    scrollIntoView({ alignment: "center" });
+  };
+
+  return (
+    <div>
+      <div className="mb-4 flex gap-2">
+        <button
+          onClick={() => scrollToItem(Math.max(0, activeIndex - 1))}
+          className="px-3 py-1 bg-muted rounded"
+        >
+          Previous
+        </button>
+        <button
+          onClick={() => scrollToItem(Math.min(items.length - 1, activeIndex + 1))}
+          className="px-3 py-1 bg-muted rounded"
+        >
+          Next
+        </button>
+      </div>
+
+      <div
+        ref={scrollableRef}
+        className="h-64 overflow-auto border rounded-lg"
+      >
+        {items.map((item, index) => (
+          <div
+            key={item}
+            ref={(el) => (itemRefs.current[index] = el)}
+            className={`p-4 border-b ${
+              activeIndex === index ? "bg-primary/10" : ""
+            }`}
+          >
+            {item}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+```tsx
+function useScrollIntoView<
+  Target extends HTMLElement = HTMLElement,
+  Parent extends HTMLElement | null = null
+>(options?: UseScrollIntoViewOptions): UseScrollIntoViewReturnValue<Target, Parent>
+```
+
+<ParamField path="options" type="UseScrollIntoViewOptions">
+  Scrolling behavior configuration
+
+  <ParamField path="options.duration" type="number" default={1250}>
+    Animation duration in milliseconds
+  </ParamField>
+
+  <ParamField path="options.axis" type="'x' | 'y'" default="y">
+    Axis to scroll on
+  </ParamField>
+
+  <ParamField path="options.onScrollFinish" type="() => void">
+    Called after scrolling finishes
+  </ParamField>
+
+  <ParamField path="options.easing" type="(t: number) => number">
+    Easing function that maps progress from `0` to `1`. Defaults to ease-in-out quad.
+  </ParamField>
+
+  <ParamField path="options.offset" type="number" default={0}>
+    Additional offset from the chosen alignment edge
+  </ParamField>
+
+  <ParamField path="options.cancelable" type="boolean" default={true}>
+    Whether user wheel/touch movement can stop the animation
+  </ParamField>
+
+  <ParamField path="options.isList" type="boolean" default={false}>
+    Enables list-specific alignment guards to reduce jumpy behavior
+  </ParamField>
+</ParamField>
+
+<ResponseField name="scrollableRef" type="RefObject<Parent | null>">
+  Ref to attach to the scroll container (optional, defaults to window)
+</ResponseField>
+
+<ResponseField name="targetRef" type="RefObject<Target | null>">
+  Ref to attach to the element to scroll into view
+</ResponseField>
+
+<ResponseField name="scrollIntoView" type="(params?: { alignment?: 'start' | 'end' | 'center' }) => void">
+  Function to trigger the scroll animation
+</ResponseField>
+
+<ResponseField name="cancel" type="() => void">
+  Function to cancel the current scroll animation
+</ResponseField>
+
+## Type Definitions
+
+```tsx
+type ScrollAlignment = "start" | "end" | "center";
+type ScrollAxis = "x" | "y";
+
+interface UseScrollIntoViewOptions {
+  onScrollFinish?: () => void;
+  duration?: number;
+  axis?: ScrollAxis;
+  easing?: (t: number) => number;
+  offset?: number;
+  cancelable?: boolean;
+  isList?: boolean;
+}
+
+interface UseScrollIntoViewReturnValue<
+  Target extends HTMLElement = HTMLElement,
+  Parent extends HTMLElement | null = null
+> {
+  scrollableRef: RefObject<Parent | null>;
+  targetRef: RefObject<Target | null>;
+  scrollIntoView: (params?: { alignment?: ScrollAlignment }) => void;
+  cancel: () => void;
+}
+```
+
+## Caveats
+
+- Respects `prefers-reduced-motion` (instant scroll when enabled)
+- Animation can be interrupted by user scroll/touch if `cancelable: true`
+- Uses `requestAnimationFrame` for smooth animations
+- Coordinates are relative to the scroll container or window
+
+## SSR and RSC Notes
+
+- Use this hook in Client Components only
+- Do not call it from React Server Components

@@ -1,0 +1,162 @@
+---
+title: Autocomplete
+description: Text input with inline suggestions as you type.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Autocomplete } from "@kuzenbo/core";
+
+const suggestions = [
+  "Apple",
+  "Banana",
+  "Cherry",
+  "Date",
+  "Elderberry",
+];
+
+function Example() {
+  return (
+    <Autocomplete>
+      <Autocomplete.Label>Fruit</Autocomplete.Label>
+      <Autocomplete.Row>
+        <Autocomplete.Input placeholder="Type to search..." />
+        <Autocomplete.Trigger />
+      </Autocomplete.Row>
+      <Autocomplete.Portal>
+        <Autocomplete.Positioner>
+          <Autocomplete.Popup>
+            <Autocomplete.Content>
+              <Autocomplete.List>
+                <Autocomplete.Empty>No results found.</Autocomplete.Empty>
+                <Autocomplete.Collection items={suggestions}>
+                  {(item) => (
+                    <Autocomplete.Item value={item}>
+                      {item}
+                    </Autocomplete.Item>
+                  )}
+                </Autocomplete.Collection>
+              </Autocomplete.List>
+            </Autocomplete.Content>
+          </Autocomplete.Popup>
+        </Autocomplete.Positioner>
+      </Autocomplete.Portal>
+    </Autocomplete>
+  );
+}
+```
+
+## Props
+
+### Autocomplete
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the autocomplete and its children.
+</ParamField>
+
+<ParamField path="value" type="string">
+  The controlled value.
+</ParamField>
+
+<ParamField path="onValueChange" type="(value: string) => void">
+  Callback when the value changes.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the autocomplete is disabled.
+</ParamField>
+
+<ParamField path="required" type="boolean">
+  Whether the autocomplete is required.
+</ParamField>
+
+### Autocomplete.Input
+
+<ParamField path="placeholder" type="string">
+  Placeholder text.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Autocomplete.Item
+
+<ParamField path="value" type="string" required>
+  The value for this item.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the item is disabled.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Autocomplete.Collection
+
+<ParamField path="items" type="string[]" required>
+  The items to render.
+</ParamField>
+
+<ParamField path="children" type="(item: string) => ReactNode" required>
+  Function to render each item.
+</ParamField>
+
+## Advanced Patterns
+
+### Custom Filtering
+
+```tsx
+const { useFilter, useFilteredItems } = Autocomplete;
+
+function FilteredAutocomplete() {
+  const filter = useFilter({ sensitivity: "base" });
+  const filteredItems = useFilteredItems(items, filter);
+
+  return (
+    <Autocomplete>
+      {/* ... */}
+      <Autocomplete.Collection items={filteredItems}>
+        {(item) => <Autocomplete.Item value={item}>{item}</Autocomplete.Item>}
+      </Autocomplete.Collection>
+    </Autocomplete>
+  );
+}
+```
+
+### Grouped Suggestions
+
+```tsx
+<Autocomplete.List>
+  <Autocomplete.Group>
+    <Autocomplete.GroupLabel>Recent</Autocomplete.GroupLabel>
+    <Autocomplete.Item value="recent-1">Recent Item 1</Autocomplete.Item>
+    <Autocomplete.Item value="recent-2">Recent Item 2</Autocomplete.Item>
+  </Autocomplete.Group>
+  <Autocomplete.Separator />
+  <Autocomplete.Group>
+    <Autocomplete.GroupLabel>All Items</Autocomplete.GroupLabel>
+    <Autocomplete.Item value="item-1">Item 1</Autocomplete.Item>
+    <Autocomplete.Item value="item-2">Item 2</Autocomplete.Item>
+  </Autocomplete.Group>
+</Autocomplete.List>
+```
+
+### Clear Button
+
+```tsx
+<Autocomplete.Row>
+  <Autocomplete.Input placeholder="Type to search..." />
+  <Autocomplete.Clear />
+  <Autocomplete.Trigger />
+</Autocomplete.Row>
+```

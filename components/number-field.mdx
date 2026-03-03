@@ -1,0 +1,365 @@
+---
+title: NumberField
+description: A number input with increment/decrement buttons and optional scrub area for mouse drag interactions.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+## Usage
+
+```tsx
+import { NumberField } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useId } from "react";
+
+function App() {
+  const id = useId();
+
+  return (
+    <NumberField defaultValue={0} id={id}>
+      <Label htmlFor={id}>Quantity</Label>
+      <NumberField.Group>
+        <NumberField.Decrement />
+        <NumberField.Input />
+        <NumberField.Increment />
+      </NumberField.Group>
+    </NumberField>
+  );
+}
+```
+
+## Examples
+
+### Controlled NumberField
+
+Manage value with React state.
+
+```tsx
+import { NumberField } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useState, useId } from "react";
+
+function ControlledExample() {
+  const id = useId();
+  const [quantity, setQuantity] = useState<number | null>(2);
+
+  return (
+    <NumberField
+      id={id}
+      max={10}
+      min={1}
+      onValueChange={setQuantity}
+      step={1}
+      value={quantity}
+    >
+      <Label htmlFor={id}>Cart quantity</Label>
+      <NumberField.Group>
+        <NumberField.Decrement />
+        <NumberField.Input />
+        <NumberField.Increment />
+      </NumberField.Group>
+    </NumberField>
+  );
+}
+```
+
+### With Scrub Area
+
+Drag the label to adjust the value.
+
+```tsx
+import { NumberField } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useId } from "react";
+
+function ScrubAreaExample() {
+  const id = useId();
+
+  return (
+    <NumberField defaultValue={100} id={id}>
+      <NumberField.ScrubArea className="flex items-center gap-2">
+        <Label className="cursor-ew-resize" htmlFor={id}>
+          Amount
+        </Label>
+        <NumberField.ScrubAreaCursor />
+      </NumberField.ScrubArea>
+
+      <NumberField.Group>
+        <NumberField.Decrement />
+        <NumberField.Input />
+        <NumberField.Increment />
+      </NumberField.Group>
+    </NumberField>
+  );
+}
+```
+
+### Currency Format
+
+Format values as currency.
+
+```tsx
+import { NumberField } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useId } from "react";
+
+function CurrencyExample() {
+  const id = useId();
+
+  return (
+    <NumberField
+      defaultValue={2500}
+      format={{ currency: "USD", style: "currency" }}
+      id={id}
+      largeStep={500}
+      min={0}
+      smallStep={10}
+      step={50}
+    >
+      <Label htmlFor={id}>Monthly ad budget</Label>
+      <NumberField.Group>
+        <NumberField.Decrement />
+        <NumberField.Input />
+        <NumberField.Increment />
+      </NumberField.Group>
+    </NumberField>
+  );
+}
+```
+
+### Pack Size Steps
+
+Increment by custom step values.
+
+```tsx
+import { NumberField } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useId } from "react";
+
+function PackSizeExample() {
+  const id = useId();
+
+  return (
+    <NumberField
+      defaultValue={12}
+      id={id}
+      max={120}
+      min={6}
+      step={6}
+    >
+      <Label htmlFor={id}>Units per shipment</Label>
+      <NumberField.Group>
+        <NumberField.Decrement />
+        <NumberField.Input />
+        <NumberField.Increment />
+      </NumberField.Group>
+    </NumberField>
+  );
+}
+```
+
+### Read Only
+
+Display values without allowing edits.
+
+```tsx
+import { NumberField } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useId } from "react";
+
+function ReadOnlyExample() {
+  const id = useId();
+
+  return (
+    <NumberField defaultValue={3} id={id} readOnly>
+      <Label htmlFor={id}>Approved quantity</Label>
+      <NumberField.Group>
+        <NumberField.Decrement />
+        <NumberField.Input />
+        <NumberField.Increment />
+      </NumberField.Group>
+    </NumberField>
+  );
+}
+```
+
+### Sizes
+
+NumberFields support size variants inherited from the size context.
+
+```tsx
+import { NumberField } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useId } from "react";
+
+function SizesExample() {
+  const id = useId();
+
+  return (
+    <div className="grid gap-3">
+      <NumberField defaultValue={0} id={id} size="xs">
+        <Label htmlFor={id}>XS quantity</Label>
+        <NumberField.Group>
+          <NumberField.Decrement />
+          <NumberField.Input />
+          <NumberField.Increment />
+        </NumberField.Group>
+      </NumberField>
+
+      <NumberField defaultValue={0} id={id} size="sm">
+        <Label htmlFor={id}>SM quantity</Label>
+        <NumberField.Group>
+          <NumberField.Decrement />
+          <NumberField.Input />
+          <NumberField.Increment />
+        </NumberField.Group>
+      </NumberField>
+
+      <NumberField defaultValue={0} id={id} size="md">
+        <Label htmlFor={id}>MD quantity</Label>
+        <NumberField.Group>
+          <NumberField.Decrement />
+          <NumberField.Input />
+          <NumberField.Increment />
+        </NumberField.Group>
+      </NumberField>
+    </div>
+  );
+}
+```
+
+## Props
+
+### NumberField
+
+NumberField extends Base UI NumberField.Root props.
+
+<ParamField path="value" type="number | null">
+  Controlled value of the number field.
+</ParamField>
+
+<ParamField path="defaultValue" type="number">
+  Default value for uncontrolled usage.
+</ParamField>
+
+<ParamField path="onValueChange" type="(value: number | null) => void">
+  Callback fired when the value changes.
+</ParamField>
+
+<ParamField path="min" type="number">
+  Minimum allowed value.
+</ParamField>
+
+<ParamField path="max" type="number">
+  Maximum allowed value.
+</ParamField>
+
+<ParamField path="step" type="number" default="1">
+  Step increment for increment/decrement.
+</ParamField>
+
+<ParamField path="largeStep" type="number">
+  Larger step increment (Shift + arrow keys).
+</ParamField>
+
+<ParamField path="smallStep" type="number">
+  Smaller step increment (Alt/Option + arrow keys).
+</ParamField>
+
+<ParamField path="format" type="Intl.NumberFormatOptions">
+  Number formatting options (e.g., currency, percent).
+</ParamField>
+
+<ParamField path="size" type="string" default="md">
+  Size variant applied to all child components.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the entire number field.
+</ParamField>
+
+<ParamField path="readOnly" type="boolean" default="false">
+  When true, makes the field read-only.
+</ParamField>
+
+<ParamField path="required" type="boolean" default="false">
+  When true, marks the field as required.
+</ParamField>
+
+<ParamField path="id" type="string">
+  ID for associating with a label.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+<ParamField path="children" type="ReactNode" required>
+  NumberField subcomponents.
+</ParamField>
+
+## Subcomponents
+
+### NumberField.Group
+
+Container for the input and increment/decrement buttons.
+
+```tsx
+<NumberField.Group>
+  <NumberField.Decrement />
+  <NumberField.Input />
+  <NumberField.Increment />
+</NumberField.Group>
+```
+
+### NumberField.Input
+
+The text input for entering numeric values.
+
+### NumberField.Increment
+
+Button to increase the value by the step amount.
+
+### NumberField.Decrement
+
+Button to decrease the value by the step amount.
+
+### NumberField.ScrubArea
+
+Area that enables mouse drag to adjust value.
+
+### NumberField.ScrubAreaCursor
+
+Custom cursor displayed during scrubbing.
+
+## TypeScript
+
+```tsx
+import type {
+  NumberFieldProps,
+  NumberFieldInputProps,
+  NumberFieldGroupProps,
+  NumberFieldIncrementProps,
+  NumberFieldDecrementProps,
+  NumberFieldScrubAreaProps,
+} from "@kuzenbo/core";
+
+const CustomNumberField = (props: NumberFieldProps) => {
+  return <NumberField {...props} />;
+};
+```
+
+## Accessibility
+
+- NumberField uses semantic ARIA spinbutton role
+- Supports keyboard navigation with arrow keys, Page Up/Down, Home, and End
+- Increment and decrement buttons are properly labeled
+- Screen readers announce value changes
+- Respects min/max bounds
+- Disabled and read-only states properly communicated

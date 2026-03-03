@@ -1,0 +1,142 @@
+---
+title: Spinner
+description: Animated loading indicator for indeterminate progress states.
+---
+
+<ComponentPreview name="spinner-default" />
+
+## Installation
+
+<Tabs>
+  <Tab title="CLI">
+    ```bash
+    npx @kuzenbo/cli add spinner
+    ```
+  </Tab>
+  <Tab title="Manual">
+    Install the required dependencies:
+
+    ```bash
+    npm install @kuzenbo/core @hugeicons/react
+    ```
+
+    Copy the component source:
+
+    <Accordion title="spinner.tsx">
+      ```tsx
+      // See source at packages/core/src/ui/spinner/
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Spinner } from "@kuzenbo/core";
+
+export default function Example() {
+  return <Spinner />;
+}
+```
+
+## Examples
+
+### Sizes
+
+Spinner supports the standard size system.
+
+```tsx
+<Spinner size="xs" />
+<Spinner size="sm" />
+<Spinner size="md" />
+<Spinner size="lg" />
+<Spinner size="xl" />
+```
+
+### With Text
+
+Combine spinner with loading text.
+
+```tsx
+<div className="flex items-center gap-2">
+  <Spinner size="sm" />
+  <span>Loading...</span>
+</div>
+```
+
+### Centered
+
+Center the spinner in a container.
+
+```tsx
+<div className="flex h-40 items-center justify-center">
+  <Spinner />
+</div>
+```
+
+### Custom Stroke Width
+
+Adjust the stroke width for different visual weights.
+
+```tsx
+<Spinner strokeWidth={1} />
+<Spinner strokeWidth={2} />
+<Spinner strokeWidth={3} />
+```
+
+### Custom Color
+
+Override the color with CSS classes.
+
+```tsx
+<Spinner className="text-primary" />
+<Spinner className="text-success" />
+<Spinner className="text-warning" />
+```
+
+### Button Loading State
+
+Show spinner in buttons during loading.
+
+```tsx
+<Button disabled>
+  <Spinner size="sm" />
+  Loading...
+</Button>
+```
+
+## API Reference
+
+### Spinner
+
+<ParamField path="size" type="UISize" default="md">
+  Size of the spinner.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="strokeWidth" type="number" default="2">
+  Stroke width of the spinner icon.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Accessibility
+
+- Has `role="status"` for screen reader announcements
+- Includes `aria-label="Loading"` for context
+- Always pair with text for critical loading states
+- Use meaningful loading messages nearby
+
+## Best Practices
+
+- Use for indeterminate loading states
+- Prefer Progress for determinate operations
+- Don't use multiple spinners simultaneously
+- Center spinners in their container
+- Provide context about what's loading
+- Use appropriate sizes for the context (e.g., `sm` for buttons)
+- Consider skeleton loaders for content placeholders

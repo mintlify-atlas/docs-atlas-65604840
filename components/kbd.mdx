@@ -1,0 +1,206 @@
+---
+title: Kbd
+description: Display keyboard shortcuts and key combinations with semantic styling
+---
+
+The Kbd component displays keyboard shortcuts and key combinations with consistent styling across your application. It adapts its appearance in different contexts like tooltips.
+
+## Import
+
+```tsx
+import { Kbd } from "@kuzenbo/core";
+```
+
+## Usage
+
+```tsx
+<Kbd>⌘</Kbd>
+<Kbd>K</Kbd>
+
+<Kbd.Group>
+  <Kbd>⌘</Kbd>
+  <Kbd>Shift</Kbd>
+  <Kbd>P</Kbd>
+</Kbd.Group>
+```
+
+## Anatomy
+
+- `Kbd` - Single keyboard key display
+- `Kbd.Group` - Container for multiple keys in a sequence
+
+## Props
+
+### Kbd
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="md">
+  Controls the key size and text:
+  
+  - `xs` - Height 4 (16px), text 10px, min-width 4
+  - `sm` - Height 5 (20px), text 11px, min-width 5
+  - `md` - Height 5 (20px), text xs, min-width 5
+  - `lg` - Height 6 (24px), text sm, min-width 6
+  - `xl` - Height 7 (28px), text sm, min-width 7
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Kbd.Group
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="md">
+  Controls the size for all child Kbd components.
+</ParamField>
+
+<ParamField path="separator" type="ReactNode" default="+">
+  The separator to display between keys.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Examples
+
+### Single key
+
+```tsx
+Press <Kbd>Enter</Kbd> to submit
+```
+
+### Key combination
+
+```tsx
+<Kbd.Group>
+  <Kbd>⌘</Kbd>
+  <Kbd>K</Kbd>
+</Kbd.Group>
+```
+
+### Custom separator
+
+```tsx
+<Kbd.Group separator=" + ">
+  <Kbd>Ctrl</Kbd>
+  <Kbd>Alt</Kbd>
+  <Kbd>Delete</Kbd>
+</Kbd.Group>
+```
+
+### Different sizes
+
+```tsx
+<div className="flex items-center gap-4">
+  <Kbd.Group size="xs">
+    <Kbd>⌘</Kbd>
+    <Kbd>K</Kbd>
+  </Kbd.Group>
+  <Kbd.Group size="sm">
+    <Kbd>⌘</Kbd>
+    <Kbd>K</Kbd>
+  </Kbd.Group>
+  <Kbd.Group size="md">
+    <Kbd>⌘</Kbd>
+    <Kbd>K</Kbd>
+  </Kbd.Group>
+  <Kbd.Group size="lg">
+    <Kbd>⌘</Kbd>
+    <Kbd>K</Kbd>
+  </Kbd.Group>
+  <Kbd.Group size="xl">
+    <Kbd>⌘</Kbd>
+    <Kbd>K</Kbd>
+  </Kbd.Group>
+</div>
+```
+
+### In tooltips
+
+Kbd automatically adjusts styling when inside tooltips:
+
+```tsx
+import { Tooltip } from "@kuzenbo/core";
+
+<Tooltip>
+  <Tooltip.Trigger>Search</Tooltip.Trigger>
+  <Tooltip.Content>
+    Quick search
+    <Kbd.Group>
+      <Kbd>⌘</Kbd>
+      <Kbd>K</Kbd>
+    </Kbd.Group>
+  </Tooltip.Content>
+</Tooltip>
+```
+
+### With icons
+
+Combine with icons for visual representation:
+
+```tsx
+import { ArrowUpIcon } from "@hugeicons/react";
+
+<Kbd.Group>
+  <Kbd>Shift</Kbd>
+  <Kbd>
+    <ArrowUpIcon className="size-3" />
+  </Kbd>
+</Kbd.Group>
+```
+
+### Platform-specific shortcuts
+
+```tsx
+const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+
+<p>
+  Open command palette:
+  <Kbd.Group>
+    <Kbd>{isMac ? '⌘' : 'Ctrl'}</Kbd>
+    <Kbd>K</Kbd>
+  </Kbd.Group>
+</p>
+```
+
+### Arrow keys
+
+```tsx
+<div className="flex gap-2">
+  <Kbd>←</Kbd>
+  <Kbd>↑</Kbd>
+  <Kbd>↓</Kbd>
+  <Kbd>→</Kbd>
+</div>
+```
+
+### Function keys
+
+```tsx
+<Kbd.Group>
+  <Kbd>Fn</Kbd>
+  <Kbd>F11</Kbd>
+</Kbd.Group>
+```
+
+## Data Attributes
+
+- `[data-size]` - Reflects the current size
+- `[data-slot]` - Value is "kbd" or "kbd-group"
+
+## Accessibility
+
+- Uses semantic `<kbd>` element
+- Proper font and spacing for readability
+- Sufficient color contrast
+- SVG icons automatically sized and non-interactive
+- Screen readers announce key combinations naturally
+
+## Styling Context
+
+The Kbd component adapts its appearance in different contexts:
+
+- Default: Muted background with muted foreground text
+- In tooltips: Semi-transparent background adapting to tooltip theme
+
+This context-aware styling is handled automatically through CSS selectors.

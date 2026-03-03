@@ -1,0 +1,195 @@
+---
+title: Dialog
+description: A modal dialog component for displaying content that requires user interaction.
+---
+
+A modal dialog that interrupts the user with important content and expects a response.
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { Dialog, Button } from "@kuzenbo/core";
+
+export default function DialogExample() {
+  return (
+    <Dialog>
+      <Dialog.Trigger render={<Button variant="outline" />}>
+        Invite teammate
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Header>
+          <Dialog.Title>Invite a teammate</Dialog.Title>
+          <Dialog.Description>
+            Add a teammate to the workspace with access to dashboards and
+            deployment history.
+          </Dialog.Description>
+        </Dialog.Header>
+        <Dialog.Footer>
+          <Button>Send invitation</Button>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog>
+  );
+}
+```
+
+### Composed Anatomy
+
+For advanced use cases, you can compose the dialog using individual parts:
+
+```tsx
+import { Dialog, Button } from "@kuzenbo/core";
+
+export default function ComposedDialog() {
+  return (
+    <Dialog>
+      <Dialog.Trigger render={<Button variant="outline" />}>
+        Open dialog
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Viewport>
+          <Dialog.Popup>
+            <Dialog.Header>
+              <Dialog.Title>Confirm action</Dialog.Title>
+              <Dialog.Description>
+                This action cannot be undone.
+              </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Footer>
+              <Button>Confirm</Button>
+            </Dialog.Footer>
+          </Dialog.Popup>
+        </Dialog.Viewport>
+      </Dialog.Portal>
+    </Dialog>
+  );
+}
+```
+
+### Without Close Button
+
+```tsx
+import { Dialog, Button } from "@kuzenbo/core";
+
+export default function DialogWithoutClose() {
+  return (
+    <Dialog>
+      <Dialog.Trigger render={<Button variant="outline" />}>
+        Start checkpoint
+      </Dialog.Trigger>
+      <Dialog.Content showCloseButton={false}>
+        <Dialog.Header>
+          <Dialog.Title>Security checkpoint</Dialog.Title>
+          <Dialog.Description>
+            Complete the required steps to continue.
+          </Dialog.Description>
+        </Dialog.Header>
+        <Dialog.Footer showCloseButton>
+          <Button>Complete</Button>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog>
+  );
+}
+```
+
+## API Reference
+
+### Dialog (Root)
+
+<ParamField path="defaultOpen" type="boolean">
+  The initial open state when uncontrolled.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  The controlled open state of the dialog.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback fired when the open state changes.
+</ParamField>
+
+### Dialog.Content
+
+<ParamField path="showCloseButton" type="boolean" default="true">
+  Whether to display the close button in the top-right corner.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the dialog popup.
+</ParamField>
+
+### Dialog.Trigger
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the trigger. Uses Base UI render composition.
+</ParamField>
+
+### Dialog.Title
+
+<ParamField path="children" type="ReactNode">
+  The title content for the dialog.
+</ParamField>
+
+### Dialog.Description
+
+<ParamField path="children" type="ReactNode">
+  The description content for the dialog.
+</ParamField>
+
+### Dialog.Header
+
+<ParamField path="children" type="ReactNode">
+  The header content, typically contains Title and Description.
+</ParamField>
+
+### Dialog.Footer
+
+<ParamField path="children" type="ReactNode">
+  The footer content, typically contains action buttons.
+</ParamField>
+
+<ParamField path="showCloseButton" type="boolean">
+  Whether to include a close button in the footer.
+</ParamField>
+
+### Dialog.Close
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the close trigger.
+</ParamField>
+
+## Component Parts
+
+The Dialog component is built from several composable parts:
+
+- `Dialog` - Root component that manages state
+- `Dialog.Trigger` - Opens the dialog
+- `Dialog.Portal` - Portals the dialog content to document.body
+- `Dialog.Backdrop` - The overlay backdrop
+- `Dialog.Viewport` - Centers the dialog popup
+- `Dialog.Popup` - The dialog container
+- `Dialog.Content` - Convenience wrapper that includes Portal, Backdrop, Viewport, and Popup
+- `Dialog.Header` - Styled header container
+- `Dialog.Title` - Accessible title
+- `Dialog.Description` - Accessible description
+- `Dialog.Footer` - Styled footer container
+- `Dialog.Close` - Closes the dialog
+- `Dialog.Overlay` - Alternative backdrop component
+
+## Accessibility
+
+- Dialog implements the WAI-ARIA Dialog pattern
+- Focus is trapped within the dialog when open
+- Pressing Escape closes the dialog
+- Focus returns to the trigger element when closed
+- Title and Description are automatically linked for screen readers

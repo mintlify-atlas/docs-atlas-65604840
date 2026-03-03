@@ -1,0 +1,384 @@
+---
+title: '@kuzenbo/ai'
+description: 'AI-oriented UI, hooks, and utilities for Kuzenbo'
+icon: 'sparkles'
+---
+
+## Overview
+
+The `@kuzenbo/ai` package provides AI-focused UI components and utilities for building conversational interfaces, AI assistants, and intelligent features into your applications.
+
+<Note status="warning">
+This package is currently in preview and not yet published to npm. The API may change before the stable release.
+</Note>
+
+## Installation
+
+Once published, install with:
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/ai @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash yarn
+yarn add @kuzenbo/ai @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash pnpm
+pnpm add @kuzenbo/ai @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash bun
+bun add @kuzenbo/ai @kuzenbo/core @kuzenbo/theme react react-dom
+```
+</CodeGroup>
+
+## Exports
+
+<CardGroup cols={2}>
+  <Card title="AIWidget" icon="robot">
+    Chat interface widget for AI assistants
+  </Card>
+  <Card title="useAISession" icon="code">
+    Hook for managing AI conversation state
+  </Card>
+  <Card title="buildAIPrompt" icon="message">
+    Utility for constructing AI prompts
+  </Card>
+</CardGroup>
+
+## Components
+
+### AI Widget
+
+A complete chat interface for AI interactions:
+
+```tsx
+import { AIWidget } from '@kuzenbo/ai/ui/ai-widget';
+import { useState } from 'react';
+
+export function AIAssistant() {
+  const [messages, setMessages] = useState([]);
+
+  const handleSend = async (message: string) => {
+    // Add user message
+    setMessages([...messages, { role: 'user', content: message }]);
+
+    // Call AI API
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message }),
+    });
+    const data = await response.json();
+
+    // Add AI response
+    setMessages([...messages, { role: 'assistant', content: data.reply }]);
+  };
+
+  return (
+    <AIWidget
+      messages={messages}
+      onSend={handleSend}
+      placeholder="Ask me anything..."
+    />
+  );
+}
+```
+
+## Hooks
+
+### useAISession
+
+Manage AI conversation state:
+
+```tsx
+import { useAISession } from '@kuzenbo/ai/hooks/use-ai-session';
+import { AIWidget } from '@kuzenbo/ai/ui/ai-widget';
+
+export function AIChat() {
+  const {
+    messages,
+    isLoading,
+    error,
+    sendMessage,
+    reset,
+  } = useAISession({
+    apiEndpoint: '/api/chat',
+    systemPrompt: 'You are a helpful assistant.',
+  });
+
+  return (
+    <>
+      <AIWidget
+        messages={messages}
+        onSend={sendMessage}
+        isLoading={isLoading}
+        error={error}
+      />
+      <button onClick={reset}>Reset Conversation</button>
+    </>
+  );
+}
+```
+
+### Session Options
+
+```tsx
+import { useAISession } from '@kuzenbo/ai/hooks/use-ai-session';
+
+const session = useAISession({
+  apiEndpoint: '/api/chat',
+  systemPrompt: 'You are a coding assistant.',
+  model: 'gpt-4',
+  temperature: 0.7,
+  maxTokens: 2000,
+  onError: (error) => console.error('AI Error:', error),
+  onSuccess: (response) => console.log('AI Response:', response),
+});
+```
+
+## Utilities
+
+### buildAIPrompt
+
+Construct structured prompts for AI models:
+
+```tsx
+import { buildAIPrompt } from '@kuzenbo/ai/utils/build-ai-prompt';
+
+const prompt = buildAIPrompt({
+  system: 'You are a helpful coding assistant.',
+  context: {
+    language: 'TypeScript',
+    framework: 'React',
+  },
+  examples: [
+    {
+      input: 'How do I create a button?',
+      output: 'Use the Button component from @kuzenbo/core',
+    },
+  ],
+  instruction: 'Help me build a form component',
+});
+```
+
+### Prompt Templates
+
+```tsx
+import { buildAIPrompt } from '@kuzenbo/ai/utils/build-ai-prompt';
+
+// Code review prompt
+const reviewPrompt = buildAIPrompt({
+  system: 'You are an expert code reviewer.',
+  context: {
+    language: 'TypeScript',
+    codebase: 'React application',
+  },
+  instruction: `Review this code:\n\n${code}`,
+});
+
+// Documentation prompt
+const docsPrompt = buildAIPrompt({
+  system: 'You are a technical writer.',
+  instruction: `Generate documentation for:\n\n${component}`,
+});
+```
+
+## AI Widget Customization
+
+### Custom Styling
+
+```tsx
+import { AIWidget } from '@kuzenbo/ai/ui/ai-widget';
+
+<AIWidget
+  messages={messages}
+  onSend={handleSend}
+  className="custom-ai-widget"
+  messageClassName="custom-message"
+  inputClassName="custom-input"
+/>
+```
+
+### Custom Message Rendering
+
+```tsx
+import { AIWidget } from '@kuzenbo/ai/ui/ai-widget';
+import { Avatar } from '@kuzenbo/core/ui/avatar';
+
+<AIWidget
+  messages={messages}
+  onSend={handleSend}
+  renderMessage={(message) => (
+    <div className="flex gap-3">
+      <Avatar
+        src={message.role === 'user' ? '/user.jpg' : '/ai.jpg'}
+        alt={message.role}
+      />
+      <div className="flex-1">
+        <p className="font-semibold">
+          {message.role === 'user' ? 'You' : 'AI Assistant'}
+        </p>
+        <p>{message.content}</p>
+      </div>
+    </div>
+  )}
+/>
+```
+
+### Streaming Responses
+
+```tsx
+import { useAISession } from '@kuzenbo/ai/hooks/use-ai-session';
+
+const session = useAISession({
+  apiEndpoint: '/api/chat/stream',
+  streaming: true,
+  onStream: (chunk) => {
+    // Handle streaming chunks
+    console.log('Stream chunk:', chunk);
+  },
+});
+```
+
+## Advanced Usage
+
+### Multi-turn Conversations
+
+```tsx
+import { useAISession } from '@kuzenbo/ai/hooks/use-ai-session';
+
+const session = useAISession({
+  apiEndpoint: '/api/chat',
+  maxHistory: 10, // Keep last 10 messages
+  summarizeHistory: true, // Summarize old messages
+});
+```
+
+### Function Calling
+
+```tsx
+import { useAISession } from '@kuzenbo/ai/hooks/use-ai-session';
+
+const functions = [
+  {
+    name: 'get_weather',
+    description: 'Get current weather for a location',
+    parameters: {
+      type: 'object',
+      properties: {
+        location: { type: 'string' },
+      },
+    },
+  },
+];
+
+const session = useAISession({
+  apiEndpoint: '/api/chat',
+  functions,
+  onFunctionCall: async (name, args) => {
+    if (name === 'get_weather') {
+      return await fetchWeather(args.location);
+    }
+  },
+});
+```
+
+### Context Management
+
+```tsx
+import { buildAIPrompt } from '@kuzenbo/ai/utils/build-ai-prompt';
+
+const prompt = buildAIPrompt({
+  system: 'You are a helpful assistant.',
+  context: {
+    user: {
+      name: 'John',
+      preferences: { theme: 'dark' },
+    },
+    session: {
+      startTime: new Date(),
+      previousTopics: ['React', 'TypeScript'],
+    },
+  },
+  instruction: 'Help me with my code',
+});
+```
+
+## Integration Examples
+
+### With OpenAI
+
+```tsx
+import { useAISession } from '@kuzenbo/ai/hooks/use-ai-session';
+import { AIWidget } from '@kuzenbo/ai/ui/ai-widget';
+
+export function OpenAIChat() {
+  const session = useAISession({
+    apiEndpoint: 'https://api.openai.com/v1/chat/completions',
+    headers: {
+      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    model: 'gpt-4',
+  });
+
+  return <AIWidget {...session} />;
+}
+```
+
+### With Anthropic Claude
+
+```tsx
+import { useAISession } from '@kuzenbo/ai/hooks/use-ai-session';
+
+const session = useAISession({
+  apiEndpoint: 'https://api.anthropic.com/v1/messages',
+  headers: {
+    'x-api-key': process.env.ANTHROPIC_API_KEY,
+  },
+  model: 'claude-3-opus-20240229',
+});
+```
+
+## Dependencies
+
+- `tailwind-variants` - Styling
+- `tailwind-merge` - Class merging
+
+## Peer Dependencies
+
+```json
+{
+  "@kuzenbo/core": "^0.0.7",
+  "@kuzenbo/theme": "^0.0.7",
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0"
+}
+```
+
+## TypeScript
+
+Fully typed AI utilities:
+
+```tsx
+import { useAISession } from '@kuzenbo/ai/hooks/use-ai-session';
+import type { AIMessage, AISessionOptions } from '@kuzenbo/ai/hooks/use-ai-session';
+
+interface CustomMessage extends AIMessage {
+  metadata?: Record<string, unknown>;
+}
+
+const session = useAISession<CustomMessage>({
+  apiEndpoint: '/api/chat',
+});
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Core Components" icon="box" href="/packages/core">
+    Explore other UI components
+  </Card>
+</CardGroup>

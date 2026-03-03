@@ -1,0 +1,227 @@
+---
+title: Sheet
+description: A slide-in panel component for displaying supplementary content from the edges of the screen.
+---
+
+A sheet component that slides in from the edges of the screen, ideal for sidebars, settings panels, and detail views.
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { Sheet, Button } from "@kuzenbo/core";
+
+export default function SheetExample() {
+  return (
+    <Sheet>
+      <Sheet.Trigger render={<Button variant="outline" />}>
+        Open customer profile
+      </Sheet.Trigger>
+      <Sheet.Content side="right">
+        <Sheet.Header>
+          <Sheet.Title>Customer profile</Sheet.Title>
+          <Sheet.Description>
+            Review lifecycle details before escalating a support ticket.
+          </Sheet.Description>
+        </Sheet.Header>
+        <Sheet.Footer>
+          <Sheet.Close render={<Button variant="outline" />}>Close</Sheet.Close>
+          <Button>Escalate case</Button>
+        </Sheet.Footer>
+      </Sheet.Content>
+    </Sheet>
+  );
+}
+```
+
+### Left Side Sheet
+
+```tsx
+import { Sheet, Button } from "@kuzenbo/core";
+
+export default function LeftSheetExample() {
+  return (
+    <Sheet>
+      <Sheet.Trigger render={<Button variant="outline" />}>
+        Open navigation
+      </Sheet.Trigger>
+      <Sheet.Content side="left">
+        <Sheet.Header>
+          <Sheet.Title>Navigation</Sheet.Title>
+        </Sheet.Header>
+      </Sheet.Content>
+    </Sheet>
+  );
+}
+```
+
+### Composed Anatomy
+
+```tsx
+import { Sheet, Button } from "@kuzenbo/core";
+
+export default function ComposedSheet() {
+  return (
+    <Sheet>
+      <Sheet.Trigger render={<Button variant="outline" />}>
+        Open panel
+      </Sheet.Trigger>
+      <Sheet.Portal>
+        <Sheet.Backdrop />
+        <Sheet.Viewport>
+          <Sheet.Popup side="right">
+            <Sheet.Header>
+              <Sheet.Title>Panel title</Sheet.Title>
+              <Sheet.Description>
+                Panel description.
+              </Sheet.Description>
+            </Sheet.Header>
+            <Sheet.Footer>
+              <Sheet.Close render={<Button variant="outline" />}>
+                Close
+              </Sheet.Close>
+              <Button>Save</Button>
+            </Sheet.Footer>
+          </Sheet.Popup>
+        </Sheet.Viewport>
+      </Sheet.Portal>
+    </Sheet>
+  );
+}
+```
+
+### Without Close Button
+
+```tsx
+import { Sheet, Button } from "@kuzenbo/core";
+
+export default function SheetWithoutClose() {
+  return (
+    <Sheet>
+      <Sheet.Trigger render={<Button variant="outline" />}>
+        Open form
+      </Sheet.Trigger>
+      <Sheet.Content side="right" showCloseButton={false}>
+        <Sheet.Header>
+          <Sheet.Title>Edit settings</Sheet.Title>
+        </Sheet.Header>
+        <Sheet.Footer>
+          <Sheet.Close render={<Button variant="outline" />}>
+            Cancel
+          </Sheet.Close>
+          <Button>Save changes</Button>
+        </Sheet.Footer>
+      </Sheet.Content>
+    </Sheet>
+  );
+}
+```
+
+## API Reference
+
+### Sheet (Root)
+
+<ParamField path="defaultOpen" type="boolean">
+  The initial open state when uncontrolled.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  The controlled open state of the sheet.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback fired when the open state changes.
+</ParamField>
+
+### Sheet.Content
+
+<ParamField path="side" type="'top' | 'right' | 'bottom' | 'left'" default="'right'">
+  The side from which the sheet slides in.
+</ParamField>
+
+<ParamField path="showCloseButton" type="boolean" default="true">
+  Whether to display the close button in the top-right corner.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the sheet popup.
+</ParamField>
+
+### Sheet.Popup
+
+<ParamField path="side" type="'top' | 'right' | 'bottom' | 'left'" default="'right'">
+  The side from which the sheet slides in.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Sheet.Trigger
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the trigger. Uses Base UI render composition.
+</ParamField>
+
+### Sheet.Title
+
+<ParamField path="children" type="ReactNode">
+  The title content for the sheet.
+</ParamField>
+
+### Sheet.Description
+
+<ParamField path="children" type="ReactNode">
+  The description content for the sheet.
+</ParamField>
+
+### Sheet.Header
+
+<ParamField path="children" type="ReactNode">
+  The header content, typically contains Title and Description.
+</ParamField>
+
+### Sheet.Footer
+
+<ParamField path="children" type="ReactNode">
+  The footer content, typically contains action buttons.
+</ParamField>
+
+### Sheet.Close
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the close trigger.
+</ParamField>
+
+## Component Parts
+
+The Sheet component is built from several composable parts:
+
+- `Sheet` - Root component that manages state
+- `Sheet.Trigger` - Opens the sheet
+- `Sheet.Portal` - Portals the sheet content to document.body
+- `Sheet.Backdrop` - The overlay backdrop
+- `Sheet.Viewport` - Positions the sheet
+- `Sheet.Popup` - The sheet container with slide animation
+- `Sheet.Content` - Convenience wrapper that includes Portal, Backdrop, Viewport, and Popup
+- `Sheet.Header` - Styled header container
+- `Sheet.Title` - Accessible title
+- `Sheet.Description` - Accessible description
+- `Sheet.Footer` - Styled footer container
+- `Sheet.Close` - Closes the sheet
+- `Sheet.Overlay` - Alternative backdrop component
+
+## Accessibility
+
+- Sheet implements the WAI-ARIA Dialog pattern
+- Focus is trapped within the sheet when open
+- Pressing Escape closes the sheet
+- Focus returns to the trigger element when closed
+- Title and Description are automatically linked for screen readers

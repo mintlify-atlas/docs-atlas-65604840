@@ -1,0 +1,146 @@
+---
+title: useInViewport
+description: Check if an element is currently visible in the viewport
+---
+
+## Overview
+
+Reports whether the attached element is currently inside the viewport. Uses `IntersectionObserver` when available and resets state when the ref is cleared.
+
+## Function Signature
+
+```typescript
+function useInViewport<T extends HTMLElement = HTMLElement>(
+): UseInViewportReturnValue<T>
+```
+
+### Type Definitions
+
+```typescript
+interface UseInViewportReturnValue<T extends HTMLElement = HTMLElement> {
+  inViewport: boolean;
+  ref: RefCallback<T | null>;
+}
+```
+
+## Parameters
+
+This hook takes no parameters and uses default `IntersectionObserver` settings.
+
+## Return Value
+
+<ResponseField name="inViewport" type="boolean">
+  Boolean indicating whether the element is currently intersecting with the viewport. Returns `false` when the element is not attached or is outside the viewport.
+</ResponseField>
+
+<ResponseField name="ref" type="RefCallback<T | null>">
+  A ref callback to attach to the element you want to monitor.
+</ResponseField>
+
+## Usage Example
+
+```tsx
+import { useInViewport } from "@kuzenbo/hooks";
+
+function Example() {
+  const { ref, inViewport } = useInViewport();
+
+  return (
+    <div>
+      <div style={{ height: "100vh" }}>Scroll down to see the element...</div>
+      <div
+        ref={ref}
+        style={{
+          padding: "2rem",
+          background: inViewport ? "lightgreen" : "lightcoral",
+          transition: "background 0.3s ease",
+        }}
+      >
+        {inViewport ? "I'm in the viewport!" : "I'm outside the viewport"}
+      </div>
+      <div style={{ height: "100vh" }}>More content below...</div>
+    </div>
+  );
+}
+```
+
+## Animation Trigger Example
+
+```tsx
+import { useInViewport } from "@kuzenbo/hooks";
+
+function AnimatedCard({ children }: { children: React.ReactNode }) {
+  const { ref, inViewport } = useInViewport();
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: inViewport ? 1 : 0,
+        transform: inViewport ? "translateY(0)" : "translateY(50px)",
+        transition: "opacity 0.6s ease, transform 0.6s ease",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Example() {
+  return (
+    <div>
+      <div style={{ height: "100vh" }}>Scroll to see animations</div>
+      <AnimatedCard>
+        <h2>Card 1</h2>
+        <p>This animates when it enters the viewport</p>
+      </AnimatedCard>
+      <AnimatedCard>
+        <h2>Card 2</h2>
+        <p>This also animates independently</p>
+      </AnimatedCard>
+      <AnimatedCard>
+        <h2>Card 3</h2>
+        <p>Each card triggers on its own intersection</p>
+      </AnimatedCard>
+    </div>
+  );
+}
+```
+
+## Conditional Rendering Example
+
+```tsx
+import { useInViewport } from "@kuzenbo/hooks";
+
+function LazyVideo({ src }: { src: string }) {
+  const { ref, inViewport } = useInViewport();
+
+  return (
+    <div ref={ref} style={{ minHeight: "400px", background: "#000" }}>
+      {inViewport && (
+        <video autoPlay muted loop style={{ width: "100%" }}>
+          <source src={src} type="video/mp4" />
+        </video>
+      )}
+    </div>
+  );
+}
+```
+
+## Features
+
+- Simple boolean API for viewport detection
+- Uses native `IntersectionObserver` for efficient tracking
+- Automatic cleanup when element is removed
+- Handles batch updates when scrolling fast (uses last entry)
+- Resets state to `false` when ref is cleared
+- Zero configuration required
+
+## Comparison with useIntersection
+
+Use `useInViewport` when you only need a simple boolean check for visibility. Use `useIntersection` when you need:
+- Fine-grained intersection details
+- Custom thresholds
+- Root margins
+- Custom root element
+- Intersection ratio information

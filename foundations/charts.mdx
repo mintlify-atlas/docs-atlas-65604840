@@ -1,0 +1,689 @@
+---
+title: "Charts"
+description: "Production-ready chart components for data visualization with Recharts integration"
+---
+
+## Overview
+
+`@kuzenbo/charts` provides a complete suite of production-ready chart components built on Recharts. It includes 13 chart types with full theming support, interactive legends, tooltips, and responsive behavior.
+
+## Installation
+
+<CodeGroup>
+
+```bash npm
+npm install @kuzenbo/charts @kuzenbo/core @kuzenbo/theme recharts
+```
+
+```bash bun
+bun add @kuzenbo/charts @kuzenbo/core @kuzenbo/theme recharts
+```
+
+```bash pnpm
+pnpm add @kuzenbo/charts @kuzenbo/core @kuzenbo/theme recharts
+```
+
+```bash yarn
+yarn add @kuzenbo/charts @kuzenbo/core @kuzenbo/theme recharts
+```
+
+</CodeGroup>
+
+<Note>
+  `@kuzenbo/charts` requires React 19+, `recharts`, `@kuzenbo/core`, and `@kuzenbo/theme` as peer dependencies.
+</Note>
+
+## Quick start
+
+Create your first chart in three steps:
+
+<Steps>
+  <Step title="Import the chart component">
+    ```tsx
+    import { LineChart } from "@kuzenbo/charts/ui/line-chart";
+    ```
+  </Step>
+  
+  <Step title="Define your data and series">
+    ```tsx
+    const data = [
+      { month: "Jan", revenue: 172000, target: 180000 },
+      { month: "Feb", revenue: 186000, target: 190000 },
+      { month: "Mar", revenue: 201000, target: 205000 },
+    ];
+
+    const series = [
+      { name: "revenue", label: "Revenue", color: "var(--color-chart-1)" },
+      { name: "target", label: "Target", color: "var(--color-chart-4)" },
+    ] as const;
+    ```
+  </Step>
+  
+  <Step title="Render the chart">
+    ```tsx
+    export function RevenueChart() {
+      return (
+        <LineChart
+          chartRootProps={{ className: "h-80 w-full" }}
+          data={data}
+          dataKey="month"
+          series={series}
+          valueFormatter={(value) => `$${value.toLocaleString()}`}
+          withLegend
+        />
+      );
+    }
+    ```
+  </Step>
+</Steps>
+
+## Available chart types
+
+Kuzenbo includes 13 production-ready chart components:
+
+### Cartesian charts
+
+<CardGroup cols={2}>
+  <Card title="Line chart" icon="chart-line">
+    Trend visualization with support for multiple series, curves, and gradients.
+    
+    ```tsx
+    import { LineChart } from "@kuzenbo/charts/ui/line-chart";
+    ```
+  </Card>
+  
+  <Card title="Bar chart" icon="chart-bar">
+    Comparison visualization with vertical/horizontal orientation and stacking.
+    
+    ```tsx
+    import { BarChart } from "@kuzenbo/charts/ui/bar-chart";
+    ```
+  </Card>
+  
+  <Card title="Area chart" icon="chart-area">
+    Filled line charts for cumulative data and range visualization.
+    
+    ```tsx
+    import { AreaChart } from "@kuzenbo/charts/ui/area-chart";
+    ```
+  </Card>
+  
+  <Card title="Composite chart" icon="chart-mixed">
+    Mix lines, bars, and areas in a single chart for complex comparisons.
+    
+    ```tsx
+    import { CompositeChart } from "@kuzenbo/charts/ui/composite-chart";
+    ```
+  </Card>
+</CardGroup>
+
+### Distribution charts
+
+<CardGroup cols={2}>
+  <Card title="Scatter chart" icon="chart-scatter">
+    Correlation and distribution visualization with bubble support.
+    
+    ```tsx
+    import { ScatterChart } from "@kuzenbo/charts/ui/scatter-chart";
+    ```
+  </Card>
+  
+  <Card title="Bubble chart" icon="circle-dot">
+    Three-dimensional data with x, y, and size dimensions.
+    
+    ```tsx
+    import { BubbleChart } from "@kuzenbo/charts/ui/bubble-chart";
+    ```
+  </Card>
+  
+  <Card title="Heatmap" icon="grid-2">
+    Matrix visualization for correlation and intensity data.
+    
+    ```tsx
+    import { Heatmap } from "@kuzenbo/charts/ui/heatmap";
+    ```
+  </Card>
+</CardGroup>
+
+### Circular charts
+
+<CardGroup cols={2}>
+  <Card title="Pie chart" icon="chart-pie">
+    Part-to-whole relationships with percentage breakdown.
+    
+    ```tsx
+    import { PieChart } from "@kuzenbo/charts/ui/pie-chart";
+    ```
+  </Card>
+  
+  <Card title="Donut chart" icon="circle-notch">
+    Hollow pie chart with center metric support.
+    
+    ```tsx
+    import { DonutChart } from "@kuzenbo/charts/ui/donut-chart";
+    ```
+  </Card>
+  
+  <Card title="Radial bar chart" icon="chart-radar">
+    Circular progress and comparison visualization.
+    
+    ```tsx
+    import { RadialBarChart } from "@kuzenbo/charts/ui/radial-bar-chart";
+    ```
+  </Card>
+</CardGroup>
+
+### Specialized charts
+
+<CardGroup cols={2}>
+  <Card title="Radar chart" icon="radar">
+    Multi-dimensional comparison across categories.
+    
+    ```tsx
+    import { RadarChart } from "@kuzenbo/charts/ui/radar-chart";
+    ```
+  </Card>
+  
+  <Card title="Funnel chart" icon="filter">
+    Conversion funnel and process flow visualization.
+    
+    ```tsx
+    import { FunnelChart } from "@kuzenbo/charts/ui/funnel-chart";
+    ```
+  </Card>
+  
+  <Card title="Sparkline" icon="wave-pulse">
+    Compact inline trend indicator without axes.
+    
+    ```tsx
+    import { Sparkline } from "@kuzenbo/charts/ui/sparkline";
+    ```
+  </Card>
+</CardGroup>
+
+## Chart architecture
+
+Kuzenbo charts follow a layered architecture:
+
+### Prebuilt charts
+
+High-level components for common use cases. Import from `@kuzenbo/charts/ui/*`:
+
+```tsx
+import { LineChart } from "@kuzenbo/charts/ui/line-chart";
+import { BarChart } from "@kuzenbo/charts/ui/bar-chart";
+import { DonutChart } from "@kuzenbo/charts/ui/donut-chart";
+```
+
+### Primitives
+
+Low-level building blocks for custom charts:
+
+```tsx
+import { Chart } from "@kuzenbo/charts";
+
+function CustomChart() {
+  return (
+    <Chart.Root className="h-80">
+      <Chart.Provider config={chartConfig}>
+        <Chart.Style />
+        <Chart.Frame>
+          {/* Recharts components */}
+        </Chart.Frame>
+        <Chart.Legend />
+      </Chart.Provider>
+    </Chart.Root>
+  );
+}
+```
+
+### Core primitives
+
+<ResponseField name="Chart.Root" type="component">
+  Outer container with responsive sizing and theme integration.
+</ResponseField>
+
+<ResponseField name="Chart.Provider" type="component">
+  Context provider for chart configuration and color mapping.
+</ResponseField>
+
+<ResponseField name="Chart.Style" type="component">
+  Injects CSS custom properties for series colors.
+</ResponseField>
+
+<ResponseField name="Chart.Frame" type="component">
+  Responsive container wrapper for Recharts components.
+</ResponseField>
+
+<ResponseField name="Chart.Tooltip" type="component">
+  Customizable tooltip with value formatting.
+</ResponseField>
+
+<ResponseField name="Chart.Legend" type="component">
+  Interactive legend with highlight support.
+</ResponseField>
+
+## Color system
+
+Kuzenbo charts use semantic color tokens that adapt to your theme:
+
+### Chart color variables
+
+```css
+--color-chart-1: oklch(0.65 0.25 270);
+--color-chart-2: oklch(0.7 0.2 180);
+--color-chart-3: oklch(0.75 0.15 120);
+--color-chart-4: oklch(0.6 0.22 30);
+--color-chart-5: oklch(0.68 0.18 330);
+```
+
+### Series configuration
+
+Define series with explicit colors:
+
+```tsx
+const series = [
+  { name: "revenue", label: "Revenue", color: "var(--color-chart-1)" },
+  { name: "expenses", label: "Expenses", color: "var(--color-chart-2)" },
+  { name: "profit", label: "Profit", color: "var(--color-chart-3)" },
+];
+```
+
+### Custom colors
+
+Override chart colors globally or per instance:
+
+```css
+/* Global override */
+:root {
+  --color-chart-1: oklch(0.65 0.3 350);
+  --color-chart-2: oklch(0.7 0.25 280);
+}
+
+/* Component-specific */
+.revenue-chart {
+  --color-chart-1: oklch(0.6 0.22 140);
+}
+```
+
+## Configuration object
+
+The `ChartProvider` accepts a configuration object for series metadata:
+
+```tsx
+import type { ChartConfig } from "@kuzenbo/charts";
+
+const chartConfig: ChartConfig = {
+  revenue: {
+    label: "Revenue",
+    color: "var(--color-chart-1)",
+  },
+  expenses: {
+    label: "Expenses",
+    color: "var(--color-chart-2)",
+  },
+  profit: {
+    label: "Profit",
+    color: "var(--color-chart-3)",
+  },
+};
+```
+
+### Using the configuration
+
+```tsx
+import { Chart } from "@kuzenbo/charts";
+
+function CustomChart() {
+  return (
+    <Chart.Root className="h-80">
+      <Chart.Provider config={chartConfig}>
+        {/* Chart content */}
+      </Chart.Provider>
+    </Chart.Root>
+  );
+}
+```
+
+## Responsive behavior
+
+All charts include responsive sizing:
+
+### AutoSize component
+
+```tsx
+import { Chart } from "@kuzenbo/charts";
+
+function ResponsiveChart() {
+  return (
+    <Chart.Root className="w-full">
+      <Chart.AutoSize>
+        {({ width, height }) => (
+          <Chart.Frame width={width} height={height}>
+            {/* Chart content */}
+          </Chart.Frame>
+        )}
+      </Chart.AutoSize>
+    </Chart.Root>
+  );
+}
+```
+
+### Min height token
+
+Control default chart height:
+
+```css
+:root {
+  --kb-chart-min-height: 280px;
+}
+
+.dashboard-chart {
+  --kb-chart-min-height: 400px;
+}
+```
+
+## Hooks and utilities
+
+Kuzenbo exposes Recharts hooks for custom chart logic:
+
+### useChartConfig
+
+Access chart configuration:
+
+```tsx
+import { Chart } from "@kuzenbo/charts";
+
+function CustomTooltip() {
+  const config = Chart.useConfig();
+  const label = config.revenue?.label; // "Revenue"
+  return <div>{label}</div>;
+}
+```
+
+### useSeriesColor
+
+Resolve series colors:
+
+```tsx
+import { Chart } from "@kuzenbo/charts";
+
+function CustomLegend() {
+  const revenueColor = Chart.useSeriesColor("revenue");
+  return <span style={{ color: revenueColor }}>Revenue</span>;
+}
+```
+
+### useSeriesColorVar
+
+Get CSS variable reference:
+
+```tsx
+import { Chart } from "@kuzenbo/charts";
+
+function CustomElement() {
+  const colorVar = Chart.useSeriesColorVar("revenue");
+  // Returns: "var(--color-chart-1)"
+  return <div style={{ backgroundColor: colorVar }} />;
+}
+```
+
+### Recharts hooks
+
+All Recharts hooks are re-exported:
+
+```tsx
+import { Chart } from "@kuzenbo/charts";
+
+function InteractiveChart() {
+  const isActive = Chart.useIsTooltipActive();
+  const dataPoints = Chart.useActiveTooltipDataPoints();
+  const width = Chart.useChartWidth();
+  const height = Chart.useChartHeight();
+  
+  return <div>Chart width: {width}px</div>;
+}
+```
+
+## Interactive features
+
+### Legend highlighting
+
+Enable legend-based series highlighting:
+
+```tsx
+<LineChart
+  data={data}
+  dataKey="month"
+  series={series}
+  enableLegendHighlight
+  withLegend
+/>
+```
+
+When enabled, hovering a legend item dims other series.
+
+### Custom tooltips
+
+Override tooltip content:
+
+```tsx
+import type { ChartTooltipContentProps } from "@kuzenbo/charts";
+
+function CustomTooltip(props: ChartTooltipContentProps) {
+  if (!props.active || !props.payload) return null;
+  
+  return (
+    <div className="rounded-lg border bg-background p-2 shadow-md">
+      <p className="font-semibold">{props.label}</p>
+      {props.payload.map((entry) => (
+        <p key={entry.name} style={{ color: entry.color }}>
+          {entry.name}: {entry.value}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+<LineChart
+  data={data}
+  dataKey="month"
+  series={series}
+  tooltipProps={{
+    content: <CustomTooltip />,
+  }}
+/>
+```
+
+### Reference lines
+
+Add horizontal or vertical reference lines:
+
+```tsx
+<LineChart
+  data={data}
+  dataKey="month"
+  series={series}
+  referenceLines={[
+    {
+      y: 180000,
+      label: "Target",
+      color: "var(--kb-destructive)",
+      strokeDasharray: "3 3",
+    },
+  ]}
+/>
+```
+
+## Advanced examples
+
+### Multi-axis chart
+
+```tsx
+const series = [
+  { name: "revenue", label: "Revenue", yAxisId: "left" },
+  { name: "margin", label: "Margin %", yAxisId: "right" },
+];
+
+<LineChart
+  data={data}
+  dataKey="month"
+  series={series}
+  withRightYAxis
+  rightYAxisProps={{
+    tickFormatter: (value) => `${value}%`,
+  }}
+  valueFormatter={(value) => `$${value.toLocaleString()}`}
+/>
+```
+
+### Gradient fill
+
+```tsx
+<LineChart
+  type="gradient"
+  data={data}
+  dataKey="month"
+  series={[{ name: "revenue", label: "Revenue" }]}
+  gradientStops={[
+    { offset: 0, color: "var(--color-chart-1)", opacity: 0.8 },
+    { offset: 100, color: "var(--color-chart-1)", opacity: 0 },
+  ]}
+/>
+```
+
+### Stacked bar chart
+
+```tsx
+import { BarChart } from "@kuzenbo/charts/ui/bar-chart";
+
+<BarChart
+  data={data}
+  dataKey="month"
+  series={series}
+  layout="horizontal"
+  stacked
+  withLegend
+/>
+```
+
+### Sparkline with trend
+
+```tsx
+import { Sparkline } from "@kuzenbo/charts/ui/sparkline";
+
+<Sparkline
+  data={data}
+  dataKey="value"
+  trendDirection="up"
+  trendColors={{
+    up: "var(--kb-success)",
+    down: "var(--kb-destructive)",
+    neutral: "var(--kb-muted-foreground)",
+  }}
+  withGradient
+/>
+```
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Use semantic color tokens">
+    Always use `var(--color-chart-*)` variables instead of hardcoded colors to ensure theme compatibility:
+    
+    ```tsx
+    // Good
+    const series = [
+      { name: "revenue", color: "var(--color-chart-1)" },
+    ];
+    
+    // Avoid
+    const series = [
+      { name: "revenue", color: "#3b82f6" },
+    ];
+    ```
+  </Accordion>
+  
+  <Accordion title="Format values consistently">
+    Use the `valueFormatter` prop for consistent number formatting across tooltips and labels:
+    
+    ```tsx
+    <LineChart
+      valueFormatter={(value) => 
+        new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }).format(value)
+      }
+    />
+    ```
+  </Accordion>
+  
+  <Accordion title="Set explicit dimensions">
+    Always define chart height via className or style to prevent layout shifts:
+    
+    ```tsx
+    <LineChart
+      chartRootProps={{ className: "h-80 w-full" }}
+      // ...
+    />
+    ```
+  </Accordion>
+  
+  <Accordion title="Handle null data gracefully">
+    Use `connectNulls` for line/area charts to handle gaps in data:
+    
+    ```tsx
+    <LineChart
+      connectNulls
+      data={[
+        { month: "Jan", value: 100 },
+        { month: "Feb", value: null },
+        { month: "Mar", value: 150 },
+      ]}
+    />
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Performance considerations
+
+<Note>
+  All chart components are client-side only. Always use the `"use client"` directive when importing charts in Next.js App Router.
+</Note>
+
+```tsx
+"use client";
+
+import { LineChart } from "@kuzenbo/charts/ui/line-chart";
+```
+
+### Large datasets
+
+For datasets with 500+ points:
+
+1. Consider data aggregation or sampling
+2. Disable animations: `chartProps={{ isAnimationActive: false }}`
+3. Use virtualization for scrollable charts
+4. Implement pagination or time-based filtering
+
+### Lazy loading
+
+Dynamically import charts to reduce initial bundle size:
+
+```tsx
+import dynamic from "next/dynamic";
+
+const LineChart = dynamic(
+  () => import("@kuzenbo/charts/ui/line-chart").then((mod) => mod.LineChart),
+  { ssr: false }
+);
+```
+
+## Related documentation
+
+<CardGroup cols={2}>
+  <Card title="Theme runtime" icon="palette" href="/foundations/theme-runtime">
+    Understand Kuzenbo's theming system.
+  </Card>
+</CardGroup>

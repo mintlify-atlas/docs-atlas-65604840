@@ -1,0 +1,66 @@
+---
+title: usePrevious
+description: Returns the value from the previous render
+---
+
+## Usage
+
+Returns the value from the previous render. This is useful for comparing current and previous values in effects or render logic.
+
+```tsx
+import { usePrevious } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [count, setCount] = useState(0);
+  const previousCount = usePrevious(count);
+
+  return (
+    <div>
+      <p>Current: {count}</p>
+      <p>Previous: {previousCount ?? 'N/A'}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+```
+
+## Track value changes
+
+Compare current and previous values to detect changes:
+
+```tsx
+import { usePrevious } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function Demo() {
+  const [value, setValue] = useState('');
+  const previousValue = usePrevious(value);
+
+  useEffect(() => {
+    if (previousValue !== null && previousValue !== value) {
+      console.log(`Value changed from "${previousValue}" to "${value}"`);
+    }
+  }, [value, previousValue]);
+
+  return <input value={value} onChange={(e) => setValue(e.target.value)} />;
+}
+```
+
+## Definition
+
+```tsx
+function usePrevious<T>(value: T): T | null
+```
+
+### Parameters
+
+<ParamField path="value" type="T">
+  Current value to persist for the next render
+</ParamField>
+
+### Returns
+
+<ResponseField name="previousValue" type="T | null">
+  The value from the previous render, or `null` on the first render
+</ResponseField>

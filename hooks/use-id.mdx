@@ -1,0 +1,54 @@
+---
+title: useId
+description: Returns a stable element id string for accessibility and SSR compatibility
+---
+
+## Usage
+
+Returns a stable element id string, unless an explicit id is provided. If no static id is passed, it starts from a React-generated id and switches to a random id after mount to reduce collision risk across separate trees.
+
+```tsx
+import { useId } from '@kuzenbo/hooks';
+
+function Demo() {
+  const id = useId();
+  return (
+    <div>
+      <label htmlFor={id}>Email</label>
+      <input id={id} type="email" />
+    </div>
+  );
+}
+```
+
+## Override with static id
+
+You can provide a static id to override the generated id:
+
+```tsx
+import { useId } from '@kuzenbo/hooks';
+
+function Demo() {
+  const id = useId('my-custom-id');
+  // id will always be 'my-custom-id'
+  return <input id={id} />;
+}
+```
+
+## Definition
+
+```tsx
+function useId(staticId?: string): string
+```
+
+### Parameters
+
+<ParamField path="staticId" type="string" optional>
+  Optional id that overrides generated ids when provided
+</ParamField>
+
+### Returns
+
+<ResponseField name="id" type="string">
+  A stable unique identifier string
+</ResponseField>

@@ -1,0 +1,164 @@
+---
+title: 'useEyeDropper'
+description: 'Use the browser EyeDropper API to pick colors'
+---
+
+`useEyeDropper` exposes browser EyeDropper support state and a method to open the picker. On unsupported browsers, `open` resolves to `null` instead of throwing.
+
+## Usage
+
+```tsx
+import { useEyeDropper } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [color, setColor] = useState('#000000');
+  const { supported, open } = useEyeDropper();
+
+  const pickColor = async () => {
+    const result = await open();
+    if (result) {
+      setColor(result.sRGBHex);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={pickColor} disabled={!supported}>
+        {supported ? 'Pick Color' : 'Not Supported'}
+      </button>
+      <div
+        style={{
+          width: 100,
+          height: 100,
+          background: color,
+          marginTop: 10,
+        }}
+      />
+      <p>Selected: {color}</p>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Returns
+
+<ResponseField name="supported" type="boolean">
+  `true` if the browser supports the EyeDropper API, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="open" type="(options?: EyeDropperOpenOptions) => Promise<EyeDropperOpenReturnType | null>">
+  Method to open the eyedropper. Returns a promise that resolves with the picked color or `null` if unsupported/canceled.
+</ResponseField>
+
+### EyeDropperOpenOptions
+
+<ParamField path="signal" type="AbortSignal">
+  An `AbortSignal` to cancel the eyedropper operation.
+</ParamField>
+
+### EyeDropperOpenReturnType
+
+<ResponseField name="sRGBHex" type="string">
+  The selected color in sRGB hexadecimal format (e.g., `#ff0000`).
+</ResponseField>
+
+## Browser Support
+
+The EyeDropper API is currently supported in:
+
+- Chrome/Edge 95+
+- Opera 81+
+
+Not supported in:
+- Firefox
+- Safari
+- Opera (legacy)
+
+```tsx
+import { useEyeDropper } from '@kuzenbo/hooks';
+
+function ColorPicker() {
+  const { supported, open } = useEyeDropper();
+
+  if (!supported) {
+    return <p>EyeDropper is not supported in your browser</p>;
+  }
+
+  return <button onClick={() => open()}>Pick Color</button>;
+}
+```
+
+## With Abort Signal
+
+```tsx
+import { useEyeDropper } from '@kuzenbo/hooks';
+import { useRef } from 'react';
+
+function Demo() {
+  const { open } = useEyeDropper();
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const startPicking = async () => {
+    abortControllerRef.current = new AbortController();
+    const result = await open({ signal: abortControllerRef.current.signal });
+    if (result) {
+      console.log('Picked:', result.sRGBHex);
+    }
+  };
+
+  const cancelPicking = () => {
+    abortControllerRef.current?.abort();
+  };
+
+  return (
+    <div>
+      <button onClick={startPicking}>Pick Color</button>
+      <button onClick={cancelPicking}>Cancel</button>
+    </div>
+  );
+}
+```
+
+## Color Palette Builder
+
+```tsx
+import { useEyeDropper } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function PaletteBuilder() {
+  const [colors, setColors] = useState<string[]>([]);
+  const { supported, open } = useEyeDropper();
+
+  const addColor = async () => {
+    const result = await open();
+    if (result) {
+      setColors((prev) => [...prev, result.sRGBHex]);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={addColor} disabled={!supported}>
+        Add Color
+      </button>
+      <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+        {colors.map((color, index) => (
+          <div
+            key={index}
+            style={{
+              width: 50,
+              height: 50,
+              background: color,
+              borderRadius: 4,
+            }}
+            title={color}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+```

@@ -1,0 +1,267 @@
+---
+title: "Pagination"
+description: "Navigate through pages with @kuzenbo/core Pagination, featuring flexible composition and size scaling."
+---
+
+## Overview
+
+`Pagination` provides semantic page navigation controls with composable sub-components for building custom pagination UIs.
+
+- Use it for multi-page data display (tables, lists, search results).
+- Do not use it as a stepper or wizard navigation.
+
+The root is a `<nav aria-label="pagination">` element with centered flex layout.
+
+## Installation
+
+```npm
+npm i @kuzenbo/core
+```
+
+## Import
+
+```tsx
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@kuzenbo/core/ui/pagination";
+```
+
+## Basic Example
+
+```tsx
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@kuzenbo/core/ui/pagination";
+
+export function BasicPagination() {
+  return (
+    <Pagination>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious href="#" />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#" isActive>
+            1
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#">2</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#">3</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext href="#" />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+}
+```
+
+## Advanced Example
+
+```tsx
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@kuzenbo/core/ui/pagination";
+
+export function AdvancedPagination() {
+  return (
+    <Pagination>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious href="/page/1" />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="/page/1">1</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="/page/5">5</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="/page/6" isActive>
+            6
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="/page/7">7</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="/page/10">10</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext href="/page/7" />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+}
+```
+
+## Size Scale
+
+`Pagination` supports `xs | sm | md | lg | xl` sizing that cascades to all sub-components.
+
+```tsx
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@kuzenbo/core/ui/pagination";
+
+export function SizedPagination() {
+  return (
+    <Pagination size="lg">
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious href="#" />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#" isActive>
+            1
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#">2</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext href="#" />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+}
+```
+
+## API Reference
+
+### Pagination
+
+Root navigation container with centered layout.
+
+<ParamField path="size" type="UISize" default="md">
+  Size of the pagination: `xs | sm | md | lg | xl`.
+</ParamField>
+
+### PaginationContent
+
+Flexible list container for pagination items.
+
+<ParamField path="size" type="UISize" default="md">
+  Size override for the content.
+</ParamField>
+
+### PaginationItem
+
+Wrapper for individual pagination elements.
+
+<ParamField path="size" type="UISize" default="md">
+  Size override for the item.
+</ParamField>
+
+### PaginationLink
+
+Page number link with active state support.
+
+<ParamField path="kind" type="'default' | 'icon'" default="icon">
+  Visual style: `icon` uses ActionIcon, `default` uses Button.
+</ParamField>
+
+<ParamField path="isActive" type="boolean" default={false}>
+  Whether this page is the current page.
+</ParamField>
+
+<ParamField path="size" type="UISize" default="md">
+  Size override for the link.
+</ParamField>
+
+### PaginationPrevious
+
+Previous page navigation link with arrow icon.
+
+<ParamField path="href" type="string">
+  URL for the previous page.
+</ParamField>
+
+<ParamField path="size" type="UISize" default="md">
+  Size override for the previous button.
+</ParamField>
+
+### PaginationNext
+
+Next page navigation link with arrow icon.
+
+<ParamField path="href" type="string">
+  URL for the next page.
+</ParamField>
+
+<ParamField path="size" type="UISize" default="md">
+  Size override for the next button.
+</ParamField>
+
+### PaginationEllipsis
+
+Visual indicator for skipped pages.
+
+<ParamField path="size" type="UISize" default="md">
+  Size override for the ellipsis.
+</ParamField>
+
+## Accessibility
+
+- Use `aria-label` on Previous/Next links to clarify direction.
+- Mark the current page with `isActive` and `aria-current="page"`.
+- Ensure keyboard navigation works for all interactive elements.
+
+## SSR and RSC Notes
+
+- Pagination markup is server-friendly and works in RSC.
+- Compute page ranges on the server and render static links.
+- Use client boundaries only when pagination requires client-side state management.
+
+## Styling and Tokens
+
+- Default styles use semantic tokens (`bg-background`, `text-foreground`, `border-border`).
+- Active state uses `outline` variant for emphasis.
+- Keep pagination controls visually distinct but not overwhelming.
+
+## Troubleshooting
+
+- Current page not highlighted: ensure `isActive` is set to `true` on the current `PaginationLink`.
+- Previous/Next links not working: verify `href` props are set correctly.
+- Ellipsis creates confusion: use ellipsis sparingly and provide clear page ranges.
+
+## Related Links
+
+- [Breadcrumb](/components/breadcrumb)
+- [Tabs](/components/tabs)
+- [Button](/components/button)
+- [Action Icon](/components/action-icon)

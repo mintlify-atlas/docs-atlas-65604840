@@ -1,0 +1,189 @@
+---
+title: Code
+description: Display inline code snippets and code blocks with monospace styling
+---
+
+The Code component displays code with monospace font styling. It supports both inline code snippets and block-level code display.
+
+## Import
+
+```tsx
+import { Code } from "@kuzenbo/core";
+```
+
+## Usage
+
+```tsx
+<Code>npm install @kuzenbo/core</Code>
+
+<Code block>
+  {`function greet(name: string) {
+  return \`Hello, \${name}!\`;
+}`}
+</Code>
+```
+
+## Props
+
+<ParamField path="block" type="boolean" default={false}>
+  When true, renders as a block-level element with expanded padding and wrapping behavior. When false, renders as inline code.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the code element.
+</ParamField>
+
+## Examples
+
+### Inline code
+
+Use for short code references within text:
+
+```tsx
+<p>
+  Install the package with <Code>npm install @kuzenbo/core</Code> to get started.
+</p>
+```
+
+### Code block
+
+Use the `block` prop for multi-line code:
+
+```tsx
+<Code block>
+  {`import { Button } from "@kuzenbo/core";
+
+function App() {
+  return <Button>Click me</Button>;
+}`}
+</Code>
+```
+
+### With custom styling
+
+```tsx
+<Code className="text-primary">
+  const API_KEY = process.env.API_KEY
+</Code>
+```
+
+### Terminal commands
+
+```tsx
+<Code block>
+  $ bun install
+  $ bun run dev
+</Code>
+```
+
+### Environment variables
+
+```tsx
+<p>
+  Set your API key in <Code>NEXT_PUBLIC_API_KEY</Code> environment variable.
+</p>
+```
+
+### File paths
+
+```tsx
+<p>
+  Create a new file at <Code>src/components/ui/button.tsx</Code>
+</p>
+```
+
+### JSON snippets
+
+```tsx
+<Code block>
+  {`{
+  "name": "@kuzenbo/core",
+  "version": "1.0.0",
+  "type": "module"
+}`}
+</Code>
+```
+
+### Keyboard shortcuts in code
+
+```tsx
+<p>
+  Press <Code>Ctrl+C</Code> to stop the development server.
+</p>
+```
+
+### Mixed with regular text
+
+```tsx
+<p>
+  The <Code>useState</Code> hook returns an array with two elements:
+  the current state value and a setter function.
+</p>
+```
+
+### Configuration values
+
+```tsx
+<Code block>
+  {`export default {
+  theme: {
+    extend: {
+      colors: {
+        primary: "hsl(var(--kb-primary))"
+      }
+    }
+  }
+}`}
+</Code>
+```
+
+## Styling
+
+### Inline code
+
+- Background: `bg-muted`
+- Text color: `text-foreground`
+- Font: Monospace
+- Padding: 0.35rem horizontal, 0.2rem vertical
+- Border radius: Rounded corners
+- Font size: 0.85em relative to parent
+
+### Block code
+
+- Same base styling as inline
+- Display: Block
+- Padding: 0.75rem horizontal, 0.5rem vertical
+- Overflow: Horizontal scroll
+- White space: Preserved
+- Line height: Relaxed
+
+## Data Attributes
+
+- `[data-block]` - Present when `block={true}`
+- `[data-slot]` - Always "code"
+
+## Accessibility
+
+- Uses semantic `<code>` element
+- Monospace font aids readability
+- Sufficient color contrast
+- Block code is keyboard scrollable
+- Screen readers announce as code
+
+## Syntax Highlighting
+
+For advanced syntax highlighting, consider using the `@kuzenbo/code` package which provides:
+
+- Language-specific highlighting
+- Line numbers
+- Line highlighting
+- Copy button
+- Theme support
+
+```tsx
+import { CodeBlock } from "@kuzenbo/code";
+
+<CodeBlock language="typescript">
+  {`const greeting: string = "Hello, world!";`}
+</CodeBlock>
+```

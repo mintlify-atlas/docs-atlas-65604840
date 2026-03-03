@@ -1,0 +1,402 @@
+---
+title: "Sidebar"
+description: "Build application sidebars with @kuzenbo/core Sidebar, featuring collapsible states, mobile support, and rich menu composition."
+---
+
+## Overview
+
+`Sidebar` provides a comprehensive sidebar navigation system with collapsible behavior, mobile responsive design, and rich composition patterns.
+
+- Use it for application navigation and hierarchical content organization.
+- Supports `left` and `right` placement.
+- Includes `sidebar`, `floating`, and `inset` visual variants.
+- Features automatic mobile drawer conversion.
+- Built-in keyboard shortcuts (Cmd/Ctrl+B to toggle).
+
+Must be used within `SidebarProvider` for state management.
+
+## Installation
+
+```npm
+npm i @kuzenbo/core
+```
+
+## Import
+
+```tsx
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInput,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
+} from "@kuzenbo/core/ui/sidebar";
+```
+
+## Basic Example
+
+```tsx
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+} from "@kuzenbo/core/ui/sidebar";
+
+export function BasicSidebar() {
+  return (
+    <SidebarProvider>
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Application</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton>
+                    Dashboard
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton>
+                    Projects
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    </SidebarProvider>
+  );
+}
+```
+
+## Advanced Example
+
+```tsx
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@kuzenbo/core/ui/sidebar";
+
+export function AdvancedSidebar() {
+  return (
+    <SidebarProvider defaultOpen>
+      <Sidebar variant="floating" collapsible="icon">
+        <SidebarHeader>
+          <div className="flex items-center gap-2 px-4 py-2">
+            <span className="font-semibold">My App</span>
+          </div>
+        </SidebarHeader>
+        
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton isActive tooltip="Dashboard">
+                    Dashboard
+                  </SidebarMenuButton>
+                  <SidebarMenuBadge>5</SidebarMenuBadge>
+                </SidebarMenuItem>
+                
+                <SidebarMenuItem>
+                  <SidebarMenuButton>
+                    Projects
+                  </SidebarMenuButton>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton>
+                        Web App
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton>
+                        Mobile App
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                Settings
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      </Sidebar>
+      
+      <SidebarTrigger />
+    </SidebarProvider>
+  );
+}
+```
+
+## Controlled State
+
+```tsx
+import { SidebarProvider, useSidebar } from "@kuzenbo/core/ui/sidebar";
+import { useState } from "react";
+
+export function ControlledSidebar() {
+  const [open, setOpen] = useState(true);
+  
+  return (
+    <SidebarProvider open={open} onOpenChange={setOpen}>
+      {/* Sidebar content */}
+    </SidebarProvider>
+  );
+}
+```
+
+## API Reference
+
+### SidebarProvider
+
+Required provider for sidebar state management.
+
+<ParamField path="defaultOpen" type="boolean" default={true}>
+  Initial open state (uncontrolled).
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  Controlled open state.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback when open state changes.
+</ParamField>
+
+### Sidebar
+
+Main sidebar container.
+
+<ParamField path="side" type="'left' | 'right'" default="left">
+  Which side the sidebar appears on.
+</ParamField>
+
+<ParamField path="variant" type="'sidebar' | 'floating' | 'inset'" default="sidebar">
+  Visual style variant.
+</ParamField>
+
+<ParamField path="collapsible" type="'offExamples' | 'icon' | 'none'" default="offExamples">
+  Collapsible behavior: `offExamples` hides completely, `icon` shows icon-only state, `none` disables collapsing.
+</ParamField>
+
+### SidebarHeader
+
+Header section at the top of the sidebar.
+
+### SidebarContent
+
+Main scrollable content area.
+
+### SidebarFooter
+
+Footer section at the bottom of the sidebar.
+
+### SidebarGroup
+
+Semantic grouping container for menu sections.
+
+### SidebarGroupLabel
+
+Label for a sidebar group.
+
+### SidebarGroupContent
+
+Content wrapper for group items.
+
+### SidebarGroupAction
+
+Action button positioned in the group header.
+
+### SidebarMenu
+
+Menu list container.
+
+<ParamField path="size" type="InputSize" default="md">
+  Size of menu items: `xs | sm | md | lg | xl`.
+</ParamField>
+
+### SidebarMenuItem
+
+Individual menu item container.
+
+### SidebarMenuButton
+
+Interactive menu button with icon support.
+
+<ParamField path="isActive" type="boolean" default={false}>
+  Whether this menu item is active.
+</ParamField>
+
+<ParamField path="tooltip" type="string | TooltipContentProps">
+  Tooltip content (shown when sidebar is collapsed).
+</ParamField>
+
+<ParamField path="size" type="InputSize" default="md">
+  Size override for this button.
+</ParamField>
+
+<ParamField path="variant" type="'default' | 'outline'" default="default">
+  Visual variant.
+</ParamField>
+
+### SidebarMenuBadge
+
+Badge indicator for menu items.
+
+### SidebarMenuAction
+
+Action button within a menu item.
+
+### SidebarMenuSub
+
+Nested submenu container.
+
+### SidebarMenuSubItem
+
+Individual item within a submenu.
+
+### SidebarMenuSubButton
+
+Interactive button within a submenu.
+
+### SidebarMenuSkeleton
+
+Loading skeleton for menu items.
+
+### SidebarInput
+
+Input field styled for sidebar use.
+
+### SidebarSeparator
+
+Visual separator between sections.
+
+### SidebarTrigger
+
+Button to toggle sidebar visibility.
+
+### SidebarRail
+
+Clickable rail for expanding collapsed sidebar.
+
+### SidebarInset
+
+Main content area positioned beside the sidebar.
+
+### useSidebar
+
+Hook for accessing sidebar state and controls.
+
+<ParamField path="state" type="'expanded' | 'collapsed'">
+  Current visual state.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  Whether sidebar is open.
+</ParamField>
+
+<ParamField path="setOpen" type="(open: boolean) => void">
+  Function to set open state.
+</ParamField>
+
+<ParamField path="toggleSidebar" type="() => void">
+  Function to toggle sidebar.
+</ParamField>
+
+<ParamField path="isMobile" type="boolean">
+  Whether viewport is mobile.
+</ParamField>
+
+<ParamField path="openMobile" type="boolean">
+  Mobile drawer open state.
+</ParamField>
+
+<ParamField path="setOpenMobile" type="(open: boolean) => void">
+  Function to set mobile drawer state.
+</ParamField>
+
+## Accessibility
+
+- Sidebar includes proper semantic landmarks.
+- Keyboard shortcut (Cmd/Ctrl+B) for quick toggling.
+- Focus management when collapsing/expanding.
+- Mobile version uses Sheet drawer with proper ARIA labels.
+
+## SSR and RSC Notes
+
+- Sidebar is client-interactive (`"use client"`).
+- Mobile detection uses `useIsMobile` hook from `@kuzenbo/hooks`.
+- Cookie-based state persistence for sidebar preference.
+
+## Styling and Tokens
+
+- Uses sidebar-specific tokens (`bg-sidebar`, `text-sidebar-foreground`, `border-sidebar-border`).
+- `floating` variant adds shadow and rounded corners.
+- `inset` variant adds margin for floating appearance.
+- Icon-only collapsed state shows tooltips on hover.
+
+## Troubleshooting
+
+- Sidebar not appearing: ensure component is wrapped in `SidebarProvider`.
+- Toggle not working: verify `SidebarTrigger` is rendered and provider is present.
+- Mobile drawer not showing: check that Sheet component is properly imported.
+- Tooltips not appearing when collapsed: ensure `tooltip` prop is set on `SidebarMenuButton`.
+
+## Related Links
+
+- [Navigation List](/components/navigation-list)
+- [Sheet](/components/sheet)
+- [Navigation Menu](/components/navigation-menu)
+- [Collapsible](/components/collapsible)

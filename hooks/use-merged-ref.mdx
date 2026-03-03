@@ -1,0 +1,65 @@
+---
+title: useMergedRef
+description: Merges multiple refs into one callback ref for synchronized node assignment
+---
+
+## Usage
+
+Merges multiple refs into one callback ref so every provided ref receives the same node assignment and cleanup. This is useful when you need to attach multiple refs to a single element.
+
+```tsx
+import { useMergedRef } from '@kuzenbo/hooks';
+import { useRef } from 'react';
+
+function Demo() {
+  const ref1 = useRef<HTMLDivElement>(null);
+  const ref2 = useRef<HTMLDivElement>(null);
+  const mergedRef = useMergedRef(ref1, ref2);
+
+  return <div ref={mergedRef}>Both refs will be assigned</div>;
+}
+```
+
+## With callback refs
+
+Works with both object refs and callback refs:
+
+```tsx
+import { useMergedRef } from '@kuzenbo/hooks';
+import { useRef } from 'react';
+
+function Demo() {
+  const objectRef = useRef<HTMLDivElement>(null);
+  const callbackRef = (node: HTMLDivElement | null) => {
+    console.log('Node:', node);
+  };
+  
+  const mergedRef = useMergedRef(objectRef, callbackRef);
+
+  return <div ref={mergedRef}>Content</div>;
+}
+```
+
+## Definition
+
+```tsx
+type PossibleRef<T> = Ref<T> | undefined;
+type RefCleanup = (() => void) | undefined;
+type MergedRefCallback<T> = (node: T | null) => RefCleanup;
+
+function useMergedRef<T>(
+  ...refs: PossibleRef<T>[]
+): MergedRefCallback<T>
+```
+
+### Parameters
+
+<ParamField path="refs" type="PossibleRef<T>[]">
+  Callback refs and/or object refs to keep synchronized
+</ParamField>
+
+### Returns
+
+<ResponseField name="mergedRef" type="MergedRefCallback<T>">
+  A callback ref that assigns all provided refs and handles cleanup
+</ResponseField>

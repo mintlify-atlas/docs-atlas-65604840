@@ -1,0 +1,428 @@
+---
+title: "Theme runtime"
+description: "Learn how Kuzenbo's theme system handles dark mode, token resolution, and pre-hydration bootstrap"
+---
+
+## Overview
+
+Kuzenbo's theme runtime provides a complete solution for managing light/dark mode, semantic design tokens, and flicker-free theme initialization. Built on `@kuzenbo/theme`, it handles theme persistence, server-side rendering, and seamless client-side hydration.
+
+## Installation
+
+<CodeGroup>
+
+```bash npm
+npm install @kuzenbo/theme
+```
+
+```bash bun
+bun add @kuzenbo/theme
+```
+
+```bash pnpm
+pnpm add @kuzenbo/theme
+```
+
+```bash yarn
+yarn add @kuzenbo/theme
+```
+
+</CodeGroup>
+
+<Note>
+  The theme package requires React 19+ and `next-themes` as peer dependencies.
+</Note>
+
+## Quick start
+
+Set up the theme runtime in your root layout:
+
+```tsx app/layout.tsx
+import type { ReactNode } from "react";
+
+import "@kuzenbo/theme/prebuilt/kuzenbo.css";
+import { ThemeBootstrapScript } from "@kuzenbo/theme";
+import { ThemeProvider } from "@kuzenbo/theme";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeBootstrapScript />
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+<Warning>
+  Always include `suppressHydrationWarning` on the `html` element to prevent React hydration warnings caused by the theme bootstrap script.
+</Warning>
+
+## Core components
+
+### ThemeBootstrapScript
+
+The `ThemeBootstrapScript` component injects an inline script that runs before React hydrates, preventing theme flicker. It reads the theme preference from cookies and localStorage, then applies it to the document root.
+
+```tsx
+import { ThemeBootstrapScript } from "@kuzenbo/theme";
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeBootstrapScript />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+#### Props
+
+<ResponseField name="defaultThemeSetting" type="ThemeSetting" default="system">
+  The default theme setting when no preference is stored. Accepts `"light"`, `"dark"`, or `"system"`.
+</ResponseField>
+
+<ResponseField name="id" type="string" default="kuzenbo-theme-bootstrap">
+  The HTML id attribute for the script element.
+</ResponseField>
+
+<ResponseField name="nonce" type="string">
+  CSP nonce for the inline script. Reads from `process.env.THEME_BOOTSTRAP_NONCE` by default.
+</ResponseField>
+
+### ThemeProvider
+
+The `ThemeProvider` wraps your application and manages theme state using `next-themes`. It syncs with localStorage and provides theme toggling functionality.
+
+```tsx
+import { ThemeProvider } from "@kuzenbo/theme";
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+#### Props
+
+`ThemeProvider` accepts all `next-themes` props. Key defaults:
+
+<ResponseField name="attribute" type="string" default="class">
+  HTML attribute to apply theme. Defaults to `class` (adds `.dark` class).
+</ResponseField>
+
+<ResponseField name="defaultTheme" type="string" default="system">
+  Default theme when no preference is stored.
+</ResponseField>
+
+<ResponseField name="storageKey" type="string" default="kuzenbo-theme">
+  localStorage key for persisting theme preference.
+</ResponseField>
+
+<ResponseField name="enableSystem" type="boolean" default="true">
+  Enable system theme detection.
+</ResponseField>
+
+<ResponseField name="disableTransitionOnChange" type="boolean" default="true">
+  Disable CSS transitions when theme changes to prevent visual artifacts.
+</ResponseField>
+
+## Theme resolution flow
+
+Kuzenbo resolves theme preferences in this priority order:
+
+<Steps>
+  <Step title="Cookie preference">
+    First checks the `kuzenbo-theme` cookie for a stored preference (`dark` or `light`).
+  </Step>
+  
+  <Step title="localStorage preference">
+    If no cookie exists, reads from `localStorage` using the `kuzenbo-theme` key.
+  </Step>
+  
+  <Step title="System preference">
+    Falls back to the system color scheme using `(prefers-color-scheme: dark)` media query.
+  </Step>
+  
+  <Step title="Default setting">
+    Uses the configured `defaultThemeSetting` (defaults to `"system"`).
+  </Step>
+</Steps>
+
+### Bootstrap synchronization
+
+The bootstrap script ensures consistency between cookie and localStorage:
+
+```typescript
+// If cookie exists but localStorage differs, sync to cookie value
+if (cookieTheme && storageTheme !== cookieTheme) {
+  localStorage.setItem(STORAGE_KEY, cookieTheme);
+}
+
+// If localStorage exists but no cookie, create cookie
+if (storageTheme && !cookieTheme) {
+  document.cookie = `kuzenbo-theme=${storageTheme}; Path=/; Max-Age=31536000; SameSite=Lax`;
+}
+```
+
+## Programmatic utilities
+
+### applyThemeToRootElement
+
+Manually apply a theme to the document root:
+
+```typescript
+import { applyThemeToRootElement } from "@kuzenbo/theme";
+
+applyThemeToRootElement("dark");
+// Adds .dark class and sets color-scheme: dark
+```
+
+### resolveThemeBootstrapPlan
+
+Resolve the theme bootstrap plan for server-side rendering:
+
+```typescript
+import { resolveThemeBootstrapPlan } from "@kuzenbo/theme";
+
+const plan = resolveThemeBootstrapPlan({
+  cookieTheme: "dark",
+  storageTheme: null,
+  systemTheme: "light",
+  defaultThemeSetting: "system",
+});
+
+console.log(plan);
+// {
+//   resolvedTheme: "dark",
+//   shouldWriteCookie: false,
+//   shouldWriteStorage: true
+// }
+```
+
+### readThemeFromCookieString
+
+Extract theme preference from a cookie string:
+
+```typescript
+import { readThemeFromCookieString } from "@kuzenbo/theme";
+
+const theme = readThemeFromCookieString("kuzenbo-theme=dark; Path=/");
+console.log(theme); // "dark"
+```
+
+### serializeThemeCookie
+
+Create a theme cookie string:
+
+```typescript
+import { serializeThemeCookie } from "@kuzenbo/theme";
+
+const cookieString = serializeThemeCookie("dark");
+console.log(cookieString);
+// "kuzenbo-theme=dark; Path=/; Max-Age=31536000; SameSite=Lax"
+```
+
+## Server-side integration
+
+### Next.js App Router
+
+Read theme from cookies in Server Components:
+
+```tsx app/layout.tsx
+import { cookies } from "next/headers";
+import { readThemeFromCookieString } from "@kuzenbo/theme";
+
+export default async function RootLayout({ children }) {
+  const cookieStore = await cookies();
+  const theme = readThemeFromCookieString(cookieStore.toString());
+  
+  return (
+    <html lang="en" suppressHydrationWarning data-theme={theme}>
+      <body>
+        <ThemeBootstrapScript defaultThemeSetting="dark" />
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+### Next.js middleware
+
+Persist theme changes via middleware:
+
+```typescript middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { readThemeFromCookieString, serializeThemeCookie } from "@kuzenbo/theme";
+
+export function middleware(request: NextRequest) {
+  const response = NextResponse.next();
+  const theme = readThemeFromCookieString(request.headers.get("cookie") || "");
+  
+  if (!theme) {
+    response.headers.set("Set-Cookie", serializeThemeCookie("system"));
+  }
+  
+  return response;
+}
+```
+
+## Constants and configuration
+
+### Storage keys
+
+```typescript
+import {
+  THEME_COOKIE_KEY,
+  THEME_STORAGE_KEY,
+  THEME_COOKIE_MAX_AGE_SECONDS,
+} from "@kuzenbo/theme";
+
+console.log(THEME_COOKIE_KEY); // "kuzenbo-theme"
+console.log(THEME_STORAGE_KEY); // "kuzenbo-theme"
+console.log(THEME_COOKIE_MAX_AGE_SECONDS); // 31536000 (1 year)
+```
+
+### System theme detection
+
+```typescript
+import { SYSTEM_DARK_MEDIA_QUERY } from "@kuzenbo/theme";
+
+console.log(SYSTEM_DARK_MEDIA_QUERY); // "(prefers-color-scheme: dark)"
+```
+
+### Default values
+
+```typescript
+import {
+  DEFAULT_THEME_SETTING,
+  THEME_BOOTSTRAP_SCRIPT_ID,
+} from "@kuzenbo/theme";
+
+console.log(DEFAULT_THEME_SETTING); // "system"
+console.log(THEME_BOOTSTRAP_SCRIPT_ID); // "kuzenbo-theme-bootstrap"
+```
+
+## CSP configuration
+
+For strict Content Security Policy, provide a nonce:
+
+```typescript
+// Set via environment variable
+process.env.THEME_BOOTSTRAP_NONCE = "abc123";
+```
+
+```tsx
+import { ThemeBootstrapScript } from "@kuzenbo/theme";
+
+<ThemeBootstrapScript nonce="abc123" />
+```
+
+The bootstrap script will include the nonce attribute:
+
+```html
+<script id="kuzenbo-theme-bootstrap" nonce="abc123">
+  (function () { /* theme bootstrap code */ })();
+</script>
+```
+
+## Type reference
+
+### ThemePreference
+
+```typescript
+type ThemePreference = "dark" | "light";
+```
+
+### ThemeSetting
+
+```typescript
+type ThemeSetting = ThemePreference | "system";
+```
+
+### ThemeBootstrapPlan
+
+```typescript
+interface ThemeBootstrapPlan {
+  resolvedTheme: ThemePreference;
+  shouldWriteCookie: boolean;
+  shouldWriteStorage: boolean;
+}
+```
+
+### ThemeBootstrapPlanInput
+
+```typescript
+interface ThemeBootstrapPlanInput {
+  cookieTheme: ThemePreference | null;
+  defaultThemeSetting?: ThemeSetting;
+  storageTheme: ThemePreference | null;
+  systemTheme: ThemePreference;
+}
+```
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Always use suppressHydrationWarning">
+    The theme bootstrap script modifies the HTML element before React hydrates. Without `suppressHydrationWarning`, React will log warnings about mismatched content.
+    
+    ```tsx
+    <html lang="en" suppressHydrationWarning>
+    ```
+  </Accordion>
+  
+  <Accordion title="Place ThemeBootstrapScript early">
+    The bootstrap script should run as early as possible to prevent theme flicker. Place it in the `<head>` or at the start of `<body>`.
+    
+    ```tsx
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeBootstrapScript />
+      </head>
+      <body>...</body>
+    </html>
+    ```
+  </Accordion>
+  
+  <Accordion title="Use semantic color tokens">
+    Always use semantic tokens like `--kb-background` and `--kb-foreground` instead of hardcoding theme colors. This ensures your UI adapts correctly to theme changes.
+    
+    ```css
+    .my-component {
+      background-color: var(--kb-background);
+      color: var(--kb-foreground);
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Disable transitions during theme change">
+    The default `disableTransitionOnChange` prevents visual artifacts when switching themes. Keep this enabled unless you have specific transition requirements.
+  </Accordion>
+</AccordionGroup>
+
+## Related documentation
+
+<CardGroup cols={2}>
+  
+  <Card title="Styles baseline" icon="paintbrush" href="/foundations/styles-baseline">
+    Learn about global baseline styles and CSS foundations.
+  </Card>
+  
+  
+  <Card title="Architecture" icon="sitemap" href="/foundations/architecture">
+    Dive into Kuzenbo's monorepo structure and package boundaries.
+  </Card>
+</CardGroup>

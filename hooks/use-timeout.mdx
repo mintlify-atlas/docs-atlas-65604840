@@ -1,0 +1,188 @@
+---
+title: 'useTimeout'
+description: 'Provides imperative controls for a one-shot timeout'
+icon: 'hourglass'
+---
+
+Provides imperative controls for a one-shot timeout. `start` schedules the timeout only when one is not already active, and `clear` cancels the pending timeout.
+
+## Signature
+
+```typescript
+function useTimeout<TArgs extends readonly unknown[]>(
+  onTimeout: (...args: TArgs) => void,
+  delay: number,
+  options?: UseTimeoutOptions
+): UseTimeoutReturnValue<TArgs>
+```
+
+## Parameters
+
+<ParamField path="onTimeout" type="(...args: TArgs) => void" required>
+  Callback executed when the timeout finishes.
+</ParamField>
+
+<ParamField path="delay" type="number" required>
+  Timeout delay in milliseconds.
+</ParamField>
+
+<ParamField path="options" type="UseTimeoutOptions">
+  Optional hook behavior settings.
+  
+  <Expandable title="UseTimeoutOptions">
+    <ResponseField name="autoInvoke" type="boolean" default="false">
+      Starts the timeout automatically on mount.
+    </ResponseField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+<ResponseField name="controls" type="UseTimeoutReturnValue<TArgs>">
+  An object with timeout control methods.
+  
+  <Expandable title="Properties">
+    <ResponseField name="start" type="(...args: TArgs) => void">
+      Starts the timeout. Only schedules a new timeout if one is not already active.
+    </ResponseField>
+    <ResponseField name="clear" type="() => void">
+      Clears the pending timeout.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Usage
+
+### Basic timeout
+
+```tsx
+import { useTimeout } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function DelayedMessage() {
+  const [visible, setVisible] = useState(false);
+
+  const { start, clear } = useTimeout(() => {
+    setVisible(true);
+  }, 3000);
+
+  return (
+    <div>
+      <button onClick={() => start()}>Show message in 3s</button>
+      <button onClick={clear}>Cancel</button>
+      {visible && <p>Hello!</p>}
+    </div>
+  );
+}
+```
+
+### Auto-start timeout
+
+```tsx
+import { useTimeout } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Toast() {
+  const [visible, setVisible] = useState(true);
+
+  useTimeout(
+    () => setVisible(false),
+    5000,
+    { autoInvoke: true }
+  );
+
+  if (!visible) return null;
+
+  return (
+    <div className="toast">
+      This message will disappear in 5 seconds
+    </div>
+  );
+}
+```
+
+### Timeout with arguments
+
+```tsx
+import { useTimeout } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Notification() {
+  const [message, setMessage] = useState('');
+
+  const { start } = useTimeout((msg: string) => {
+    setMessage(msg);
+  }, 2000);
+
+  return (
+    <div>
+      <button onClick={() => start('Success!')}>
+        Show success
+      </button>
+      <button onClick={() => start('Error!')}>
+        Show error
+      </button>
+      {message && <p>{message}</p>}
+    </div>
+  );
+}
+```
+
+### Delayed action with cleanup
+
+```tsx
+import { useTimeout } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function SearchSuggestions({ query }: { query: string }) {
+  const [suggestions, setSuggestions] = useState([]);
+
+  const { start, clear } = useTimeout(async () => {
+    const response = await fetch(`/api/suggestions?q=${query}`);
+    const data = await response.json();
+    setSuggestions(data);
+  }, 500);
+
+  useEffect(() => {
+    if (query) {
+      clear();
+      start();
+    } else {
+      setSuggestions([]);
+    }
+  }, [query]);
+
+  return (
+    <ul>
+      {suggestions.map((s, i) => <li key={i}>{s}</li>)}
+    </ul>
+  );
+}
+```
+
+### One-time welcome message
+
+```tsx
+import { useTimeout } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function WelcomeBanner() {
+  const [show, setShow] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  const { start } = useTimeout(
+    () => setShow(true),
+    1000,
+    { autoInvoke: true }
+  );
+
+  if (dismissed || !show) return null;
+
+  return (
+    <div className="banner">
+      <p>Welcome to our app!</p>
+      <button onClick={() => setDismissed(true)}>Dismiss</button>
+    </div>
+  );
+}
+```

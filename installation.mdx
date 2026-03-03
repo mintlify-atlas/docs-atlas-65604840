@@ -1,0 +1,195 @@
+---
+title: Installation
+description: Install Kuzenbo and set up your development environment to start building with composable React primitives.
+---
+
+# Installation
+
+Install Kuzenbo and set up your development environment to start building with composable React primitives.
+
+## Requirements
+
+Kuzenbo requires the following peer dependencies:
+
+- React 19.0.0 or later
+- React DOM 19.0.0 or later
+- Tailwind CSS 4.0.0 or later (for styling)
+
+<Note>
+Kuzenbo uses React 19 features and Base UI primitives for accessibility and composition.
+</Note>
+
+## Installing the core runtime
+
+The core runtime consists of two required packages that work together:
+
+- `@kuzenbo/core` - UI primitives and composition building blocks
+- `@kuzenbo/theme` - Theme runtime, bootstrap script, and semantic tokens
+
+<CodeGroup>
+
+```bash bun
+bun add @kuzenbo/core @kuzenbo/theme
+```
+
+```bash npm
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+```bash pnpm
+pnpm add @kuzenbo/core @kuzenbo/theme
+```
+
+```bash yarn
+yarn add @kuzenbo/core @kuzenbo/theme
+```
+
+</CodeGroup>
+
+<Tip>
+Always install `@kuzenbo/core` and `@kuzenbo/theme` together. The theme package provides semantic tokens that all UI components depend on.
+</Tip>
+
+## Optional packages
+
+### Baseline styles
+
+The `@kuzenbo/styles` package provides recommended global CSS for token-driven borders, scrollbar styling, and accessibility improvements.
+
+<CodeGroup>
+
+```bash bun
+bun add @kuzenbo/styles
+```
+
+```bash npm
+npm install @kuzenbo/styles
+```
+
+```bash pnpm
+pnpm add @kuzenbo/styles
+```
+
+```bash yarn
+yarn add @kuzenbo/styles
+```
+
+</CodeGroup>
+
+### Standalone hooks
+
+If you only need React hooks without UI components:
+
+<CodeGroup>
+
+```bash bun
+bun add @kuzenbo/hooks
+```
+
+```bash npm
+npm install @kuzenbo/hooks
+```
+
+```bash pnpm
+pnpm add @kuzenbo/hooks
+```
+
+```bash yarn
+yarn add @kuzenbo/hooks
+```
+
+</CodeGroup>
+
+<Note>
+The `@kuzenbo/hooks` package has no theme dependency and can be used standalone.
+</Note>
+
+### Specialized UI packages
+
+Install additional packages based on your needs:
+
+<CodeGroup>
+
+```bash Charts
+bun add @kuzenbo/charts
+```
+
+```bash Notifications
+bun add @kuzenbo/notifications
+```
+
+```bash Date (Preview)
+bun add @kuzenbo/date
+```
+
+```bash Data table (Preview)
+bun add @kuzenbo/datatable
+```
+
+</CodeGroup>
+
+<Warning>
+Packages marked as "Preview" are not yet published to npm. Their documented surface is evolving and can change before stable release.
+</Warning>
+
+## Tailwind CSS configuration
+
+Kuzenbo components use Tailwind CSS for styling. You need to configure Tailwind to include Kuzenbo's source files:
+
+```javascript tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@kuzenbo/core/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@kuzenbo/charts/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@kuzenbo/notifications/**/*.{js,ts,jsx,tsx}",
+    // Add other Kuzenbo packages as needed
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+<Tip>
+Only include the packages you've installed in your `content` array to keep build times fast.
+</Tip>
+
+## TypeScript configuration
+
+Kuzenbo is built with TypeScript and provides full type definitions. No additional configuration is required.
+
+```json tsconfig.json
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "target": "ES2022",
+    "strict": true
+  }
+}
+```
+
+## Verifying installation
+
+Check that your packages are installed correctly:
+
+```bash
+npm list @kuzenbo/core @kuzenbo/theme
+```
+
+You should see both packages listed with version `0.0.7` or later.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quick start" icon="rocket" href="/quickstart">
+    Build your first Kuzenbo app in 60 seconds.
+  </Card>
+  <Card title="Theming" icon="palette" href="/theming">
+    Learn how to customize themes and implement light/dark mode.
+  </Card>
+</CardGroup>

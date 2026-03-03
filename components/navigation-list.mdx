@@ -1,0 +1,314 @@
+---
+title: "Navigation List"
+description: "Build vertical navigation lists with @kuzenbo/core NavigationList, featuring collapsible groups and multiple visual variants."
+---
+
+## Overview
+
+`NavigationList` provides a flexible vertical navigation system with collapsible items, badges, and actions.
+
+- Use it for sidebar navigation, settings panels, or file trees.
+- Supports `surface` and `sidebar` tone variants.
+- Includes `light`, `subtle`, and `filled` visual variants.
+- Built-in collapsible groups with automatic chevron indicators.
+
+Ideal for application sidebars and hierarchical navigation structures.
+
+## Installation
+
+```npm
+npm i @kuzenbo/core
+```
+
+## Import
+
+```tsx
+import {
+  NavigationList,
+  NavigationListAction,
+  NavigationListBadge,
+  NavigationListContent,
+  NavigationListGroup,
+  NavigationListGroupContent,
+  NavigationListGroupLabel,
+  NavigationListItem,
+  NavigationListLink,
+  NavigationListSeparator,
+  NavigationListSkeleton,
+  NavigationListSub,
+  NavigationListSubItem,
+  NavigationListSubLink,
+} from "@kuzenbo/core/ui/navigation-list";
+```
+
+## Basic Example
+
+```tsx
+import {
+  NavigationList,
+  NavigationListItem,
+  NavigationListLink,
+} from "@kuzenbo/core/ui/navigation-list";
+
+export function BasicNavigationList() {
+  return (
+    <NavigationList>
+      <NavigationListItem>
+        <NavigationListLink href="/dashboard" active>
+          Dashboard
+        </NavigationListLink>
+      </NavigationListItem>
+      <NavigationListItem>
+        <NavigationListLink href="/projects">
+          Projects
+        </NavigationListLink>
+      </NavigationListItem>
+      <NavigationListItem>
+        <NavigationListLink href="/settings">
+          Settings
+        </NavigationListLink>
+      </NavigationListItem>
+    </NavigationList>
+  );
+}
+```
+
+## Collapsible Groups
+
+```tsx
+import {
+  NavigationList,
+  NavigationListGroup,
+  NavigationListGroupContent,
+  NavigationListGroupLabel,
+  NavigationListItem,
+  NavigationListLink,
+  NavigationListSub,
+  NavigationListSubItem,
+  NavigationListSubLink,
+} from "@kuzenbo/core/ui/navigation-list";
+
+export function CollapsibleNavigationList() {
+  return (
+    <NavigationList>
+      <NavigationListItem collapsible defaultOpened>
+        <NavigationListLink label="Projects" />
+        <NavigationListSub>
+          <NavigationListSubItem>
+            <NavigationListSubLink href="/projects/web">
+              Web App
+            </NavigationListSubLink>
+          </NavigationListSubItem>
+          <NavigationListSubItem>
+            <NavigationListSubLink href="/projects/mobile">
+              Mobile App
+            </NavigationListSubLink>
+          </NavigationListSubItem>
+        </NavigationListSub>
+      </NavigationListItem>
+    </NavigationList>
+  );
+}
+```
+
+## Advanced Example
+
+```tsx
+import {
+  NavigationList,
+  NavigationListBadge,
+  NavigationListItem,
+  NavigationListLink,
+} from "@kuzenbo/core/ui/navigation-list";
+import { Bell01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+
+export function AdvancedNavigationList() {
+  return (
+    <NavigationList variant="filled" tone="sidebar">
+      <NavigationListItem>
+        <NavigationListLink
+          href="/notifications"
+          label="Notifications"
+          description="View your recent activity"
+          leftSection={
+            <HugeiconsIcon icon={Bell01Icon} strokeWidth={2} />
+          }
+        />
+        <NavigationListBadge>12</NavigationListBadge>
+      </NavigationListItem>
+    </NavigationList>
+  );
+}
+```
+
+## Size and Variants
+
+```tsx
+import { NavigationList } from "@kuzenbo/core/ui/navigation-list";
+
+export function StyledNavigationList() {
+  return (
+    <NavigationList size="lg" variant="light" tone="surface">
+      {/* Navigation items */}
+    </NavigationList>
+  );
+}
+```
+
+## API Reference
+
+### NavigationList
+
+Root navigation container with variant and tone options.
+
+<ParamField path="size" type="UISize" default="md">
+  Size of the navigation list: `xs | sm | md | lg | xl`.
+</ParamField>
+
+<ParamField path="variant" type="NavigationListVariant" default="light">
+  Visual variant: `light | subtle | filled`.
+</ParamField>
+
+<ParamField path="tone" type="NavigationListTone" default="surface">
+  Color tone: `surface | sidebar`.
+</ParamField>
+
+### NavigationListItem
+
+Individual navigation item with optional collapsible behavior.
+
+<ParamField path="collapsible" type="boolean" default={false}>
+  Whether this item can be expanded/collapsed.
+</ParamField>
+
+<ParamField path="opened" type="boolean">
+  Controlled open state.
+</ParamField>
+
+<ParamField path="defaultOpened" type="boolean" default={false}>
+  Initial open state (uncontrolled).
+</ParamField>
+
+<ParamField path="onOpenedChange" type="(opened: boolean) => void">
+  Callback when open state changes.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  Whether the item is disabled.
+</ParamField>
+
+### NavigationListLink
+
+Interactive link or button within a navigation item.
+
+<ParamField path="href" type="string">
+  URL for the link (uses `<a>` if provided).
+</ParamField>
+
+<ParamField path="active" type="boolean" default={false}>
+  Whether this link represents the current page.
+</ParamField>
+
+<ParamField path="label" type="ReactNode">
+  Primary label text.
+</ParamField>
+
+<ParamField path="description" type="ReactNode">
+  Secondary description text.
+</ParamField>
+
+<ParamField path="leftSection" type="ReactNode">
+  Content before the label (icons, avatars).
+</ParamField>
+
+<ParamField path="rightSection" type="ReactNode">
+  Content after the label (chevron auto-added for collapsible items).
+</ParamField>
+
+<ParamField path="noWrap" type="boolean" default={false}>
+  Whether to truncate text with ellipsis.
+</ParamField>
+
+<ParamField path="disableRightSectionRotation" type="boolean" default={false}>
+  Disable chevron rotation on collapsible items.
+</ParamField>
+
+### NavigationListBadge
+
+Badge indicator positioned absolutely within the item.
+
+### NavigationListAction
+
+Action button positioned absolutely within the item.
+
+### NavigationListContent
+
+Additional content wrapper for custom layouts.
+
+### NavigationListGroup
+
+Semantic group container for related items.
+
+### NavigationListGroupLabel
+
+Label for a navigation group.
+
+### NavigationListGroupContent
+
+Content wrapper for group items.
+
+### NavigationListSub
+
+Nested sub-navigation container.
+
+### NavigationListSubItem
+
+Individual item within sub-navigation.
+
+### NavigationListSubLink
+
+Link within sub-navigation.
+
+### NavigationListSeparator
+
+Visual separator between items or groups.
+
+### NavigationListSkeleton
+
+Loading skeleton for navigation items.
+
+## Accessibility
+
+- Use semantic `<nav>` element for primary navigation.
+- Mark the current page with `active` or `aria-current="page"`.
+- Collapsible items announce expanded/collapsed state.
+- Ensure keyboard navigation works for all interactive elements.
+
+## SSR and RSC Notes
+
+- NavigationList is client-interactive due to collapsible behavior (`"use client"`).
+- Static navigation lists without collapsible items can be server-rendered.
+- Use client boundaries for interactive navigation.
+
+## Styling and Tokens
+
+- `surface` tone uses standard semantic tokens (`bg-muted`, `text-foreground`).
+- `sidebar` tone uses sidebar-specific tokens (`bg-sidebar-accent`, `text-sidebar-foreground`).
+- `filled` variant applies accent backgrounds to active items.
+- `light` variant applies subtle backgrounds.
+- `subtle` variant applies minimal backgrounds.
+
+## Troubleshooting
+
+- Collapsible item not expanding: ensure `collapsible={true}` is set on `NavigationListItem`.
+- Chevron not rotating: check `disableRightSectionRotation` is not set to `true`.
+- Active state not showing: verify `active` prop on `NavigationListLink`.
+- Text overflow issues: set `noWrap={true}` for truncation.
+
+## Related Links
+
+- [Navigation Menu](/components/navigation-menu)
+- [Sidebar](/components/sidebar)
+- [Breadcrumb](/components/breadcrumb)
+- [Collapsible](/components/collapsible)

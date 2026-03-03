@@ -1,0 +1,185 @@
+---
+title: useMediaQuery
+description: Subscribe to CSS media queries and track match status
+---
+
+Subscribes to a CSS media query and reports whether it currently matches. Supports an optional fallback value and deferred initial evaluation for SSR-friendly behavior.
+
+## Usage
+
+```tsx
+import { useMediaQuery } from '@kuzenbo/hooks';
+
+function Demo() {
+  const matches = useMediaQuery('(max-width: 768px)');
+
+  return (
+    <div>
+      {matches ? 'Mobile view' : 'Desktop view'}
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useMediaQuery(
+  query: string,
+  initialValue?: boolean,
+  options?: UseMediaQueryOptions
+): boolean
+```
+
+## Parameters
+
+<ParamField path="query" type="string" required>
+  Media query string passed to `window.matchMedia`. Example: `'(max-width: 768px)'`.
+</ParamField>
+
+<ParamField path="initialValue" type="boolean" optional>
+  Optional fallback value used before the query is evaluated. Useful for SSR or initial render.
+</ParamField>
+
+<ParamField path="options" type="UseMediaQueryOptions" optional>
+  Controls whether the initial query read happens in an effect.
+
+  <ParamField path="options.getInitialValueInEffect" type="boolean" optional>
+    If `true`, the initial query evaluation happens in an effect for SSR safety. Defaults to `true`.
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+<ResponseField name="matches" type="boolean">
+  Boolean indicating whether the media query currently matches.
+</ResponseField>
+
+## Examples
+
+### Responsive Layout
+
+```tsx
+import { useMediaQuery } from '@kuzenbo/hooks';
+
+function ResponsiveLayout() {
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isTablet = useMediaQuery('(min-width: 769px) and (max-width: 1024px)');
+  const isDesktop = useMediaQuery('(min-width: 1025px)');
+
+  return (
+    <div>
+      {isMobile && <MobileLayout />}
+      {isTablet && <TabletLayout />}
+      {isDesktop && <DesktopLayout />}
+    </div>
+  );
+}
+```
+
+### Dark Mode Detection
+
+```tsx
+import { useMediaQuery } from '@kuzenbo/hooks';
+
+function ThemeDetector() {
+  const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
+
+  return (
+    <div className={prefersDark ? 'dark-theme' : 'light-theme'}>
+      Current theme: {prefersDark ? 'Dark' : 'Light'}
+    </div>
+  );
+}
+```
+
+### Reduced Motion Preference
+
+```tsx
+import { useMediaQuery } from '@kuzenbo/hooks';
+
+function AnimatedComponent() {
+  const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
+
+  return (
+    <div
+      style={{
+        transition: prefersReducedMotion ? 'none' : 'all 0.3s ease',
+      }}
+    >
+      Content
+    </div>
+  );
+}
+```
+
+### Portrait/Landscape Orientation
+
+```tsx
+import { useMediaQuery } from '@kuzenbo/hooks';
+
+function OrientationDetector() {
+  const isPortrait = useMediaQuery('(orientation: portrait)');
+
+  return (
+    <div>
+      Current orientation: {isPortrait ? 'Portrait' : 'Landscape'}
+    </div>
+  );
+}
+```
+
+### High Resolution Display
+
+```tsx
+import { useMediaQuery } from '@kuzenbo/hooks';
+
+function RetinaImage() {
+  const isRetina = useMediaQuery('(min-resolution: 2dppx)');
+
+  return (
+    <img
+      src={isRetina ? '/image@2x.png' : '/image.png'}
+      alt="Responsive image"
+    />
+  );
+}
+```
+
+### SSR-Safe with Initial Value
+
+```tsx
+import { useMediaQuery } from '@kuzenbo/hooks';
+
+function SSRSafeComponent() {
+  const isMobile = useMediaQuery(
+    '(max-width: 768px)',
+    false, // Initial value for SSR
+    { getInitialValueInEffect: true }
+  );
+
+  return <div>{isMobile ? 'Mobile' : 'Desktop'}</div>;
+}
+```
+
+### Multiple Breakpoints
+
+```tsx
+import { useMediaQuery } from '@kuzenbo/hooks';
+
+function BreakpointDisplay() {
+  const breakpoints = {
+    xs: useMediaQuery('(max-width: 639px)'),
+    sm: useMediaQuery('(min-width: 640px) and (max-width: 767px)'),
+    md: useMediaQuery('(min-width: 768px) and (max-width: 1023px)'),
+    lg: useMediaQuery('(min-width: 1024px) and (max-width: 1279px)'),
+    xl: useMediaQuery('(min-width: 1280px)'),
+  };
+
+  const currentBreakpoint = Object.keys(breakpoints).find(
+    (key) => breakpoints[key as keyof typeof breakpoints]
+  );
+
+  return <div>Current breakpoint: {currentBreakpoint}</div>;
+}
+```

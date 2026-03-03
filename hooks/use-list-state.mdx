@@ -1,0 +1,283 @@
+---
+title: useListState
+description: Manages an array in React state with immutable helpers for list operations
+---
+
+## Overview
+
+Manages an array in React state and exposes immutable helpers for common list operations like append, prepend, insert, remove, reorder, swap, and targeted item updates.
+
+## Import
+
+```tsx
+import { useListState } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useListState<T>(
+  initialValue?: T[] | (() => T[])
+): UseListStateReturnValue<T>;
+```
+
+## Parameters
+
+<ParamField path="initialValue" type="T[] | (() => T[])" default="[]">
+  Initial list value or lazy initializer function
+</ParamField>
+
+## Return Value
+
+<ResponseField name="[state, handlers]" type="UseListStateReturnValue<T>">
+  A tuple containing the current list and handler functions
+  
+  <ResponseField name="state" type="T[]">
+    Current array state
+  </ResponseField>
+  
+  <ResponseField name="handlers" type="UseListStateHandlers<T>">
+    Object containing list manipulation functions
+    
+    <ResponseField name="handlers.setState" type="Dispatch<SetStateAction<T[]>>">
+      Direct state setter (supports updater functions)
+    </ResponseField>
+    
+    <ResponseField name="handlers.append" type="(...items: T[]) => void">
+      Appends items to the end of the list
+    </ResponseField>
+    
+    <ResponseField name="handlers.prepend" type="(...items: T[]) => void">
+      Prepends items to the start of the list
+    </ResponseField>
+    
+    <ResponseField name="handlers.insert" type="(index: number, ...items: T[]) => void">
+      Inserts items at the specified index
+    </ResponseField>
+    
+    <ResponseField name="handlers.pop" type="() => void">
+      Removes the last item from the list
+    </ResponseField>
+    
+    <ResponseField name="handlers.shift" type="() => void">
+      Removes the first item from the list
+    </ResponseField>
+    
+    <ResponseField name="handlers.apply" type="(fn: (item: T, index?: number) => T) => void">
+      Applies a function to all items
+    </ResponseField>
+    
+    <ResponseField name="handlers.applyWhere" type="(condition: (item: T, index: number) => boolean, fn: (item: T, index?: number) => T) => void">
+      Applies a function to items matching a condition
+    </ResponseField>
+    
+    <ResponseField name="handlers.remove" type="(...indices: number[]) => void">
+      Removes items at the specified indices
+    </ResponseField>
+    
+    <ResponseField name="handlers.reorder" type="(payload: { from: number; to: number }) => void">
+      Moves an item from one position to another
+    </ResponseField>
+    
+    <ResponseField name="handlers.swap" type="(payload: { from: number; to: number }) => void">
+      Swaps two items at the specified positions
+    </ResponseField>
+    
+    <ResponseField name="handlers.setItem" type="(index: number, item: T) => void">
+      Sets an item at the specified index
+    </ResponseField>
+    
+    <ResponseField name="handlers.setItemProp" type="<K extends keyof T>(index: number, prop: K, value: T[K]) => void">
+      Sets a property of an item at the specified index
+    </ResponseField>
+    
+    <ResponseField name="handlers.filter" type="(fn: (item: T, i: number) => boolean) => void">
+      Filters the list using a predicate function
+    </ResponseField>
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Todo List
+
+```tsx
+import { useListState } from '@kuzenbo/hooks';
+
+interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+}
+
+function TodoList() {
+  const [todos, handlers] = useListState<Todo>([
+    { id: '1', text: 'Learn React', completed: false },
+    { id: '2', text: 'Build an app', completed: false },
+  ]);
+
+  const addTodo = (text: string) => {
+    handlers.append({
+      id: Date.now().toString(),
+      text,
+      completed: false,
+    });
+  };
+
+  const toggleTodo = (index: number) => {
+    handlers.setItemProp(index, 'completed', !todos[index].completed);
+  };
+
+  return (
+    <div>
+      {todos.map((todo, index) => (
+        <div key={todo.id}>
+          <input
+            type="checkbox"
+            checked={todo.completed}
+            onChange={() => toggleTodo(index)}
+          />
+          {todo.text}
+          <button onClick={() => handlers.remove(index)}>Delete</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Reorderable List
+
+```tsx
+import { useListState } from '@kuzenbo/hooks';
+
+function ReorderableList() {
+  const [items, handlers] = useListState(['Apple', 'Banana', 'Cherry']);
+
+  return (
+    <div>
+      {items.map((item, index) => (
+        <div key={item}>
+          <span>{item}</span>
+          {index > 0 && (
+            <button onClick={() => handlers.swap({ from: index, to: index - 1 })}>
+              Move Up
+            </button>
+          )}
+          {index < items.length - 1 && (
+            <button onClick={() => handlers.swap({ from: index, to: index + 1 })}>
+              Move Down
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Bulk Operations
+
+```tsx
+import { useListState } from '@kuzenbo/hooks';
+
+interface User {
+  name: string;
+  age: number;
+}
+
+function UserList() {
+  const [users, handlers] = useListState<User>([
+    { name: 'John', age: 23 },
+    { name: 'Amy', age: 21 },
+    { name: 'Bill', age: 36 },
+  ]);
+
+  const incrementAllAges = () => {
+    handlers.apply((user) => ({ ...user, age: user.age + 1 }));
+  };
+
+  const incrementSeniorAges = () => {
+    handlers.applyWhere(
+      (user) => user.age > 30,
+      (user) => ({ ...user, age: user.age + 1 })
+    );
+  };
+
+  const removeMinors = () => {
+    handlers.filter((user) => user.age >= 18);
+  };
+
+  return (
+    <div>
+      <button onClick={incrementAllAges}>Increment All Ages</button>
+      <button onClick={incrementSeniorAges}>Increment Senior Ages</button>
+      <button onClick={removeMinors}>Remove Minors</button>
+      {users.map((user, index) => (
+        <div key={index}>
+          {user.name} - {user.age}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Stack and Queue Operations
+
+```tsx
+import { useListState } from '@kuzenbo/hooks';
+
+function StackQueue() {
+  const [stack, stackHandlers] = useListState<number>([]);
+  const [queue, queueHandlers] = useListState<number>([]);
+
+  return (
+    <div>
+      <div>
+        <h3>Stack (LIFO)</h3>
+        <button onClick={() => stackHandlers.append(Date.now())}>Push</button>
+        <button onClick={() => stackHandlers.pop()}>Pop</button>
+        <p>Items: {stack.join(', ')}</p>
+      </div>
+      
+      <div>
+        <h3>Queue (FIFO)</h3>
+        <button onClick={() => queueHandlers.append(Date.now())}>Enqueue</button>
+        <button onClick={() => queueHandlers.shift()}>Dequeue</button>
+        <p>Items: {queue.join(', ')}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+export interface UseListStateHandlers<T> {
+  setState: Dispatch<SetStateAction<T[]>>;
+  append: (...items: T[]) => void;
+  prepend: (...items: T[]) => void;
+  insert: (index: number, ...items: T[]) => void;
+  pop: () => void;
+  shift: () => void;
+  apply: (fn: (item: T, index?: number) => T) => void;
+  applyWhere: (
+    condition: (item: T, index: number) => boolean,
+    fn: (item: T, index?: number) => T
+  ) => void;
+  remove: (...indices: number[]) => void;
+  reorder: ({ from, to }: { from: number; to: number }) => void;
+  swap: ({ from, to }: { from: number; to: number }) => void;
+  setItem: (index: number, item: T) => void;
+  setItemProp: <K extends keyof T, U extends T[K]>(
+    index: number,
+    prop: K,
+    value: U
+  ) => void;
+  filter: (fn: (item: T, i: number) => boolean) => void;
+}
+
+export type UseListStateReturnValue<T> = [T[], UseListStateHandlers<T>];
+```

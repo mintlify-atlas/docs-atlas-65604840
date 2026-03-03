@@ -1,0 +1,368 @@
+---
+title: Slider
+description: A slider input for selecting numeric values from a range with support for marks, labels, and tooltips.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+## Usage
+
+```tsx
+import { Slider } from "@kuzenbo/core";
+import { useState } from "react";
+
+function App() {
+  const [value, setValue] = useState(50);
+
+  return (
+    <Slider
+      value={value}
+      onChange={setValue}
+      label={(v) => `${v}%`}
+    />
+  );
+}
+```
+
+## Examples
+
+### Basic Slider
+
+A simple controlled slider with a label.
+
+```tsx
+import { Slider } from "@kuzenbo/core";
+import { useState } from "react";
+
+function BasicExample() {
+  const [value, setValue] = useState(72);
+
+  return (
+    <div className="w-80 px-4">
+      <Slider
+        label={(v) => `${v}%`}
+        onChange={setValue}
+        step={1}
+        value={value}
+      />
+    </div>
+  );
+}
+```
+
+### With Marks
+
+Add visual marks along the slider track.
+
+```tsx
+import { Slider } from "@kuzenbo/core";
+import { useState } from "react";
+
+function MarksExample() {
+  const [value, setValue] = useState(45);
+
+  const marks = [
+    { label: "0%", value: 0 },
+    { label: "25%", value: 25 },
+    { label: "50%", value: 50 },
+    { label: "75%", value: 75 },
+    { label: "100%", value: 100 },
+  ];
+
+  return (
+    <div className="w-80 px-4">
+      <Slider
+        marks={marks}
+        onChange={setValue}
+        step={5}
+        value={value}
+      />
+    </div>
+  );
+}
+```
+
+### Restrict to Marks
+
+Force values to snap to predefined marks only.
+
+```tsx
+import { Slider } from "@kuzenbo/core";
+import { useState } from "react";
+
+function RestrictToMarksExample() {
+  const [value, setValue] = useState(55);
+
+  const marks = [
+    { label: "XS", value: 10 },
+    { label: "S", value: 30 },
+    { label: "M", value: 55 },
+    { label: "L", value: 75 },
+    { label: "XL", value: 95 },
+  ];
+
+  return (
+    <div className="w-80 px-4">
+      <Slider
+        marks={marks}
+        onChange={setValue}
+        restrictToMarks
+        value={value}
+      />
+    </div>
+  );
+}
+```
+
+### Tooltip Modes
+
+Control when the value tooltip is displayed.
+
+```tsx
+import { Slider } from "@kuzenbo/core";
+import { useState } from "react";
+
+function TooltipModesExample() {
+  const [value, setValue] = useState(60);
+
+  return (
+    <div className="flex w-80 flex-col gap-4 px-4">
+      <div>
+        <p className="text-muted-foreground text-sm mb-2">Tooltip on hover</p>
+        <Slider
+          label={(v) => `${v}%`}
+          labelAlwaysOn={false}
+          onChange={setValue}
+          showLabelOnHover={true}
+          value={value}
+        />
+      </div>
+      <div>
+        <p className="text-muted-foreground text-sm mb-2">Tooltip always visible</p>
+        <Slider
+          label={(v) => `${v}%`}
+          labelAlwaysOn={true}
+          onChange={setValue}
+          value={value}
+        />
+      </div>
+      <div>
+        <p className="text-muted-foreground text-sm mb-2">Tooltip hidden</p>
+        <Slider
+          label={null}
+          onChange={setValue}
+          value={value}
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+### Custom Styling
+
+Customize color, size, and radius.
+
+```tsx
+import { Slider } from "@kuzenbo/core";
+import { useState } from "react";
+
+function CustomStylingExample() {
+  const [value, setValue] = useState(55);
+
+  return (
+    <div className="w-80 px-4">
+      <Slider
+        color="success"
+        label={(v) => `${v}%`}
+        onChange={setValue}
+        radius="lg"
+        size="sm"
+        value={value}
+      />
+    </div>
+  );
+}
+```
+
+### Vertical Orientation
+
+Display the slider vertically.
+
+```tsx
+import { Slider } from "@kuzenbo/core";
+import { useState } from "react";
+
+function VerticalExample() {
+  const [value, setValue] = useState(40);
+
+  return (
+    <div className="flex h-72 w-24 items-center justify-center px-4">
+      <Slider
+        labelAlwaysOn
+        onChange={setValue}
+        orientation="vertical"
+        value={value}
+      />
+    </div>
+  );
+}
+```
+
+### With Hidden Input
+
+Generate a hidden input for form submission.
+
+```tsx
+import { Slider } from "@kuzenbo/core";
+import { useState } from "react";
+
+function HiddenInputExample() {
+  const [value, setValue] = useState(62);
+
+  return (
+    <form className="flex w-80 flex-col gap-3 px-4">
+      <Slider
+        aria-label="Volume"
+        hiddenInputProps={{ id: "volume-input" }}
+        label={(v) => `${v}%`}
+        labelAlwaysOn
+        name="volume"
+        onChange={setValue}
+        value={value}
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+## Props
+
+<ParamField path="value" type="number">
+  Controlled value of the slider.
+</ParamField>
+
+<ParamField path="defaultValue" type="number">
+  Default value for uncontrolled usage.
+</ParamField>
+
+<ParamField path="onChange" type="(value: number) => void">
+  Callback fired when the value changes during interaction.
+</ParamField>
+
+<ParamField path="onChangeEnd" type="(value: number) => void">
+  Callback fired when the user stops dragging.
+</ParamField>
+
+<ParamField path="min" type="number" default="0">
+  Minimum value of the slider.
+</ParamField>
+
+<ParamField path="max" type="number" default="100">
+  Maximum value of the slider.
+</ParamField>
+
+<ParamField path="step" type="number" default="1">
+  Step increment for value changes.
+</ParamField>
+
+<ParamField path="label" type="((value: number) => ReactNode) | null">
+  Function to format the tooltip label. Pass `null` to hide the tooltip.
+</ParamField>
+
+<ParamField path="labelAlwaysOn" type="boolean" default="false">
+  When true, the tooltip is always visible.
+</ParamField>
+
+<ParamField path="showLabelOnHover" type="boolean" default="true">
+  When true, shows the tooltip on hover.
+</ParamField>
+
+<ParamField path="marks" type="SliderMark[]">
+  Array of marks to display along the track.
+  
+  Each mark: `{ value: number; label?: ReactNode }`
+</ParamField>
+
+<ParamField path="restrictToMarks" type="boolean" default="false">
+  When true, values can only be set to mark positions.
+</ParamField>
+
+<ParamField path="orientation" type="string" default="horizontal">
+  Orientation of the slider.
+  
+  Options: `"horizontal"` | `"vertical"`
+</ParamField>
+
+<ParamField path="size" type="string">
+  Size variant for the slider.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="color" type="string">
+  Color theme for the slider (e.g., `"primary"`, `"success"`, `"danger"`).
+</ParamField>
+
+<ParamField path="radius" type="string">
+  Border radius variant.
+  
+  Options: `"sm"` | `"md"` | `"lg"` | `"xl"` | `"full"`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the slider.
+</ParamField>
+
+<ParamField path="name" type="string">
+  Name for the hidden input (used with forms).
+</ParamField>
+
+<ParamField path="hiddenInputProps" type="object">
+  Additional props for the hidden input element.
+</ParamField>
+
+<ParamField path="inverted" type="boolean" default="false">
+  When true, inverts the slider direction.
+</ParamField>
+
+<ParamField path="precision" type="number">
+  Number of decimal places for the value.
+</ParamField>
+
+<ParamField path="scale" type="(value: number) => number">
+  Function to scale the display value.
+</ParamField>
+
+<ParamField path="domain" type="[number, number]">
+  Internal value domain for scaling (different from min/max display range).
+</ParamField>
+
+## TypeScript
+
+```tsx
+import type {
+  SliderProps,
+  SliderMarkDefinition,
+  SliderSize,
+  SliderRadius,
+} from "@kuzenbo/core";
+
+const CustomSlider = (props: SliderProps) => {
+  return <Slider {...props} />;
+};
+```
+
+## Accessibility
+
+- Slider uses semantic ARIA slider role
+- Supports keyboard navigation with arrow keys, Home, End, Page Up, and Page Down
+- Announces current value to screen readers
+- Disabled state prevents all interactions
+- Proper focus indicators for keyboard navigation
+- Labels are properly associated with the slider control

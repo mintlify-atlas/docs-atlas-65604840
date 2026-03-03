@@ -1,0 +1,241 @@
+---
+title: useSetState
+description: Manages object state with partial updates that are shallow-merged
+---
+
+## Overview
+
+Manages object state with partial updates that are shallow-merged into the current state. Similar to class component `setState` behavior.
+
+## Import
+
+```tsx
+import { useSetState } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useSetState<T extends Record<string, unknown>>(
+  initialState: T
+): UseSetStateReturnValue<T>;
+```
+
+## Parameters
+
+<ParamField path="initialState" type="T extends Record<string, unknown>" required>
+  Initial object used to seed the hook state
+</ParamField>
+
+## Return Value
+
+<ResponseField name="[state, setState]" type="UseSetStateReturnValue<T>">
+  A tuple containing the current state and setter function
+  
+  <ResponseField name="state" type="T">
+    Current object state
+  </ResponseField>
+  
+  <ResponseField name="setState" type="UseSetStateCallback<T>">
+    Function that accepts a partial state object or updater function and shallow-merges it with the current state
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Basic Form State
+
+```tsx
+import { useSetState } from '@kuzenbo/hooks';
+
+function UserForm() {
+  const [formState, setFormState] = useSetState({
+    name: '',
+    email: '',
+    age: 0,
+  });
+
+  return (
+    <form>
+      <input
+        type="text"
+        value={formState.name}
+        onChange={(e) => setFormState({ name: e.target.value })}
+        placeholder="Name"
+      />
+      <input
+        type="email"
+        value={formState.email}
+        onChange={(e) => setFormState({ email: e.target.value })}
+        placeholder="Email"
+      />
+      <input
+        type="number"
+        value={formState.age}
+        onChange={(e) => setFormState({ age: parseInt(e.target.value) })}
+        placeholder="Age"
+      />
+      <pre>{JSON.stringify(formState, null, 2)}</pre>
+    </form>
+  );
+}
+```
+
+### With Updater Function
+
+```tsx
+import { useSetState } from '@kuzenbo/hooks';
+
+function Counter() {
+  const [state, setState] = useSetState({
+    count: 0,
+    lastUpdated: Date.now(),
+  });
+
+  const increment = () => {
+    setState((current) => ({
+      count: current.count + 1,
+      lastUpdated: Date.now(),
+    }));
+  };
+
+  return (
+    <div>
+      <p>Count: {state.count}</p>
+      <p>Last Updated: {new Date(state.lastUpdated).toLocaleTimeString()}</p>
+      <button onClick={increment}>Increment</button>
+    </div>
+  );
+}
+```
+
+### Filter State Management
+
+```tsx
+import { useSetState } from '@kuzenbo/hooks';
+
+interface Filters {
+  search: string;
+  category: string;
+  minPrice: number;
+  maxPrice: number;
+  inStock: boolean;
+}
+
+function ProductFilters() {
+  const [filters, setFilters] = useSetState<Filters>({
+    search: '',
+    category: 'all',
+    minPrice: 0,
+    maxPrice: 1000,
+    inStock: false,
+  });
+
+  const resetFilters = () => {
+    setFilters({
+      search: '',
+      category: 'all',
+      minPrice: 0,
+      maxPrice: 1000,
+      inStock: false,
+    });
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={filters.search}
+        onChange={(e) => setFilters({ search: e.target.value })}
+        placeholder="Search..."
+      />
+      <select
+        value={filters.category}
+        onChange={(e) => setFilters({ category: e.target.value })}
+      >
+        <option value="all">All Categories</option>
+        <option value="electronics">Electronics</option>
+        <option value="clothing">Clothing</option>
+      </select>
+      <label>
+        <input
+          type="checkbox"
+          checked={filters.inStock}
+          onChange={(e) => setFilters({ inStock: e.target.checked })}
+        />
+        In Stock Only
+      </label>
+      <button onClick={resetFilters}>Reset Filters</button>
+    </div>
+  );
+}
+```
+
+### Settings Panel
+
+```tsx
+import { useSetState } from '@kuzenbo/hooks';
+
+interface Settings {
+  theme: 'light' | 'dark';
+  fontSize: number;
+  notifications: boolean;
+  language: string;
+}
+
+function SettingsPanel() {
+  const [settings, setSettings] = useSetState<Settings>({
+    theme: 'light',
+    fontSize: 16,
+    notifications: true,
+    language: 'en',
+  });
+
+  return (
+    <div>
+      <div>
+        <label>Theme:</label>
+        <select
+          value={settings.theme}
+          onChange={(e) => setSettings({ theme: e.target.value as 'light' | 'dark' })}
+        >
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+      
+      <div>
+        <label>Font Size: {settings.fontSize}px</label>
+        <input
+          type="range"
+          min="12"
+          max="24"
+          value={settings.fontSize}
+          onChange={(e) => setSettings({ fontSize: parseInt(e.target.value) })}
+        />
+      </div>
+      
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={settings.notifications}
+            onChange={(e) => setSettings({ notifications: e.target.checked })}
+          />
+          Enable Notifications
+        </label>
+      </div>
+    </div>
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+export type UseSetStateCallback<T> = (
+  state: Partial<T> | ((currentState: T) => Partial<T>)
+) => void;
+
+export type UseSetStateReturnValue<T> = [T, UseSetStateCallback<T>];
+```

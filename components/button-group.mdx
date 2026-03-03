@@ -1,0 +1,209 @@
+---
+title: ButtonGroup
+description: Visually groups related buttons into a cohesive unit.
+---
+
+## Import
+
+```tsx
+import { ButtonGroup } from "@kuzenbo/core";
+```
+
+## Usage
+
+The `ButtonGroup` component connects multiple buttons visually, removing borders between them and creating a unified appearance.
+
+```tsx
+import { Button, ButtonGroup } from "@kuzenbo/core";
+
+export default function ContractFilters() {
+  return (
+    <ButtonGroup>
+      <Button variant="outline">All contracts</Button>
+      <Button variant="outline">Needs legal review</Button>
+    </ButtonGroup>
+  );
+}
+```
+
+## Vertical Orientation
+
+Stack buttons vertically:
+
+```tsx
+import { Button, ButtonGroup } from "@kuzenbo/core";
+
+export default function NavigationMenu() {
+  return (
+    <ButtonGroup orientation="vertical">
+      <Button variant="outline">Overview</Button>
+      <Button variant="outline">Pipeline</Button>
+      <Button variant="outline">Renewals</Button>
+    </ButtonGroup>
+  );
+}
+```
+
+## Icon Only Buttons
+
+Group action icons together:
+
+```tsx
+import { ActionIcon, ButtonGroup } from "@kuzenbo/core";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { SearchIcon, Add01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+
+export default function InvoiceActions() {
+  return (
+    <ButtonGroup>
+      <ActionIcon aria-label="Search invoices" size="sm" variant="outline">
+        <HugeiconsIcon icon={SearchIcon} />
+      </ActionIcon>
+      <ActionIcon aria-label="Create invoice" size="sm" variant="outline">
+        <HugeiconsIcon icon={Add01Icon} />
+      </ActionIcon>
+      <ActionIcon aria-label="Clear filters" size="sm" variant="outline">
+        <HugeiconsIcon icon={Cancel01Icon} />
+      </ActionIcon>
+    </ButtonGroup>
+  );
+}
+```
+
+## Sizes
+
+ButtonGroup supports five size variants:
+
+```tsx
+import { Button, ButtonGroup } from "@kuzenbo/core";
+
+const sizes = ["xs", "sm", "md", "lg", "xl"] as const;
+
+export default function ButtonGroupSizes() {
+  return (
+    <div className="flex flex-col gap-3">
+      {sizes.map((size) => (
+        <ButtonGroup key={size} size={size}>
+          <Button variant="outline">Bulk assign owner</Button>
+          <Button variant="outline">Escalate to legal</Button>
+        </ButtonGroup>
+      ))}
+    </div>
+  );
+}
+```
+
+## With Separator
+
+Add visual separators between buttons:
+
+```tsx
+import { Button, ButtonGroup } from "@kuzenbo/core";
+
+export default function ActionsWithSeparator() {
+  return (
+    <ButtonGroup>
+      <Button variant="outline">Save draft</Button>
+      <ButtonGroup.Separator />
+      <Button variant="outline">Publish</Button>
+    </ButtonGroup>
+  );
+}
+```
+
+## With Text
+
+Include non-interactive text within the group:
+
+```tsx
+import { Button, ButtonGroup } from "@kuzenbo/core";
+
+export default function CounterActions() {
+  return (
+    <ButtonGroup>
+      <Button size="sm" variant="outline">-</Button>
+      <ButtonGroup.Text>5 seats</ButtonGroup.Text>
+      <Button size="sm" variant="outline">+</Button>
+    </ButtonGroup>
+  );
+}
+```
+
+## Props
+
+### ButtonGroup
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="horizontal">
+  Layout direction for the button group.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="md">
+  Size variant applied to all buttons in the group.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes for the container.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Buttons to group together.
+</ParamField>
+
+### ButtonGroup.Separator
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="vertical">
+  Separator direction. Typically matches the parent ButtonGroup orientation.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Inherit size from the parent ButtonGroup by default.
+</ParamField>
+
+### ButtonGroup.Text
+
+<ParamField path="children" type="ReactNode">
+  Text content to display within the button group.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes for styling.
+</ParamField>
+
+## Composition
+
+```tsx
+import { Button, ButtonGroup } from "@kuzenbo/core";
+
+<ButtonGroup orientation="horizontal" size="md">
+  <Button variant="outline">Edit</Button>
+  <ButtonGroup.Separator />
+  <Button variant="outline">Delete</Button>
+</ButtonGroup>
+```
+
+## Types
+
+```tsx
+export type ButtonGroupProps = ComponentProps<"div"> &
+  VariantProps<typeof buttonGroupVariants> & {
+    size?: UISize;
+  };
+export type ButtonGroupSeparatorProps = ComponentProps<typeof Separator>;
+export type ButtonGroupTextProps = ComponentProps<"span">;
+```
+
+## Styling
+
+ButtonGroup uses `tailwind-variants` for consistent styling:
+
+- Removes inner borders between buttons
+- Adjusts border radius so only outer edges are rounded
+- Handles focus states with proper z-index layering
+- Supports both horizontal and vertical orientations
+
+## Accessibility
+
+- Uses `role="group"` for semantic grouping
+- Each button remains independently focusable and keyboard-navigable
+- Focus indicators are properly layered above adjacent buttons
+- Group orientation is communicated via `data-orientation` attribute

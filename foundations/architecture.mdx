@@ -1,0 +1,620 @@
+---
+title: "Architecture"
+description: "Understand Kuzenbo's monorepo structure, package boundaries, and build architecture"
+---
+
+## Overview
+
+Kuzenbo is built as a Bun workspace monorepo with strict package boundaries enforced via Turborepo tags. This architecture ensures clean separation between UI packages, build tooling, and internal dependencies.
+
+## Repository layout
+
+The monorepo follows a clear structure with apps and packages:
+
+```
+kuzenbo/
+├── apps/
+│   └── website/          # Next.js 16 docs and playground
+├── packages/
+│   ├── core/             # @kuzenbo/core - UI components
+│   ├── charts/           # @kuzenbo/charts - Chart components
+│   ├── theme/            # @kuzenbo/theme - Theme runtime
+│   ├── styles/           # @kuzenbo/styles - Baseline CSS
+│   ├── hooks/            # @kuzenbo/hooks - React hooks
+│   ├── notifications/    # @kuzenbo/notifications - Toast/notifications
+│   ├── date/             # @kuzenbo/date - Calendar/date pickers
+│   ├── ai/               # @kuzenbo/ai - AI UI components
+│   ├── code/             # @kuzenbo/code - Code editor/syntax
+│   ├── datatable/        # @kuzenbo/datatable - Data tables
+│   ├── tiptap/           # @kuzenbo/tiptap - Rich text editor
+│   ├── storybook/        # @kuzenbo/storybook - Shared config
+│   ├── cli/              # @kuzenbo/cli - CLI tooling
+│   └── mcp/              # @kuzenbo/mcp - MCP integration
+├── turbo.json            # Monorepo task orchestration
+└── package.json          # Workspace root
+```
+
+## Package categories
+
+Kuzenbo packages fall into three categories:
+
+### UI packages
+
+User-facing component libraries:
+
+<CardGroup cols={2}>
+  <Card title="@kuzenbo/core" icon="cube">
+    Primary UI component library with buttons, inputs, dialogs, and layouts.
+  </Card>
+  
+  <Card title="@kuzenbo/charts" icon="chart-line">
+    13 production-ready chart components built on Recharts.
+  </Card>
+  
+  <Card title="@kuzenbo/notifications" icon="bell">
+    Toast and notification system with multiple viewport positions.
+  </Card>
+  
+  <Card title="@kuzenbo/date" icon="calendar">
+    Calendar, date picker, and date range components.
+  </Card>
+  
+  <Card title="@kuzenbo/ai" icon="brain">
+    AI-specific UI components for chat, completions, and tool outputs.
+  </Card>
+  
+  <Card title="@kuzenbo/code" icon="code">
+    Code editor, syntax highlighting, and code snippet primitives.
+  </Card>
+  
+  <Card title="@kuzenbo/datatable" icon="table">
+    Advanced data table with sorting, filtering, and pagination.
+  </Card>
+  
+  <Card title="@kuzenbo/tiptap" icon="pen">
+    Rich text editor built on Tiptap with markdown support.
+  </Card>
+</CardGroup>
+
+### Platform packages
+
+Foundational runtime and tooling:
+
+<CardGroup cols={2}>
+  <Card title="@kuzenbo/theme" icon="palette">
+    Theme runtime, semantic tokens, and 75+ prebuilt color themes.
+  </Card>
+  
+  <Card title="@kuzenbo/styles" icon="paintbrush">
+    Optional baseline global styles for focus rings and scrollbars.
+  </Card>
+  
+  <Card title="@kuzenbo/hooks" icon="link">
+    Standalone React hooks with no UI dependencies.
+  </Card>
+  
+  <Card title="@kuzenbo/storybook" icon="book">
+    Shared Storybook configuration (internal only).
+  </Card>
+</CardGroup>
+
+### Experimental packages
+
+Future-focused tooling (not yet published):
+
+<CardGroup cols={2}>
+  <Card title="@kuzenbo/cli" icon="terminal">
+    CLI for scaffolding and code generation.
+  </Card>
+  
+  <Card title="@kuzenbo/mcp" icon="plug">
+    Model Context Protocol integration.
+  </Card>
+</CardGroup>
+
+## Package boundaries
+
+Kuzenbo enforces strict boundaries to maintain clean architecture:
+
+### Core boundary rules
+
+<Steps>
+  <Step title="@kuzenbo/hooks is standalone">
+    Must not import `@kuzenbo/core` or any UI packages. Keeps hooks lightweight and framework-local.
+    
+    ```typescript
+    // ❌ Not allowed in @kuzenbo/hooks
+    import { Button } from "@kuzenbo/core";
+    
+    // ✅ Allowed in @kuzenbo/hooks
+    import { useState, useEffect } from "react";
+    ```
+  </Step>
+  
+  <Step title="@kuzenbo/core depends on hooks">
+    Can import from `@kuzenbo/hooks` through normal semver dependencies.
+    
+    ```typescript
+    // ✅ Allowed in @kuzenbo/core
+    import { useMediaQuery } from "@kuzenbo/hooks";
+    ```
+  </Step>
+  
+  <Step title="One-way code dependency">
+    `@kuzenbo/code` can depend on `@kuzenbo/core`, but the reverse is denied.
+    
+    ```typescript
+    // ✅ Allowed in @kuzenbo/code
+    import { Button } from "@kuzenbo/core";
+    
+    // ❌ Not allowed in @kuzenbo/core
+    import { CodeEditor } from "@kuzenbo/code";
+    ```
+  </Step>
+  
+  <Step title="Extracted packages depend on core">
+    Charts, notifications, date, datatable, and tiptap can import from `@kuzenbo/core` for shared utilities.
+    
+    ```typescript
+    // ✅ Allowed in @kuzenbo/charts
+    import { useComponentSize } from "@kuzenbo/core/provider";
+    ```
+  </Step>
+</Steps>
+
+### Boundary enforcement
+
+Boundaries are verified via Turborepo tags:
+
+```bash
+bun run boundaries
+```
+
+This command checks that:
+- Package imports respect tag boundaries
+- No circular dependencies exist
+- Internal packages aren't imported by external code
+
+## Build architecture
+
+### Build tooling
+
+Kuzenbo uses modern ESM-only builds:
+
+<ResponseField name="Builder" type="tsdown">
+  TypeScript bundler for all package workspaces.
+</ResponseField>
+
+<ResponseField name="Module format" type="ESM-only">
+  No CommonJS output. Targets modern bundlers and runtimes.
+</ResponseField>
+
+<ResponseField name="Type generation" type="tsdown">
+  Declaration files (`.d.ts`) generated automatically.
+</ResponseField>
+
+### Multi-entry packages
+
+Some packages export multiple entry points:
+
+```json package.json
+{
+  "exports": {
+    ".": "./dist/index.js",
+    "./provider": "./dist/provider.js",
+    "./ui/button": "./dist/ui/button.js",
+    "./styles.css": "./dist/styles.css"
+  }
+}
+```
+
+Examples:
+- `@kuzenbo/core`: Multiple UI component subpaths
+- `@kuzenbo/charts`: Per-chart subpaths (`ui/line-chart`, `ui/bar-chart`)
+- `@kuzenbo/theme`: Theme provider and CSS exports
+
+### CSS asset handling
+
+CSS files are copied during build:
+
+```typescript tsdown.config.ts
+export default {
+  entry: ["src/index.ts"],
+  format: "esm",
+  dts: true,
+  onSuccess: async () => {
+    // Copy CSS from src to dist
+    await copyFile("src/default.css", "dist/default.css");
+    await copyDir("src/prebuilt/", "dist/prebuilt/");
+  },
+};
+```
+
+## Release architecture
+
+Kuzenbo uses lockstep versioning with manual releases:
+
+### Version management
+
+<Steps>
+  <Step title="Changesets for versioning">
+    All packages share the same version number. Use Changesets to track changes:
+    
+    ```bash
+    bun run release:changeset
+    ```
+  </Step>
+  
+  <Step title="Version bump">
+    Update all package versions atomically:
+    
+    ```bash
+    bun run changeset:version
+    ```
+  </Step>
+  
+  <Step title="Generate release notes">
+    Create changelog entries:
+    
+    ```bash
+    bun run release:notes
+    ```
+  </Step>
+  
+  <Step title="Publish via GitHub Actions">
+    Publishing runs only in CI with Trusted Publishing:
+    
+    ```bash
+    # Trigger via workflow dispatch
+    gh workflow run release.yml -f version=0.0.8 -f channel=stable
+    ```
+  </Step>
+</Steps>
+
+### Release channels
+
+Kuzenbo supports two release channels:
+
+<ResponseField name="stable" type="channel">
+  Production releases from `main` branch. Used for final versions.
+</ResponseField>
+
+<ResponseField name="next" type="channel">
+  Pre-release versions from `main` branch. For testing before stable.
+</ResponseField>
+
+### Publishable packages
+
+Only an allowlist of packages is published:
+
+**Published:**
+- `@kuzenbo/core`
+- `@kuzenbo/charts`
+- `@kuzenbo/theme`
+- `@kuzenbo/styles`
+- `@kuzenbo/hooks`
+- `@kuzenbo/notifications`
+
+**Not published:**
+- `@kuzenbo/storybook` (internal)
+- `@kuzenbo/website` (internal)
+- `@kuzenbo/ai` (blocked until promoted)
+- `@kuzenbo/code` (blocked until promoted)
+- `@kuzenbo/datatable` (blocked until promoted)
+- `@kuzenbo/date` (blocked until promoted)
+- `@kuzenbo/tiptap` (blocked until promoted)
+- `@kuzenbo/cli` (placeholder)
+- `@kuzenbo/mcp` (placeholder)
+
+### Trusted Publishing
+
+Releases require GitHub Actions with `id-token: write`:
+
+```yaml .github/workflows/release.yml
+permissions:
+  contents: read
+  id-token: write
+
+steps:
+  - name: Publish packages
+    run: npm publish --provenance
+```
+
+## Documentation runtime
+
+The docs site runs on Next.js 16 App Router:
+
+### File-based routing
+
+```
+apps/website/app/(docs)/docs/
+├── page.tsx                    # /docs
+├── quickstart/
+│   └── page.tsx                # /docs/quickstart
+└── foundations/
+    ├── theme-runtime/
+    │   └── page.tsx            # /docs/foundations/theme-runtime
+    └── architecture/
+        └── page.tsx            # /docs/foundations/architecture
+```
+
+### Documentation manifest
+
+Navigation and metadata live in `docs-manifest.ts`:
+
+```typescript docs-manifest.ts
+export const docsManifest = [
+  {
+    title: "Foundations",
+    pages: [
+      { title: "Theme runtime", href: "/docs/foundations/theme-runtime" },
+      { title: "Architecture", href: "/docs/foundations/architecture" },
+    ],
+  },
+];
+```
+
+### MDX content
+
+Docs are authored as MDX with route-local `content.mdx` files:
+
+```mdx content.mdx
+---
+title: "Architecture"
+description: "Monorepo structure and package boundaries"
+---
+
+# Architecture
+
+Content goes here...
+```
+
+## Development workflow
+
+Run the monorepo locally:
+
+### Install dependencies
+
+```bash
+bun install
+```
+
+### Start dev server
+
+Run the docs site with HMR for all packages:
+
+```bash
+bun run dev
+```
+
+Package edits flow automatically via HMR—no watch scripts needed.
+
+### Run Storybook
+
+```bash
+bun run storybook
+```
+
+### Quality gates
+
+Run all checks before committing:
+
+```bash
+# Format code
+bun run format
+
+# Lint codebase
+bun run lint
+
+# Type check all packages
+bun run typecheck
+
+# Run tests
+bun run test
+
+# Verify boundaries
+bun run boundaries
+```
+
+### Scoped tasks
+
+Run tasks for specific packages:
+
+```bash
+# Build only @kuzenbo/core
+bun turbo run build --filter=@kuzenbo/core
+
+# Test only @kuzenbo/hooks
+bun turbo run test --filter=@kuzenbo/hooks
+```
+
+## Toolchain
+
+Kuzenbo uses modern tooling:
+
+<CardGroup cols={2}>
+  <Card title="Bun" icon="cube">
+    Runtime, package manager, and test runner. Version 1.3.9.
+  </Card>
+  
+  <Card title="Turborepo" icon="gauge">
+    Monorepo orchestration and caching. Version 2.8.7.
+  </Card>
+  
+  <Card title="React" icon="react">
+    UI framework. Version 19.2.4.
+  </Card>
+  
+  <Card title="Next.js" icon="n">
+    App framework for docs site. Version 16.1.6.
+  </Card>
+  
+  <Card title="TypeScript" icon="code">
+    Type system. Version 5.9.3 with `tsgo` compiler.
+  </Card>
+  
+  <Card title="Ultracite" icon="shield">
+    Linter and formatter using `oxlint` and `oxfmt`.
+  </Card>
+</CardGroup>
+
+## Design policies
+
+Kuzenbo follows strict conventions:
+
+### Component structure
+
+One component per file in `packages/*/src/ui/<component>/`:
+
+```
+packages/core/src/ui/
+├── button/
+│   ├── button.tsx           # Component
+│   ├── button.test.tsx      # Tests
+│   └── button.stories.tsx   # Storybook
+└── dialog/
+    ├── dialog.tsx
+    ├── dialog.test.tsx
+    └── dialog.stories.tsx
+```
+
+### Export contracts
+
+Exported components must have matching props types:
+
+```typescript
+// ✅ Correct: Exported with props type
+export function Button(props: ButtonProps) { ... }
+export type ButtonProps = { ... };
+
+// ❌ Incorrect: Missing props export
+export function Button(props: ButtonProps) { ... }
+type ButtonProps = { ... }; // Not exported
+```
+
+### Import style
+
+Use direct named imports:
+
+```typescript
+// ✅ Correct
+import { useState, useEffect } from "react";
+import type { ReactNode } from "react";
+
+// ❌ Avoid namespace imports
+import React from "react";
+const node: React.ReactNode = ...;
+```
+
+### Color primitives
+
+Use semantic tokens, not raw Tailwind classes:
+
+```tsx
+// ✅ Correct: Semantic tokens
+<div className="bg-background text-foreground" />
+
+// ❌ Avoid: Raw palette classes
+<div className="bg-white text-gray-900" />
+```
+
+### Cursor primitives
+
+Use `cursor-clickable` token:
+
+```tsx
+// ✅ Correct: Token-based cursor
+<button className="cursor-clickable" />
+
+// ❌ Avoid: Raw cursor values
+<button className="cursor-pointer" />
+```
+
+## Testing strategy
+
+Kuzenbo uses Bun's native test runner:
+
+### Test files
+
+Place tests alongside source:
+
+```
+packages/hooks/src/
+├── use-media-query/
+│   ├── use-media-query.ts
+│   └── use-media-query.test.ts
+└── use-clipboard/
+    ├── use-clipboard.ts
+    └── use-clipboard.test.ts
+```
+
+### Naming convention
+
+```
+*.test.tsx    # UI component tests
+*.test.ts     # Logic/utility tests
+```
+
+**Never use:**
+- `*.spec.ts`
+- `*.spec.tsx`
+- `tests/` directories
+- `__tests__/` directories
+
+### Running tests
+
+```bash
+# All tests
+bun run test
+
+# Watch mode
+bun test --watch
+
+# Single package
+bun turbo run test --filter=@kuzenbo/hooks
+```
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Respect package boundaries">
+    Never import across boundary violations. Run `bun run boundaries` to verify compliance.
+  </Accordion>
+  
+  <Accordion title="Use workspace protocol">
+    Reference local packages with `workspace:*` in `package.json`:
+    
+    ```json
+    {
+      "dependencies": {
+        "@kuzenbo/hooks": "workspace:*"
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Keep public API minimal">
+    Only export what consumers need. Internal utilities should not be exported from package index.
+  </Accordion>
+  
+  <Accordion title="Document breaking changes">
+    Use Changesets to document breaking changes:
+    
+    ```bash
+    bun run release:changeset
+    # Select "major" for breaking changes
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Related documentation
+
+<CardGroup cols={2}>
+  <Card title="Theme runtime" icon="palette" href="/foundations/theme-runtime">
+    Learn about the theme package architecture.
+  </Card>
+  
+  <Card title="Charts" icon="chart-line" href="/foundations/charts">
+    Understand chart package internals.
+  </Card>
+</CardGroup>

@@ -1,0 +1,171 @@
+---
+title: 'useLongPress'
+description: 'Detect long press gestures'
+---
+
+`useLongPress` creates mouse and touch handlers that trigger a callback when a press lasts longer than the configured threshold.
+
+## Usage
+
+```tsx
+import { useLongPress } from '@kuzenbo/hooks';
+
+function Demo() {
+  const handlers = useLongPress(
+    () => console.log('Long pressed!'),
+    { threshold: 500 }
+  );
+
+  return (
+    <button {...handlers}>
+      Press and hold
+    </button>
+  );
+}
+```
+
+## API Reference
+
+### Parameters
+
+<ParamField path="onLongPress" type="(event: MouseEvent | TouchEvent) => void" required>
+  Callback fired after the press is held past the threshold.
+</ParamField>
+
+<ParamField path="options" type="UseLongPressOptions">
+  Optional long-press configuration.
+</ParamField>
+
+<ParamField path="options.threshold" type="number" default="400">
+  Time in milliseconds to trigger the long press.
+</ParamField>
+
+<ParamField path="options.onStart" type="(event: MouseEvent | TouchEvent) => void">
+  Callback triggered when the long press starts (mouse/touch down).
+</ParamField>
+
+<ParamField path="options.onFinish" type="(event: MouseEvent | TouchEvent) => void">
+  Callback triggered when the long press finishes successfully.
+</ParamField>
+
+<ParamField path="options.onCancel" type="(event: MouseEvent | TouchEvent) => void">
+  Callback triggered when the long press is canceled (released before threshold).
+</ParamField>
+
+### Returns
+
+<ResponseField name="onMouseDown" type="(event: MouseEvent) => void">
+  Mouse down event handler.
+</ResponseField>
+
+<ResponseField name="onMouseUp" type="(event: MouseEvent) => void">
+  Mouse up event handler.
+</ResponseField>
+
+<ResponseField name="onMouseLeave" type="(event: MouseEvent) => void">
+  Mouse leave event handler.
+</ResponseField>
+
+<ResponseField name="onTouchStart" type="(event: TouchEvent) => void">
+  Touch start event handler.
+</ResponseField>
+
+<ResponseField name="onTouchEnd" type="(event: TouchEvent) => void">
+  Touch end event handler.
+</ResponseField>
+
+## Custom Threshold
+
+```tsx
+import { useLongPress } from '@kuzenbo/hooks';
+
+function Demo() {
+  const handlers = useLongPress(
+    () => console.log('Long press after 1 second'),
+    { threshold: 1000 }
+  );
+
+  return <div {...handlers}>Hold for 1 second</div>;
+}
+```
+
+## With Lifecycle Callbacks
+
+```tsx
+import { useLongPress } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [status, setStatus] = useState('idle');
+
+  const handlers = useLongPress(
+    () => setStatus('completed'),
+    {
+      threshold: 500,
+      onStart: () => setStatus('pressing'),
+      onFinish: () => setStatus('finished'),
+      onCancel: () => setStatus('canceled'),
+    }
+  );
+
+  return (
+    <div>
+      <button {...handlers}>Long press me</button>
+      <p>Status: {status}</p>
+    </div>
+  );
+}
+```
+
+## Context Menu Alternative
+
+```tsx
+import { useLongPress } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function ContextMenu() {
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const handlers = useLongPress(
+    () => setMenuVisible(true),
+    { threshold: 500 }
+  );
+
+  return (
+    <div>
+      <div {...handlers} style={{ padding: 20, background: '#eee' }}>
+        Long press to show context menu
+      </div>
+      {menuVisible && (
+        <div style={{ border: '1px solid', padding: 10 }}>
+          <button onClick={() => setMenuVisible(false)}>Edit</button>
+          <button onClick={() => setMenuVisible(false)}>Delete</button>
+          <button onClick={() => setMenuVisible(false)}>Share</button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Mobile Touch Support
+
+The hook automatically handles both mouse and touch events, making it ideal for mobile interactions:
+
+```tsx
+import { useLongPress } from '@kuzenbo/hooks';
+
+function MobileCard() {
+  const handlers = useLongPress(
+    () => console.log('Show options'),
+    { threshold: 600 }
+  );
+
+  return (
+    <div {...handlers} className="card">
+      <h3>Long press to see options</h3>
+      <p>Works on both desktop and mobile</p>
+    </div>
+  );
+}
+```

@@ -1,0 +1,229 @@
+---
+title: useViewportSize
+description: Track viewport dimensions with automatic resize updates
+---
+
+Tracks viewport dimensions and updates when the window is resized or the device orientation changes. The returned size starts at `{ width: 0, height: 0 }` and is synced after mount.
+
+## Usage
+
+```tsx
+import { useViewportSize } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { width, height } = useViewportSize();
+
+  return (
+    <div>
+      Viewport size: {width} x {height}
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useViewportSize(): { width: number; height: number }
+```
+
+## Parameters
+
+This hook takes no parameters.
+
+## Return Value
+
+<ResponseField name="width" type="number">
+  Current viewport width in pixels. Initially `0` until mounted.
+</ResponseField>
+
+<ResponseField name="height" type="number">
+  Current viewport height in pixels. Initially `0` until mounted.
+</ResponseField>
+
+## Examples
+
+### Basic Viewport Display
+
+```tsx
+import { useViewportSize } from '@kuzenbo/hooks';
+
+function ViewportInfo() {
+  const { width, height } = useViewportSize();
+
+  return (
+    <div>
+      <p>Width: {width}px</p>
+      <p>Height: {height}px</p>
+      <p>Aspect Ratio: {(width / height).toFixed(2)}</p>
+    </div>
+  );
+}
+```
+
+### Responsive Component Sizing
+
+```tsx
+import { useViewportSize } from '@kuzenbo/hooks';
+
+function ResponsiveCanvas() {
+  const { width, height } = useViewportSize();
+
+  return (
+    <canvas
+      width={width * 0.8}
+      height={height * 0.6}
+      style={{
+        border: '1px solid black',
+      }}
+    />
+  );
+}
+```
+
+### Conditional Rendering Based on Size
+
+```tsx
+import { useViewportSize } from '@kuzenbo/hooks';
+
+function AdaptiveLayout() {
+  const { width } = useViewportSize();
+
+  if (width === 0) return null; // Not mounted yet
+
+  if (width < 640) {
+    return <MobileLayout />;
+  }
+
+  if (width < 1024) {
+    return <TabletLayout />;
+  }
+
+  return <DesktopLayout />;
+}
+```
+
+### Dynamic Grid Columns
+
+```tsx
+import { useViewportSize } from '@kuzenbo/hooks';
+
+function DynamicGrid({ items }) {
+  const { width } = useViewportSize();
+
+  const columns = width < 640 ? 1 : width < 1024 ? 2 : width < 1536 ? 3 : 4;
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${columns}, 1fr)`,
+        gap: '1rem',
+      }}
+    >
+      {items.map((item) => (
+        <div key={item.id}>{item.content}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Viewport Size Indicator
+
+```tsx
+import { useViewportSize } from '@kuzenbo/hooks';
+
+function ViewportIndicator() {
+  const { width, height } = useViewportSize();
+
+  const getBreakpoint = () => {
+    if (width < 640) return 'xs';
+    if (width < 768) return 'sm';
+    if (width < 1024) return 'md';
+    if (width < 1280) return 'lg';
+    return 'xl';
+  };
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 16,
+        right: 16,
+        padding: '8px 16px',
+        background: 'rgba(0, 0, 0, 0.8)',
+        color: 'white',
+        borderRadius: 4,
+      }}
+    >
+      {width} × {height} ({getBreakpoint()})
+    </div>
+  );
+}
+```
+
+### Responsive Font Size
+
+```tsx
+import { useViewportSize } from '@kuzenbo/hooks';
+
+function ResponsiveText() {
+  const { width } = useViewportSize();
+
+  const fontSize = Math.max(16, Math.min(32, width / 40));
+
+  return (
+    <h1 style={{ fontSize: `${fontSize}px` }}>
+      Responsive Heading
+    </h1>
+  );
+}
+```
+
+### Full-Screen Modal
+
+```tsx
+import { useViewportSize } from '@kuzenbo/hooks';
+
+function FullScreenModal({ isOpen, onClose, children }) {
+  const { width, height } = useViewportSize();
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width,
+        height,
+        background: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      onClick={onClose}
+    >
+      <div
+        style={{
+          maxWidth: width * 0.9,
+          maxHeight: height * 0.9,
+          overflow: 'auto',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+```
+
+## Notes
+
+- The hook listens to both `resize` and `orientationchange` events
+- Initial values are `{ width: 0, height: 0 }` and update after component mount
+- Uses passive event listeners for better performance
+- Updates are triggered on window resize and device orientation changes

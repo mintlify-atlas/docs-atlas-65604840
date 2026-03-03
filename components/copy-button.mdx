@@ -1,0 +1,162 @@
+---
+title: Copy Button
+description: A button that copies text to clipboard with visual feedback.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { CopyButton } from "@kuzenbo/core";
+
+function Example() {
+  return (
+    <CopyButton value="Text to copy" />
+  );
+}
+```
+
+## Props
+
+<ParamField path="value" type="string" required>
+  The text to copy to clipboard.
+</ParamField>
+
+<ParamField path="timeout" type="number" default="1200">
+  Duration in milliseconds to show the "copied" state.
+</ParamField>
+
+<ParamField path="status" type="'idle' | 'copying' | 'copied' | 'failed'">
+  Controlled status state.
+</ParamField>
+
+<ParamField path="defaultStatus" type="'idle' | 'copying' | 'copied' | 'failed'" default="'idle'">
+  Default status (uncontrolled mode).
+</ParamField>
+
+<ParamField path="onStatusChange" type="(status: CopyButtonStatus) => void">
+  Callback when status changes.
+</ParamField>
+
+<ParamField path="statusLabels" type="Partial<Record<CopyButtonStatus, string>>">
+  Custom labels for each status.
+</ParamField>
+
+<ParamField path="liveRegionMessages" type="Partial<Record<CopyButtonStatus, string>>">
+  Custom screen reader announcements for each status.
+</ParamField>
+
+<ParamField path="children" type="ReactNode | ((status: CopyButtonStatus) => ReactNode)">
+  Custom content or function that receives current status.
+</ParamField>
+
+## Status States
+
+The component cycles through these states:
+
+- **idle**: Ready to copy
+- **copying**: Copy operation in progress
+- **copied**: Successfully copied
+- **failed**: Copy operation failed
+
+## Examples
+
+### Basic Copy Button
+
+```tsx
+<CopyButton value="npm install @kuzenbo/core" />
+```
+
+### Custom Labels
+
+```tsx
+<CopyButton
+  value="Hello World"
+  statusLabels={{
+    idle: "Copy text",
+    copied: "Copied!",
+    failed: "Failed to copy"
+  }}
+/>
+```
+
+### With Custom Content
+
+```tsx
+<CopyButton value="Secret API Key">
+  {(status) => (
+    <>
+      {status === "copied" ? "✓ Copied" : "Copy API Key"}
+    </>
+  )}
+</CopyButton>
+```
+
+### Custom Timeout
+
+```tsx
+<CopyButton
+  value="Long message"
+  timeout={3000} // Show "copied" state for 3 seconds
+/>
+```
+
+### Controlled Status
+
+```tsx
+const [status, setStatus] = useState<CopyButtonStatus>("idle");
+
+<CopyButton
+  value="Controlled value"
+  status={status}
+  onStatusChange={setStatus}
+/>
+```
+
+### Code Block Copy
+
+```tsx
+function CodeBlock({ code }: { code: string }) {
+  return (
+    <div className="relative">
+      <pre className="p-4 rounded-lg bg-muted">
+        <code>{code}</code>
+      </pre>
+      <div className="absolute top-2 right-2">
+        <CopyButton value={code} variant="ghost" size="sm">
+          Copy code
+        </CopyButton>
+      </div>
+    </div>
+  );
+}
+```
+
+### With Different Button Styles
+
+```tsx
+<div className="flex gap-2">
+  <CopyButton value="text" variant="default" />
+  <CopyButton value="text" variant="outline" />
+  <CopyButton value="text" variant="ghost" />
+</div>
+```
+
+### Accessible Custom Messages
+
+```tsx
+<CopyButton
+  value="Important data"
+  liveRegionMessages={{
+    idle: "Press to copy data",
+    copying: "Copying data to clipboard",
+    copied: "Data successfully copied",
+    failed: "Failed to copy data. Please try again."
+  }}
+/>
+```

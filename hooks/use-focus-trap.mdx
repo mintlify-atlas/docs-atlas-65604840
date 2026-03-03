@@ -1,0 +1,96 @@
+---
+title: 'useFocusTrap'
+description: 'Trap keyboard focus inside a container'
+---
+
+`useFocusTrap` traps keyboard focus inside the referenced container while active. On activation it focuses `[data-autofocus]`, otherwise the first tabbable/focusable node, and keeps `Tab` navigation scoped.
+
+## Usage
+
+```tsx
+import { useFocusTrap } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Modal() {
+  const [active, setActive] = useState(true);
+  const ref = useFocusTrap(active);
+
+  return (
+    <div ref={ref}>
+      <h2>Modal Title</h2>
+      <input placeholder="First input" />
+      <input placeholder="Second input" />
+      <button onClick={() => setActive(false)}>Close</button>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Parameters
+
+<ParamField path="active" type="boolean" default="true">
+  Whether the focus trap behavior is enabled. When `false`, focus can move freely.
+</ParamField>
+
+### Returns
+
+<ResponseField name="ref" type="RefCallback<HTMLElement>">
+  A ref callback to attach to the container element that should trap focus.
+</ResponseField>
+
+## Auto-focus Specific Element
+
+Use the `data-autofocus` attribute to specify which element should receive focus when the trap activates:
+
+```tsx
+import { useFocusTrap } from '@kuzenbo/hooks';
+
+function Dialog() {
+  const ref = useFocusTrap();
+
+  return (
+    <div ref={ref}>
+      <h2>Confirm Action</h2>
+      <input placeholder="This won't be focused" />
+      <button>Cancel</button>
+      <button data-autofocus>Confirm</button>
+    </div>
+  );
+}
+```
+
+## Conditional Focus Trap
+
+Toggle the focus trap based on state:
+
+```tsx
+import { useFocusTrap } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Sidebar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useFocusTrap(isOpen);
+
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)}>Open Sidebar</button>
+      {isOpen && (
+        <aside ref={ref}>
+          <button onClick={() => setIsOpen(false)}>Close</button>
+          <nav>
+            <a href="#">Link 1</a>
+            <a href="#">Link 2</a>
+            <a href="#">Link 3</a>
+          </nav>
+        </aside>
+      )}
+    </>
+  );
+}
+```
+
+## Accessibility
+
+Focus traps are essential for accessible modals and dialogs. They ensure keyboard users can't accidentally tab out of the modal and into the background content.

@@ -1,0 +1,165 @@
+---
+title: 'useIdle'
+description: 'Tracks user inactivity and marks the state as idle after a timeout'
+icon: 'user-clock'
+---
+
+Tracks user inactivity and marks the state as idle after a timeout. Any configured DOM event resets the timer and marks the state as active.
+
+## Signature
+
+```typescript
+function useIdle(
+  timeout: number,
+  options?: UseIdleOptions
+): boolean
+```
+
+## Parameters
+
+<ParamField path="timeout" type="number" required>
+  Inactivity duration in milliseconds before `idle` becomes `true`.
+</ParamField>
+
+<ParamField path="options" type="UseIdleOptions">
+  Optional event list and initial idle state.
+  
+  <Expandable title="UseIdleOptions">
+    <ResponseField name="events" type="(keyof DocumentEventMap)[]" default="['keydown', 'mousemove', 'touchmove', 'click', 'scroll', 'wheel']">
+      Array of DOM events that reset the idle timer.
+    </ResponseField>
+    <ResponseField name="initialState" type="boolean" default="true">
+      Initial idle state before any events occur.
+    </ResponseField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+<ResponseField name="idle" type="boolean">
+  `true` when the user has been inactive for the timeout duration, `false` otherwise.
+</ResponseField>
+
+## Usage
+
+### Auto-pause video on idle
+
+```tsx
+import { useIdle } from '@kuzenbo/hooks';
+import { useEffect, useRef } from 'react';
+
+function VideoPlayer() {
+  const idle = useIdle(5000);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (idle && videoRef.current) {
+      videoRef.current.pause();
+    }
+  }, [idle]);
+
+  return (
+    <div>
+      <video ref={videoRef} src="/video.mp4" controls />
+      {idle && <div>Video paused due to inactivity</div>}
+    </div>
+  );
+}
+```
+
+### Custom idle events
+
+```tsx
+import { useIdle } from '@kuzenbo/hooks';
+
+function KeyboardIdleDetector() {
+  const idle = useIdle(10000, {
+    events: ['keydown', 'keypress'],
+    initialState: false
+  });
+
+  return (
+    <div>
+      <p>Status: {idle ? 'Idle' : 'Typing'}</p>
+      <input placeholder="Start typing..." />
+    </div>
+  );
+}
+```
+
+### Idle indicator
+
+```tsx
+import { useIdle } from '@kuzenbo/hooks';
+
+function IdleIndicator() {
+  const idle = useIdle(30000);
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 10,
+      right: 10,
+      padding: '8px 16px',
+      background: idle ? '#ff9800' : '#4caf50',
+      color: 'white',
+      borderRadius: '4px'
+    }}>
+      {idle ? 'Idle' : 'Active'}
+    </div>
+  );
+}
+```
+
+### Auto-logout on idle
+
+```tsx
+import { useIdle } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+function SecureApp() {
+  const idle = useIdle(15 * 60 * 1000); // 15 minutes
+
+  useEffect(() => {
+    if (idle) {
+      // Log out user
+      localStorage.removeItem('auth_token');
+      window.location.href = '/login';
+    }
+  }, [idle]);
+
+  return <div>Secure content</div>;
+}
+```
+
+### Idle warning
+
+```tsx
+import { useIdle } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function SessionWarning() {
+  const idle = useIdle(10 * 60 * 1000); // 10 minutes
+  const [showWarning, setShowWarning] = useState(false);
+
+  useEffect(() => {
+    if (idle) {
+      setShowWarning(true);
+    } else {
+      setShowWarning(false);
+    }
+  }, [idle]);
+
+  if (!showWarning) return null;
+
+  return (
+    <div className="warning-modal">
+      <h2>Are you still there?</h2>
+      <p>Your session will expire due to inactivity.</p>
+      <button onClick={() => setShowWarning(false)}>
+        Continue session
+      </button>
+    </div>
+  );
+}
+```

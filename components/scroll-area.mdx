@@ -1,0 +1,112 @@
+---
+title: Scroll Area
+description: Augments native scroll functionality for custom, cross-browser styling.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { ScrollArea } from "@kuzenbo/core";
+
+function Example() {
+  return (
+    <ScrollArea className="h-[200px] w-[350px] rounded-md border p-4">
+      <div className="space-y-4">
+        {Array.from({ length: 50 }, (_, i) => (
+          <div key={i} className="text-sm">
+            Item {i + 1}
+          </div>
+        ))}
+      </div>
+    </ScrollArea>
+  );
+}
+```
+
+## Props
+
+### ScrollArea
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+<ParamField path="children" type="ReactNode" required>
+  The content to make scrollable.
+</ParamField>
+
+### ScrollArea.Viewport
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the viewport.
+</ParamField>
+
+### ScrollArea.Bar
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="'vertical'">
+  The orientation of the scrollbar.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### ScrollArea.Thumb
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the thumb.
+</ParamField>
+
+## Advanced Patterns
+
+### Horizontal Scrolling
+
+```tsx
+<ScrollArea className="w-96 whitespace-nowrap rounded-md border">
+  <ScrollArea.Viewport>
+    <ScrollArea.Content>
+      <div className="flex space-x-4 p-4">
+        {items.map((item) => (
+          <div key={item.id} className="shrink-0">
+            {item.content}
+          </div>
+        ))}
+      </div>
+    </ScrollArea.Content>
+  </ScrollArea.Viewport>
+  <ScrollArea.Bar orientation="horizontal" />
+</ScrollArea>
+```
+
+### Custom Scrollbar
+
+```tsx
+<ScrollArea>
+  {children}
+  <ScrollArea.Bar>
+    <ScrollArea.Thumb className="bg-primary" />
+  </ScrollArea.Bar>
+  <ScrollArea.Corner />
+</ScrollArea>
+```
+
+### Both Directions
+
+```tsx
+<ScrollArea className="h-[400px] w-[400px]">
+  <ScrollArea.Viewport>
+    <ScrollArea.Content>
+      {/* Wide and tall content */}
+    </ScrollArea.Content>
+  </ScrollArea.Viewport>
+  <ScrollArea.Bar orientation="vertical" />
+  <ScrollArea.Bar orientation="horizontal" />
+  <ScrollArea.Corner />
+</ScrollArea>
+```

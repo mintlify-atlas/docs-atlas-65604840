@@ -1,0 +1,197 @@
+---
+title: Table
+description: Display data in rows and columns with built-in scrolling and size variants
+---
+
+The Table component displays structured data in a grid format with header, body, and optional caption and footer sections. It supports multiple size variants and includes built-in horizontal scrolling.
+
+## Import
+
+```tsx
+import { Table } from "@kuzenbo/core";
+```
+
+## Usage
+
+```tsx
+<Table size="md">
+  <Table.Caption>Weekly enterprise approval queue</Table.Caption>
+  <Table.Header>
+    <Table.Row>
+      <Table.Head>Request</Table.Head>
+      <Table.Head>Owner</Table.Head>
+      <Table.Head>Amount</Table.Head>
+      <Table.Head>Status</Table.Head>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell className="font-medium">PO-48213</Table.Cell>
+      <Table.Cell>Finance Ops</Table.Cell>
+      <Table.Cell>$148,200</Table.Cell>
+      <Table.Cell>Approved</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell className="font-medium">PO-48217</Table.Cell>
+      <Table.Cell>Legal</Table.Cell>
+      <Table.Cell>$72,900</Table.Cell>
+      <Table.Cell>Reviewing</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+```
+
+## Anatomy
+
+The Table component is composed of several sub-components:
+
+- `Table` - Root container with scrolling support
+- `Table.Header` - Contains header rows
+- `Table.Body` - Contains data rows
+- `Table.Footer` - Optional footer section
+- `Table.Row` - Table row (for header or body)
+- `Table.Head` - Header cell
+- `Table.Cell` - Data cell
+- `Table.Caption` - Optional table caption
+
+## Props
+
+### Table
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="md">
+  Controls the overall size of the table, affecting text size and cell padding. Size is inherited by all child components but can be overridden per component.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the table element.
+</ParamField>
+
+### Table.Cell
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the inherited size for this specific cell.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the cell.
+</ParamField>
+
+### Table.Head
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the inherited size for this header cell.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the header cell.
+</ParamField>
+
+### Table.Row
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the inherited size for this row and its children.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the row.
+</ParamField>
+
+### Table.Header
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the inherited size for the header section.
+</ParamField>
+
+### Table.Body
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the inherited size for the body section.
+</ParamField>
+
+### Table.Footer
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the inherited size for the footer section.
+</ParamField>
+
+### Table.Caption
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the caption.
+</ParamField>
+
+## Examples
+
+### Dense rows
+
+Use the `sm` or `xs` size for compact tables with many rows:
+
+```tsx
+<Table size="sm">
+  <Table.Caption>Operational SLA tracker</Table.Caption>
+  <Table.Header>
+    <Table.Row>
+      <Table.Head>Ticket</Table.Head>
+      <Table.Head>Region</Table.Head>
+      <Table.Head>SLA</Table.Head>
+      <Table.Head>State</Table.Head>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell className="font-medium">REQ-9012</Table.Cell>
+      <Table.Cell>APAC</Table.Cell>
+      <Table.Cell>8h</Table.Cell>
+      <Table.Cell>Completed</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+```
+
+### Empty state
+
+Display an empty state message when there's no data:
+
+```tsx
+<Table size="md">
+  <Table.Caption>No pending approvals for this filter set</Table.Caption>
+  <Table.Header>
+    <Table.Row>
+      <Table.Head>Request</Table.Head>
+      <Table.Head>Owner</Table.Head>
+      <Table.Head>Amount</Table.Head>
+      <Table.Head>Status</Table.Head>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell className="text-muted-foreground py-8 text-center" colSpan={4}>
+        All enterprise requests are up to date.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+```
+
+### Selectable rows
+
+Use the `data-state` attribute to indicate selected rows:
+
+```tsx
+<Table.Row data-state="selected">
+  <Table.Cell>Selected content</Table.Cell>
+</Table.Row>
+```
+
+## Data Attributes
+
+- `[data-size]` - Applied to all table components, reflects the current size
+- `[data-slot]` - Identifies the component type (e.g., "table", "table-cell")
+- `[data-state]` - On `Table.Row`, can be "selected" to highlight the row
+
+## Accessibility
+
+- Uses semantic HTML table elements (`<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>`)
+- The caption provides context for screen readers
+- Header cells use `<th>` elements for proper association
+- Scrollable container is keyboard navigable

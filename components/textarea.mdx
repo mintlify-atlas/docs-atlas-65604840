@@ -1,0 +1,186 @@
+---
+title: Textarea
+description: A multi-line text input with auto-resize functionality for collecting longer form text.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+## Usage
+
+```tsx
+import { Textarea } from "@kuzenbo/core";
+
+function App() {
+  return (
+    <Textarea
+      placeholder="Summarize the rollout impact for customer success and support teams."
+    />
+  );
+}
+```
+
+## Examples
+
+### Basic Textarea
+
+Textarea automatically resizes based on content.
+
+```tsx
+import { Textarea } from "@kuzenbo/core";
+
+function BasicExample() {
+  return (
+    <Textarea
+      placeholder="Document customer impact and mitigation actions."
+    />
+  );
+}
+```
+
+### Sizes
+
+Textareas are available in five size variants.
+
+```tsx
+import { Textarea } from "@kuzenbo/core";
+
+function SizesExample() {
+  return (
+    <div className="grid gap-2">
+      <Textarea size="xs" placeholder="XS feedback" />
+      <Textarea size="sm" placeholder="SM feedback" />
+      <Textarea size="md" placeholder="MD feedback" />
+      <Textarea size="lg" placeholder="LG feedback" />
+      <Textarea size="xl" placeholder="XL feedback" />
+    </div>
+  );
+}
+```
+
+### With Character Count
+
+Combine with maxLength to implement character limits.
+
+```tsx
+import { Textarea } from "@kuzenbo/core";
+import { useState } from "react";
+
+function CharacterCountExample() {
+  const [value, setValue] = useState(
+    "Customer reported elevated API latency between 09:10 and 09:42 UTC for EU tenants."
+  );
+
+  return (
+    <div className="grid w-full max-w-lg gap-2">
+      <Textarea
+        aria-label="Incident summary"
+        maxLength={280}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Document customer impact and mitigation actions."
+        value={value}
+      />
+      <span className="text-muted-foreground text-xs">
+        {value.length}/280 characters
+      </span>
+    </div>
+  );
+}
+```
+
+### Disabled
+
+Disabled textareas are non-interactive and visually muted.
+
+```tsx
+import { Textarea } from "@kuzenbo/core";
+
+function DisabledExample() {
+  return (
+    <Textarea
+      defaultValue="Incident timeline is locked after compliance review sign-off."
+      disabled
+    />
+  );
+}
+```
+
+### Custom Rows
+
+Control minimum visible rows with the `rows` prop.
+
+```tsx
+import { Textarea } from "@kuzenbo/core";
+
+function CustomRowsExample() {
+  return (
+    <Textarea
+      placeholder="Extended description"
+      rows={6}
+    />
+  );
+}
+```
+
+## Props
+
+Textarea extends all native HTML textarea props and react-textarea-autosize props.
+
+<ParamField path="size" type="string" default="md">
+  Size variant of the textarea.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="placeholder" type="string">
+  Placeholder text displayed when the textarea is empty.
+</ParamField>
+
+<ParamField path="rows" type="number" default="3">
+  Minimum number of visible text rows.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the textarea and makes it non-interactive.
+</ParamField>
+
+<ParamField path="readOnly" type="boolean" default="false">
+  When true, makes the textarea read-only but still focusable.
+</ParamField>
+
+<ParamField path="value" type="string">
+  Controlled value for the textarea.
+</ParamField>
+
+<ParamField path="defaultValue" type="string">
+  Initial value for uncontrolled usage.
+</ParamField>
+
+<ParamField path="maxLength" type="number">
+  Maximum number of characters allowed.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the textarea.
+</ParamField>
+
+## TypeScript
+
+```tsx
+import type { TextareaProps } from "@kuzenbo/core";
+
+const CustomTextarea = (props: TextareaProps) => {
+  return <Textarea {...props} />;
+};
+```
+
+## Accessibility
+
+- Textarea uses semantic `<textarea>` element
+- Automatically resizes to fit content using field-sizing-content
+- Supports all ARIA attributes for enhanced accessibility
+- Invalid state indicated with `aria-invalid` attribute
+- Works with native form validation

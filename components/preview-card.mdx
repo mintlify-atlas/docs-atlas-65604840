@@ -1,0 +1,191 @@
+---
+title: Preview Card
+description: Display rich preview content on hover or focus, similar to link previews.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { PreviewCard } from "@kuzenbo/core";
+
+function Example() {
+  return (
+    <PreviewCard>
+      <PreviewCard.Trigger asChild>
+        <a href="#">Hover me</a>
+      </PreviewCard.Trigger>
+      <PreviewCard.Portal>
+        <PreviewCard.Positioner>
+          <PreviewCard.Popup>
+            <PreviewCard.Content>
+              <PreviewCard.Viewport>
+                <div className="p-4">
+                  <h3 className="font-semibold">Preview Title</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Preview description and additional content.
+                  </p>
+                </div>
+              </PreviewCard.Viewport>
+              <PreviewCard.Arrow />
+            </PreviewCard.Content>
+          </PreviewCard.Popup>
+        </PreviewCard.Positioner>
+      </PreviewCard.Portal>
+    </PreviewCard>
+  );
+}
+```
+
+## Props
+
+### PreviewCard
+
+<ParamField path="defaultOpen" type="boolean">
+  Default open state (uncontrolled mode).
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  Controlled open state.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback when open state changes.
+</ParamField>
+
+<ParamField path="openDelay" type="number" default="700">
+  Delay in ms before opening on hover.
+</ParamField>
+
+<ParamField path="closeDelay" type="number" default="300">
+  Delay in ms before closing.
+</ParamField>
+
+### PreviewCard.Trigger
+
+<ParamField path="asChild" type="boolean">
+  Render as child element.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### PreviewCard.Content
+
+<ParamField path="side" type="'top' | 'right' | 'bottom' | 'left'" default="'bottom'">
+  Preferred side of the trigger to render.
+</ParamField>
+
+<ParamField path="align" type="'start' | 'center' | 'end'" default="'center'">
+  Alignment relative to the trigger.
+</ParamField>
+
+<ParamField path="sideOffset" type="number" default="4">
+  Distance from the trigger.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### PreviewCard.Arrow
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Advanced Patterns
+
+### Link Preview
+
+```tsx
+function LinkPreview({ href, children }: { href: string; children: ReactNode }) {
+  const [preview, setPreview] = useState<{ title: string; description: string } | null>(null);
+
+  return (
+    <PreviewCard>
+      <PreviewCard.Trigger asChild>
+        <a href={href} className="underline">
+          {children}
+        </a>
+      </PreviewCard.Trigger>
+      <PreviewCard.Portal>
+        <PreviewCard.Positioner>
+          <PreviewCard.Popup>
+            <PreviewCard.Content className="w-80">
+              <PreviewCard.Viewport>
+                {preview ? (
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-semibold">{preview.title}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {preview.description}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="p-4">Loading...</div>
+                )}
+              </PreviewCard.Viewport>
+              <PreviewCard.Arrow />
+            </PreviewCard.Content>
+          </PreviewCard.Popup>
+        </PreviewCard.Positioner>
+      </PreviewCard.Portal>
+    </PreviewCard>
+  );
+}
+```
+
+### User Profile Preview
+
+```tsx
+<PreviewCard>
+  <PreviewCard.Trigger asChild>
+    <button className="text-primary hover:underline">
+      @username
+    </button>
+  </PreviewCard.Trigger>
+  <PreviewCard.Portal>
+    <PreviewCard.Positioner>
+      <PreviewCard.Popup>
+        <PreviewCard.Content>
+          <PreviewCard.Viewport>
+            <div className="p-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <Avatar.Image src="/avatar.jpg" />
+                  <Avatar.Fallback>UN</Avatar.Fallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold">User Name</p>
+                  <p className="text-sm text-muted-foreground">@username</p>
+                </div>
+              </div>
+              <p className="text-sm">Bio and description</p>
+              <div className="flex gap-4 text-sm">
+                <span><strong>123</strong> followers</span>
+                <span><strong>456</strong> following</span>
+              </div>
+            </div>
+          </PreviewCard.Viewport>
+        </PreviewCard.Content>
+      </PreviewCard.Popup>
+    </PreviewCard.Positioner>
+  </PreviewCard.Portal>
+</PreviewCard>
+```
+
+### Controlled Preview
+
+```tsx
+const [open, setOpen] = useState(false);
+
+<PreviewCard open={open} onOpenChange={setOpen}>
+  {/* ... */}
+</PreviewCard>
+```

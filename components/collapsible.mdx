@@ -1,0 +1,98 @@
+---
+title: Collapsible
+description: An interactive component which expands and collapses a panel.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Collapsible } from "@kuzenbo/core";
+import { ChevronDownIcon } from "lucide-react";
+
+function Example() {
+  return (
+    <Collapsible>
+      <Collapsible.Trigger>
+        <ChevronDownIcon />
+        Show more
+      </Collapsible.Trigger>
+      <Collapsible.Content>
+        Additional content that can be toggled.
+      </Collapsible.Content>
+    </Collapsible>
+  );
+}
+```
+
+## Props
+
+### Collapsible
+
+<ParamField path="defaultOpen" type="boolean">
+  The default open state (uncontrolled mode).
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  The controlled open state.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback fired when the open state changes.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the collapsible is disabled.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Collapsible.Trigger
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Collapsible.Content
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Advanced Patterns
+
+### Controlled State
+
+```tsx
+const [open, setOpen] = useState(false);
+
+<Collapsible open={open} onOpenChange={setOpen}>
+  <Collapsible.Trigger>Toggle</Collapsible.Trigger>
+  <Collapsible.Content>
+    Content
+  </Collapsible.Content>
+</Collapsible>
+```
+
+### Custom Trigger
+
+```tsx
+<Collapsible>
+  <Collapsible.Trigger asChild>
+    <Button variant="outline">
+      <ChevronDownIcon className="transition-transform data-open:rotate-180" />
+      Expand
+    </Button>
+  </Collapsible.Trigger>
+  <Collapsible.Content>
+    Content
+  </Collapsible.Content>
+</Collapsible>
+```

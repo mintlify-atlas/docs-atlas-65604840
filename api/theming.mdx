@@ -1,0 +1,428 @@
+---
+title: Theming API
+description: Theme provider and utilities for dark mode and color scheme management
+---
+
+## Overview
+
+Kuzenbo's theming system provides seamless dark/light mode support with server-side rendering, cookie persistence, and system preference detection.
+
+## Installation
+
+```bash
+npm install @kuzenbo/theme next-themes
+```
+
+## Quick Start
+
+```tsx
+import { ThemeProvider } from "@kuzenbo/theme";
+
+export default function App({ children }) {
+  return (
+    <ThemeProvider>
+      {children}
+    </ThemeProvider>
+  );
+}
+```
+
+## ThemeProvider
+
+Wrapper around `next-themes` with Kuzenbo-specific defaults.
+
+### Props
+
+<ParamField path="children" type="ReactNode" required>
+  The application tree to wrap with theme context.
+</ParamField>
+
+<ParamField path="defaultTheme" type="string" default="system">
+  Initial theme when no preference is stored. Valid values: `"light"`, `"dark"`, or `"system"`.
+</ParamField>
+
+<ParamField path="attribute" type="string" default="class">
+  HTML attribute to use for theme switching. Kuzenbo uses `class` and applies a `.dark` class.
+</ParamField>
+
+<ParamField path="enableSystem" type="boolean" default="true">
+  Enable system preference detection via `prefers-color-scheme` media query.
+</ParamField>
+
+<ParamField path="storageKey" type="string" default="kuzenbo-theme">
+  LocalStorage key for persisting theme preference.
+</ParamField>
+
+<ParamField path="disableTransitionOnChange" type="boolean" default="true">
+  Prevents CSS transitions during theme changes to avoid flash.
+</ParamField>
+
+### Usage with next-themes
+
+```tsx
+import { ThemeProvider } from "@kuzenbo/theme";
+import { useTheme } from "next-themes";
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  
+  return (
+    <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+      Toggle theme
+    </button>
+  );
+}
+
+export default function App({ children }) {
+  return (
+    <ThemeProvider>
+      <ThemeToggle />
+      {children}
+    </ThemeProvider>
+  );
+}
+```
+
+## Theme Bootstrap
+
+Server-side theme initialization utilities for SSR frameworks.
+
+### ThemeBootstrapScript
+
+Inline script component that applies theme before hydration to prevent flash.
+
+```tsx
+import { ThemeBootstrapScript } from "@kuzenbo/theme";
+
+export default function RootLayout({ children }) {
+  return (
+    <html suppressHydrationWarning>
+      <head>
+        <ThemeBootstrapScript />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+**Props:**
+
+<ParamField path="defaultThemeSetting" type="ThemeSetting" default="system">
+  Fallback theme when no preference is stored.
+</ParamField>
+
+### getThemeBootstrapScript
+
+Generate the bootstrap script string for manual injection.
+
+```typescript
+import { getThemeBootstrapScript } from "@kuzenbo/theme";
+
+const scriptContent = getThemeBootstrapScript({
+  defaultThemeSetting: "system"
+});
+```
+
+**Parameters:**
+- `options`: `ThemeBootstrapScriptOptions`
+  - `defaultThemeSetting`: `ThemeSetting` (optional)
+
+**Returns:** `string` - Script content
+
+## Theme Utilities
+
+### applyThemeToRootElement
+
+Programmatically apply theme to document root.
+
+```typescript
+import { applyThemeToRootElement } from "@kuzenbo/theme";
+
+applyThemeToRootElement("dark");
+// Adds .dark class and sets color-scheme: dark
+```
+
+**Parameters:**
+- `theme`: `ThemePreference` (`"light"` or `"dark"`)
+
+### persistThemeCookie
+
+Save theme preference to cookie.
+
+```typescript
+import { persistThemeCookie } from "@kuzenbo/theme";
+
+persistThemeCookie("dark");
+// Sets cookie: kuzenbo-theme=dark; Path=/; Max-Age=31536000; SameSite=Lax
+```
+
+**Parameters:**
+- `theme`: `ThemePreference`
+
+### readThemeFromCookieString
+
+Extract theme preference from cookie string (server-side).
+
+```typescript
+import { readThemeFromCookieString } from "@kuzenbo/theme";
+import { cookies } from "next/headers";
+
+const cookieStore = await cookies();
+const cookieString = cookieStore.toString();
+const theme = readThemeFromCookieString(cookieString);
+// Returns "light" | "dark" | null
+```
+
+**Parameters:**
+- `cookieString`: `string` - Raw Cookie header value
+- `key`: `string` (optional) - Cookie name (default: `"kuzenbo-theme"`)
+
+**Returns:** `ThemePreference | null`
+
+### parseThemePreference
+
+Validate and parse theme preference string.
+
+```typescript
+import { parseThemePreference } from "@kuzenbo/theme";
+
+const theme1 = parseThemePreference("dark"); // "dark"
+const theme2 = parseThemePreference("invalid"); // null
+```
+
+**Parameters:**
+- `value`: `string | null | undefined`
+
+**Returns:** `ThemePreference | null`
+
+### resolveDefaultThemePreference
+
+Resolve theme preference from setting and system preference.
+
+```typescript
+import { resolveDefaultThemePreference } from "@kuzenbo/theme";
+
+const theme1 = resolveDefaultThemePreference("dark", "system");
+// Returns "dark" (uses system)
+
+const theme2 = resolveDefaultThemePreference("dark", "light");
+// Returns "light" (explicit setting)
+```
+
+**Parameters:**
+- `systemTheme`: `ThemePreference` - Detected system preference
+- `defaultThemeSetting`: `ThemeSetting` (optional) - User setting
+
+**Returns:** `ThemePreference`
+
+### resolveThemeBootstrapPlan
+
+Compute theme bootstrap strategy from multiple sources.
+
+```typescript
+import { resolveThemeBootstrapPlan } from "@kuzenbo/theme";
+
+const plan = resolveThemeBootstrapPlan({
+  cookieTheme: "dark",
+  storageTheme: null,
+  systemTheme: "light",
+  defaultThemeSetting: "system"
+});
+// {
+//   resolvedTheme: "dark",
+//   shouldWriteCookie: false,
+//   shouldWriteStorage: true
+// }
+```
+
+**Parameters:**
+- `input`: `ThemeBootstrapPlanInput`
+  - `cookieTheme`: `ThemePreference | null`
+  - `storageTheme`: `ThemePreference | null`
+  - `systemTheme`: `ThemePreference`
+  - `defaultThemeSetting`: `ThemeSetting` (optional)
+
+**Returns:** `ThemeBootstrapPlan`
+  - `resolvedTheme`: `ThemePreference` - Final theme to apply
+  - `shouldWriteCookie`: `boolean` - Whether to persist to cookie
+  - `shouldWriteStorage`: `boolean` - Whether to persist to localStorage
+
+## Constants
+
+### Theme Keys
+
+```typescript
+import {
+  THEME_COOKIE_KEY,
+  THEME_STORAGE_KEY,
+  DEFAULT_THEME_SETTING,
+  THEME_COOKIE_MAX_AGE_SECONDS,
+  SYSTEM_DARK_MEDIA_QUERY
+} from "@kuzenbo/theme";
+
+console.log(THEME_COOKIE_KEY); // "kuzenbo-theme"
+console.log(THEME_STORAGE_KEY); // "kuzenbo-theme"
+console.log(DEFAULT_THEME_SETTING); // "system"
+console.log(THEME_COOKIE_MAX_AGE_SECONDS); // 31536000 (1 year)
+console.log(SYSTEM_DARK_MEDIA_QUERY); // "(prefers-color-scheme: dark)"
+```
+
+## TypeScript Interfaces
+
+### ThemePreference
+
+```typescript
+type ThemePreference = "dark" | "light";
+```
+
+### ThemeSetting
+
+```typescript
+type ThemeSetting = ThemePreference | "system";
+```
+
+### ThemeBootstrapPlan
+
+```typescript
+interface ThemeBootstrapPlan {
+  resolvedTheme: ThemePreference;
+  shouldWriteCookie: boolean;
+  shouldWriteStorage: boolean;
+}
+```
+
+### ThemeBootstrapPlanInput
+
+```typescript
+interface ThemeBootstrapPlanInput {
+  cookieTheme: ThemePreference | null;
+  defaultThemeSetting?: ThemeSetting;
+  storageTheme: ThemePreference | null;
+  systemTheme: ThemePreference;
+}
+```
+
+### ThemeBootstrapScriptOptions
+
+```typescript
+interface ThemeBootstrapScriptOptions {
+  defaultThemeSetting?: ThemeSetting;
+}
+```
+
+## CSS Variables
+
+Kuzenbo themes use CSS custom properties defined in `@kuzenbo/theme/default.css`:
+
+```css
+:root {
+  --kb-background: oklch(1 0 0);
+  --kb-foreground: oklch(0.141 0.005 285.823);
+  --kb-primary: oklch(0.21 0.006 285.885);
+  --kb-primary-foreground: oklch(0.985 0 0);
+  /* ... more color tokens */
+}
+
+.dark {
+  --kb-background: oklch(0.141 0.005 285.823);
+  --kb-foreground: oklch(0.985 0 0);
+  /* ... dark mode overrides */
+}
+```
+
+### Semantic Color Tokens
+
+Use these tokens in your components:
+
+- `--kb-background` / `--kb-foreground`
+- `--kb-primary` / `--kb-primary-foreground`
+- `--kb-secondary` / `--kb-secondary-foreground`
+- `--kb-muted` / `--kb-muted-foreground`
+- `--kb-accent` / `--kb-accent-foreground`
+- `--kb-card` / `--kb-card-foreground`
+- `--kb-popover` / `--kb-popover-foreground`
+- `--kb-border`, `--kb-input`, `--kb-ring`
+- `--kb-danger`, `--kb-warning`, `--kb-info`, `--kb-success`
+
+```tsx
+<div className="bg-background text-foreground border-border">
+  <button className="bg-primary text-primary-foreground">
+    Primary Action
+  </button>
+</div>
+```
+
+## Complete Example
+
+```tsx
+// app/layout.tsx
+import { ThemeProvider, ThemeBootstrapScript } from "@kuzenbo/theme";
+import { KuzenboProvider } from "@kuzenbo/core/provider";
+import "@kuzenbo/theme/default.css";
+
+export default function RootLayout({ children }) {
+  return (
+    <html suppressHydrationWarning>
+      <head>
+        <ThemeBootstrapScript defaultThemeSetting="system" />
+      </head>
+      <body>
+        <ThemeProvider>
+          <KuzenboProvider defaultSize="md">
+            {children}
+          </KuzenboProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+
+// components/theme-toggle.tsx
+import { useTheme } from "next-themes";
+import { Button } from "@kuzenbo/core/ui/button";
+
+export function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  
+  return (
+    <Button
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      variant="outline"
+    >
+      {theme === "dark" ? "Light" : "Dark"} Mode
+    </Button>
+  );
+}
+```
+
+## Server-Side Rendering
+
+For SSR frameworks, use the bootstrap script to prevent theme flash:
+
+```tsx
+import { ThemeBootstrapScript } from "@kuzenbo/theme";
+import { cookies } from "next/headers";
+
+export default async function RootLayout({ children }) {
+  // Optional: Read initial theme from cookies
+  const cookieStore = await cookies();
+  const cookieString = cookieStore.toString();
+  
+  return (
+    <html suppressHydrationWarning>
+      <head>
+        <ThemeBootstrapScript />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+The script will:
+1. Check cookie for saved preference
+2. Check localStorage for saved preference
+3. Detect system preference via media query
+4. Apply theme to `<html>` element before first paint
+5. Sync preferences across storage methods

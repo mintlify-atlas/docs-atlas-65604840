@@ -1,0 +1,315 @@
+---
+title: '@kuzenbo/styles'
+description: 'Optional global baseline styles for Kuzenbo apps'
+icon: 'paintbrush'
+---
+
+## Overview
+
+The `@kuzenbo/styles` package provides optional global baseline styles for Kuzenbo applications. These styles establish consistent typography, spacing, and element defaults across your app.
+
+<Note>
+Version 0.0.7 is currently published on npm. This package is optional but recommended for consistent styling.
+</Note>
+
+## Installation
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/styles
+```
+
+```bash yarn
+yarn add @kuzenbo/styles
+```
+
+```bash pnpm
+pnpm add @kuzenbo/styles
+```
+
+```bash bun
+bun add @kuzenbo/styles
+```
+</CodeGroup>
+
+## Usage
+
+Import the recommended styles in your app's entry point:
+
+```tsx
+import '@kuzenbo/styles/recommended.css';
+// or
+import '@kuzenbo/styles/styles.css';
+```
+
+### Next.js
+
+```tsx
+// app/layout.tsx
+import '@kuzenbo/theme/default.css';
+import '@kuzenbo/styles/recommended.css';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+### Vite/React
+
+```tsx
+// main.tsx or App.tsx
+import '@kuzenbo/theme/default.css';
+import '@kuzenbo/styles/recommended.css';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
+
+## What's Included
+
+The recommended styles provide:
+
+### Typography
+
+- Consistent font families (system font stack)
+- Optimized line heights and letter spacing
+- Smooth font rendering (`-webkit-font-smoothing`)
+- Proper heading sizes and weights
+
+### Layout
+
+- Normalized box-sizing (`border-box`)
+- Removed default margins on common elements
+- Consistent spacing scale
+- Proper list styling
+
+### Forms
+
+- Consistent input styling
+- Removed default browser styles
+- Proper focus states
+- Disabled state styling
+
+### Accessibility
+
+- Focus-visible outlines
+- Reduced motion support
+- Screen reader utilities
+- Proper color contrast
+
+## Customization
+
+You can override or extend the baseline styles:
+
+```css
+/* your-app.css */
+@import '@kuzenbo/styles/recommended.css';
+
+/* Override typography */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Override headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Add custom spacing */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+```
+
+## Typography Scale
+
+The package includes a consistent typography scale:
+
+```tsx
+import '@kuzenbo/styles/recommended.css';
+
+<h1>Heading 1</h1> {/* 2.25rem / 36px */}
+<h2>Heading 2</h2> {/* 1.875rem / 30px */}
+<h3>Heading 3</h3> {/* 1.5rem / 24px */}
+<h4>Heading 4</h4> {/* 1.25rem / 20px */}
+<h5>Heading 5</h5> {/* 1.125rem / 18px */}
+<h6>Heading 6</h6> {/* 1rem / 16px */}
+<p>Body text</p> {/* 1rem / 16px */}
+<small>Small text</small> {/* 0.875rem / 14px */}
+```
+
+## Focus Styles
+
+Consistent focus indicators:
+
+```css
+/* Visible focus ring */
+:focus-visible {
+  outline: 2px solid hsl(var(--kb-ring));
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+```
+
+## Reduced Motion
+
+Respects user preferences:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+## Font Smoothing
+
+Optimized font rendering:
+
+```css
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+```
+
+## Form Elements
+
+Normalized form styling:
+
+```css
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+input:disabled,
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+```
+
+## Optional Styles
+
+You can selectively import parts of the styles package if you prefer more control:
+
+```css
+/* Import only specific parts */
+@import '@kuzenbo/styles/recommended.css' layer(base);
+
+/* Override in your own layer */
+@layer components {
+  /* Your component styles */
+}
+```
+
+## Best Practices
+
+### Import Order
+
+Recommended CSS import order:
+
+```tsx
+// 1. Theme tokens
+import '@kuzenbo/theme/default.css';
+
+// 2. Global styles
+import '@kuzenbo/styles/recommended.css';
+
+// 3. Component styles
+import './App.css';
+```
+
+### With Tailwind CSS
+
+The styles work seamlessly with Tailwind:
+
+```css
+/* globals.css */
+@import '@kuzenbo/theme/default.css';
+@import '@kuzenbo/styles/recommended.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+## Dependencies
+
+- `tailwindcss` - CSS framework (for layer support)
+
+## No Peer Dependencies
+
+This package has no peer dependencies and can be used standalone.
+
+## When to Use
+
+### ✅ Use `@kuzenbo/styles` when:
+
+- Building a new application from scratch
+- You want consistent baseline styles
+- You prefer normalized defaults
+- You're using multiple Kuzenbo packages
+
+### ❌ Skip if:
+
+- You have existing global styles
+- You prefer complete control over base styles
+- You're integrating into an existing design system
+- You want minimal CSS footprint
+
+## Size
+
+The recommended.css file is lightweight:
+
+- **Uncompressed:** ~3KB
+- **Gzipped:** ~1KB
+
+## Browser Support
+
+Supports all modern browsers:
+
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- React Native (via react-native-web)
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Theme" icon="palette" href="/packages/theme">
+    Configure themes and colors
+  </Card>
+  <Card title="Core Components" icon="box" href="/packages/core">
+    Start using components
+  </Card>
+  <Card title="Typography" icon="text" href="/components/typography">
+    Typography component
+  </Card>
+</CardGroup>

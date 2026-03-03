@@ -1,0 +1,340 @@
+---
+title: '@kuzenbo/charts'
+description: 'Ready-made chart components for Kuzenbo'
+icon: 'chart-line'
+---
+
+## Overview
+
+The `@kuzenbo/charts` package provides pre-built, accessible chart components powered by Recharts. All charts are styled to match your Kuzenbo theme and support responsive layouts out of the box.
+
+<Note>
+Version 0.0.7 is currently published on npm. This package is production-ready.
+</Note>
+
+## Installation
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/charts @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash yarn
+yarn add @kuzenbo/charts @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash pnpm
+pnpm add @kuzenbo/charts @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash bun
+bun add @kuzenbo/charts @kuzenbo/core @kuzenbo/theme react react-dom
+```
+</CodeGroup>
+
+## Available Charts
+
+<CardGroup cols={2}>
+  <Card title="Area Chart" icon="chart-area">
+    Display trends over time with filled areas
+  </Card>
+  <Card title="Bar Chart" icon="chart-simple">
+    Compare values across categories
+  </Card>
+  <Card title="Line Chart" icon="chart-line">
+    Show trends and patterns over time
+  </Card>
+  <Card title="Pie Chart" icon="chart-pie">
+    Display proportional data
+  </Card>
+  <Card title="Donut Chart" icon="circle-notch">
+    Pie chart variant with center hole
+  </Card>
+  <Card title="Radar Chart" icon="radar">
+    Multi-dimensional data visualization
+  </Card>
+  <Card title="Scatter Chart" icon="braille">
+    Plot points on X and Y axes
+  </Card>
+  <Card title="Bubble Chart" icon="circle">
+    Scatter chart with sized bubbles
+  </Card>
+  <Card title="Radial Bar Chart" icon="gauge">
+    Circular bar chart
+  </Card>
+  <Card title="Funnel Chart" icon="filter">
+    Visualize conversion funnels
+  </Card>
+  <Card title="Heatmap" icon="table-cells">
+    Display matrix data with colors
+  </Card>
+  <Card title="Composite Chart" icon="layer-group">
+    Combine multiple chart types
+  </Card>
+  <Card title="Sparkline" icon="chart-line">
+    Tiny inline charts for trends
+  </Card>
+</CardGroup>
+
+## Usage
+
+### Line Chart
+
+```tsx
+import { LineChart } from '@kuzenbo/charts/ui/line-chart';
+
+const data = [
+  { name: 'Jan', value: 400 },
+  { name: 'Feb', value: 300 },
+  { name: 'Mar', value: 600 },
+  { name: 'Apr', value: 800 },
+  { name: 'May', value: 500 },
+];
+
+export function SalesChart() {
+  return (
+    <LineChart
+      data={data}
+      xKey="name"
+      yKey="value"
+      height={300}
+      showGrid
+      showTooltip
+    />
+  );
+}
+```
+
+### Bar Chart
+
+```tsx
+import { BarChart } from '@kuzenbo/charts/ui/bar-chart';
+
+const data = [
+  { category: 'Product A', sales: 4000, revenue: 2400 },
+  { category: 'Product B', sales: 3000, revenue: 1398 },
+  { category: 'Product C', sales: 2000, revenue: 9800 },
+];
+
+export function ProductChart() {
+  return (
+    <BarChart
+      data={data}
+      xKey="category"
+      bars={[
+        { dataKey: 'sales', fill: 'hsl(var(--kb-primary))' },
+        { dataKey: 'revenue', fill: 'hsl(var(--kb-secondary))' },
+      ]}
+      height={400}
+    />
+  );
+}
+```
+
+### Pie Chart
+
+```tsx
+import { PieChart } from '@kuzenbo/charts/ui/pie-chart';
+
+const data = [
+  { name: 'Desktop', value: 400 },
+  { name: 'Mobile', value: 300 },
+  { name: 'Tablet', value: 200 },
+];
+
+export function TrafficChart() {
+  return (
+    <PieChart
+      data={data}
+      dataKey="value"
+      nameKey="name"
+      height={300}
+      showLegend
+    />
+  );
+}
+```
+
+### Donut Chart
+
+```tsx
+import { DonutChart } from '@kuzenbo/charts/ui/donut-chart';
+
+const data = [
+  { label: 'Completed', value: 65 },
+  { label: 'In Progress', value: 25 },
+  { label: 'Pending', value: 10 },
+];
+
+export function TasksChart() {
+  return (
+    <DonutChart
+      data={data}
+      dataKey="value"
+      nameKey="label"
+      innerRadius={60}
+      outerRadius={80}
+    />
+  );
+}
+```
+
+### Area Chart
+
+```tsx
+import { AreaChart } from '@kuzenbo/charts/ui/area-chart';
+
+const data = [
+  { month: 'Jan', users: 1000, sessions: 2400 },
+  { month: 'Feb', users: 1200, sessions: 2210 },
+  { month: 'Mar', users: 1500, sessions: 2900 },
+];
+
+export function AnalyticsChart() {
+  return (
+    <AreaChart
+      data={data}
+      xKey="month"
+      areas={[
+        { dataKey: 'users', fill: 'hsl(var(--kb-primary))' },
+        { dataKey: 'sessions', fill: 'hsl(var(--kb-secondary))' },
+      ]}
+      height={300}
+      stacked
+    />
+  );
+}
+```
+
+### Sparkline
+
+```tsx
+import { Sparkline } from '@kuzenbo/charts/ui/sparkline';
+
+const data = [4, 8, 5, 10, 2, 7, 9, 3, 6];
+
+export function MiniTrend() {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-sm">Revenue</span>
+      <Sparkline data={data} width={100} height={30} />
+      <span className="text-sm font-semibold">+15%</span>
+    </div>
+  );
+}
+```
+
+### Composite Chart
+
+```tsx
+import { CompositeChart } from '@kuzenbo/charts/ui/composite-chart';
+
+const data = [
+  { name: 'Jan', revenue: 4000, profit: 2400, expenses: 1600 },
+  { name: 'Feb', revenue: 3000, profit: 1398, expenses: 1602 },
+  { name: 'Mar', revenue: 2000, profit: 9800, expenses: 800 },
+];
+
+export function FinancialChart() {
+  return (
+    <CompositeChart
+      data={data}
+      xKey="name"
+      height={400}
+      lines={[{ dataKey: 'revenue', stroke: 'hsl(var(--kb-primary))' }]}
+      bars={[
+        { dataKey: 'profit', fill: 'hsl(var(--kb-success))' },
+        { dataKey: 'expenses', fill: 'hsl(var(--kb-danger))' },
+      ]}
+    />
+  );
+}
+```
+
+## Theming
+
+Charts automatically use your Kuzenbo theme colors:
+
+```tsx
+import { PieChart } from '@kuzenbo/charts/ui/pie-chart';
+
+// Charts use CSS variables from your theme
+const colors = [
+  'hsl(var(--kb-primary))',
+  'hsl(var(--kb-secondary))',
+  'hsl(var(--kb-accent))',
+  'hsl(var(--kb-success))',
+  'hsl(var(--kb-warning))',
+  'hsl(var(--kb-danger))',
+];
+
+export function ThemedChart() {
+  return <PieChart data={data} colors={colors} />;
+}
+```
+
+## Responsive Charts
+
+All charts support responsive layouts:
+
+```tsx
+import { LineChart } from '@kuzenbo/charts/ui/line-chart';
+import { useViewportSize } from '@kuzenbo/hooks';
+
+export function ResponsiveChart() {
+  const { width } = useViewportSize();
+  const isMobile = width < 768;
+
+  return (
+    <LineChart
+      data={data}
+      height={isMobile ? 200 : 400}
+      showLegend={!isMobile}
+    />
+  );
+}
+```
+
+## Dependencies
+
+- `recharts` - Charting library
+- `@kuzenbo/core` - UI components
+- `tailwind-variants` - Styling
+- `tailwind-merge` - Class merging
+
+## Peer Dependencies
+
+```json
+{
+  "@kuzenbo/core": "^0.0.7",
+  "@kuzenbo/theme": "^0.0.7",
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0"
+}
+```
+
+## TypeScript
+
+All charts are fully typed:
+
+```tsx
+import { LineChart } from '@kuzenbo/charts/ui/line-chart';
+import type { LineChartProps } from '@kuzenbo/charts/ui/line-chart';
+
+interface DataPoint {
+  date: string;
+  value: number;
+}
+
+const Chart: React.FC<{ data: DataPoint[] }> = ({ data }) => {
+  return <LineChart data={data} xKey="date" yKey="value" />;
+};
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Theme" icon="palette" href="/packages/theme">
+    Customize chart colors
+  </Card>
+</CardGroup>

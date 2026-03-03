@@ -1,0 +1,164 @@
+---
+title: useFetch
+description: Fetches JSON data from a URL and tracks loading, error, and result state
+---
+
+## Usage
+
+Fetches JSON data from a URL and tracks loading, error, and result state. The hook can auto-run on mount and whenever dependencies change, and exposes imperative `refetch` and `abort` helpers.
+
+```tsx
+import { useFetch } from '@kuzenbo/hooks';
+
+interface User {
+  id: number;
+  name: string;
+}
+
+function Demo() {
+  const { data, loading, error } = useFetch<User>(
+    'https://api.example.com/user/1'
+  );
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  if (!data) return null;
+
+  return <p>User: {data.name}</p>;
+}
+```
+
+## Manual fetch with refetch
+
+Disable auto-invoke and manually trigger fetches:
+
+```tsx
+import { useFetch } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { data, loading, refetch } = useFetch<{ message: string }>(
+    'https://api.example.com/data',
+    { autoInvoke: false }
+  );
+
+  return (
+    <div>
+      <button onClick={() => refetch()} disabled={loading}>
+        {loading ? 'Loading...' : 'Fetch Data'}
+      </button>
+      {data && <p>{data.message}</p>}
+    </div>
+  );
+}
+```
+
+## With request options
+
+Pass fetch options like headers and method:
+
+```tsx
+import { useFetch } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { data, loading, error } = useFetch<{ result: string }>(
+    'https://api.example.com/data',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query: 'test' }),
+    }
+  );
+
+  if (loading) return <p>Submitting...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  
+  return <p>Result: {data?.result}</p>;
+}
+```
+
+## Abort requests
+
+Cancel in-flight requests:
+
+```tsx
+import { useFetch } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { data, loading, abort } = useFetch<{ data: string }>(
+    'https://api.example.com/slow-endpoint'
+  );
+
+  return (
+    <div>
+      {loading && (
+        <div>
+          <p>Loading...</p>
+          <button onClick={abort}>Cancel</button>
+        </div>
+      )}
+      {data && <p>{data.data}</p>}
+    </div>
+  );
+}
+```
+
+## Definition
+
+```tsx
+interface UseFetchOptions extends RequestInit {
+  autoInvoke?: boolean;
+}
+
+interface UseFetchReturnValue<T> {
+  data: T | null;
+  loading: boolean;
+  error: Error | null;
+  refetch: () => Promise<T | Error>;
+  abort: () => void;
+}
+
+function useFetch<T>(
+  url: string,
+  options?: UseFetchOptions
+): UseFetchReturnValue<T>
+```
+
+### Parameters
+
+<ParamField path="url" type="string">
+  Request URL used by `fetch`
+</ParamField>
+
+<ParamField path="options" type="UseFetchOptions" optional>
+  Request options plus `autoInvoke` toggle
+  
+  <ParamField path="autoInvoke" type="boolean" default={true}>
+    Whether to automatically fetch on mount
+  </ParamField>
+  
+  All standard `RequestInit` options are also supported (method, headers, body, etc.)
+</ParamField>
+
+### Returns
+
+<ResponseField name="data" type="T | null">
+  The fetched data, or `null` if not yet loaded
+</ResponseField>
+
+<ResponseField name="loading" type="boolean">
+  `true` when a fetch is in progress
+</ResponseField>
+
+<ResponseField name="error" type="Error | null">
+  Error object if the fetch failed, or `null`
+</ResponseField>
+
+<ResponseField name="refetch" type="() => Promise<T | Error>">
+  Imperatively trigger a new fetch
+</ResponseField>
+
+<ResponseField name="abort" type="() => void">
+  Cancel the current in-flight request
+</ResponseField>

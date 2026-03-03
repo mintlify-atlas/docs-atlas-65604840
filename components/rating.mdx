@@ -1,0 +1,129 @@
+---
+title: Rating
+description: Display and capture user ratings with customizable stars.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Rating } from "@kuzenbo/core";
+import { useState } from "react";
+
+function Example() {
+  const [rating, setRating] = useState(3.5);
+
+  return (
+    <Rating
+      rating={rating}
+      onRatingChange={setRating}
+      editable
+      showValue
+    />
+  );
+}
+```
+
+## Props
+
+<ParamField path="rating" type="number" required>
+  The current rating value.
+</ParamField>
+
+<ParamField path="maxRating" type="number" default="5">
+  The maximum rating value (number of stars).
+</ParamField>
+
+<ParamField path="onRatingChange" type="(rating: number) => void">
+  Callback when rating changes (editable mode).
+</ParamField>
+
+<ParamField path="editable" type="boolean" default="false">
+  Whether the rating can be changed by clicking.
+</ParamField>
+
+<ParamField path="showValue" type="boolean" default="false">
+  Whether to display the numeric rating value.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the rating stars.
+</ParamField>
+
+<ParamField path="starClassName" type="string">
+  Additional CSS classes to apply to each star.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the container.
+</ParamField>
+
+## Examples
+
+### Read-Only Rating
+
+```tsx
+<Rating rating={4} />
+```
+
+### Editable Rating
+
+```tsx
+const [rating, setRating] = useState(0);
+
+<Rating
+  rating={rating}
+  onRatingChange={setRating}
+  editable
+/>
+```
+
+### With Value Display
+
+```tsx
+<Rating rating={4.5} showValue />
+```
+
+### Custom Max Rating
+
+```tsx
+<Rating rating={7} maxRating={10} showValue />
+```
+
+### Different Sizes
+
+```tsx
+<div className="space-y-4">
+  <Rating rating={4} size="xs" />
+  <Rating rating={4} size="sm" />
+  <Rating rating={4} size="md" />
+  <Rating rating={4} size="lg" />
+  <Rating rating={4} size="xl" />
+</div>
+```
+
+### Half Star Ratings
+
+```tsx
+<Rating rating={3.5} showValue />
+```
+
+### Product Rating
+
+```tsx
+function ProductRating() {
+  return (
+    <div className="flex items-center gap-2">
+      <Rating rating={4.3} />
+      <span className="text-sm text-muted-foreground">
+        (128 reviews)
+      </span>
+    </div>
+  );
+}
+```

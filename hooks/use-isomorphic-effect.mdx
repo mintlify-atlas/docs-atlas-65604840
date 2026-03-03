@@ -1,0 +1,76 @@
+---
+title: useIsomorphicEffect
+description: Isomorphic effect that uses useLayoutEffect in browser and useEffect during SSR
+---
+
+## Usage
+
+Isomorphic effect helper that uses `useLayoutEffect` in the browser and falls back to `useEffect` during SSR to avoid layout-effect warnings. This is useful when you need layout effects that work in both server and client environments.
+
+```tsx
+import { useIsomorphicEffect } from '@kuzenbo/hooks';
+import { useRef } from 'react';
+
+function Demo() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useIsomorphicEffect(() => {
+    if (ref.current) {
+      // Safe to access DOM in browser, no-op during SSR
+      console.log('Element height:', ref.current.offsetHeight);
+    }
+  }, []);
+
+  return <div ref={ref}>Content</div>;
+}
+```
+
+## Measure DOM elements
+
+Measure DOM elements synchronously before paint:
+
+```tsx
+import { useIsomorphicEffect } from '@kuzenbo/hooks';
+import { useRef, useState } from 'react';
+
+function Demo() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+
+  useIsomorphicEffect(() => {
+    if (ref.current) {
+      setHeight(ref.current.offsetHeight);
+    }
+  }, []);
+
+  return (
+    <div>
+      <div ref={ref}>Content to measure</div>
+      <p>Height: {height}px</p>
+    </div>
+  );
+}
+```
+
+## Definition
+
+```tsx
+const useIsomorphicEffect = 
+  typeof document === 'undefined' ? useEffect : useLayoutEffect
+```
+
+### Usage
+
+Use exactly like `useEffect` or `useLayoutEffect`:
+
+```tsx
+useIsomorphicEffect(effect: EffectCallback, deps?: DependencyList): void
+```
+
+<ParamField path="effect" type="EffectCallback">
+  Effect callback to execute
+</ParamField>
+
+<ParamField path="deps" type="DependencyList" optional>
+  Optional dependency list
+</ParamField>

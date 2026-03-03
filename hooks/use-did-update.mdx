@@ -1,0 +1,66 @@
+---
+title: useDidUpdate
+description: Runs an effect only after the first render has completed
+---
+
+## Usage
+
+Runs an effect only after the first render has completed. If `dependencies` is provided, the effect runs only when one of those values changes between updates. If `dependencies` is omitted, the effect runs on every update render.
+
+```tsx
+import { useDidUpdate } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [count, setCount] = useState(0);
+
+  useDidUpdate(() => {
+    console.log('Count updated:', count);
+  }, [count]);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+```
+
+## Run on every update
+
+Omit the dependencies array to run the effect on every update:
+
+```tsx
+import { useDidUpdate } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [value, setValue] = useState('');
+
+  useDidUpdate(() => {
+    console.log('Component updated');
+  });
+
+  return <input value={value} onChange={(e) => setValue(e.target.value)} />;
+}
+```
+
+## Definition
+
+```tsx
+function useDidUpdate(
+  fn: EffectCallback,
+  dependencies?: DependencyList
+): void
+```
+
+### Parameters
+
+<ParamField path="fn" type="EffectCallback">
+  Effect callback to execute after mount
+</ParamField>
+
+<ParamField path="dependencies" type="DependencyList" optional>
+  Optional dependency list used to detect update changes
+</ParamField>

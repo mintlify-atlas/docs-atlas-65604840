@@ -1,0 +1,377 @@
+---
+title: '@kuzenbo/hooks'
+description: 'Standalone React hooks for Kuzenbo'
+icon: 'link'
+---
+
+## Overview
+
+The `@kuzenbo/hooks` package provides 70+ production-ready React hooks for common UI patterns, state management, DOM interactions, and more. All hooks are framework-agnostic and can be used independently of other Kuzenbo packages.
+
+<Note>
+Version 0.0.7 is currently published on npm. These hooks are battle-tested and production-ready.
+</Note>
+
+## Installation
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/hooks react
+```
+
+```bash yarn
+yarn add @kuzenbo/hooks react
+```
+
+```bash pnpm
+pnpm add @kuzenbo/hooks react
+```
+
+```bash bun
+bun add @kuzenbo/hooks react
+```
+</CodeGroup>
+
+## Available Hooks
+
+### State Management
+
+<CardGroup cols={2}>
+  <Card title="useToggle" icon="toggle-on">
+    Toggle between boolean states with convenient methods
+  </Card>
+  <Card title="useDisclosure" icon="eye">
+    Control open/close state for modals, dropdowns, etc.
+  </Card>
+  <Card title="useCounter" icon="hashtag">
+    Counter with increment, decrement, and reset
+  </Card>
+  <Card title="useListState" icon="list">
+    Array state with helper methods (append, prepend, remove, etc.)
+  </Card>
+  <Card title="useMap" icon="map">
+    Map state with set, delete, and clear methods
+  </Card>
+  <Card title="useSet" icon="layer-group">
+    Set state with add, delete, and toggle methods
+  </Card>
+  <Card title="useSetState" icon="database">
+    Object state with partial updates (like class components)
+  </Card>
+  <Card title="useQueue" icon="arrows-rotate">
+    Queue data structure with enqueue/dequeue
+  </Card>
+  <Card title="useStateHistory" icon="clock-rotate-left">
+    Track state history with undo/redo
+  </Card>
+  <Card title="useValidatedState" icon="check-circle">
+    State with validation rules
+  </Card>
+  <Card title="useInputState" icon="keyboard">
+    Simplified input state management
+  </Card>
+  <Card title="useUncontrolled" icon="hand-pointer">
+    Manage controlled/uncontrolled component state
+  </Card>
+</CardGroup>
+
+### Performance & Timing
+
+<CardGroup cols={2}>
+  <Card title="useDebouncedValue" icon="clock">
+    Debounce a value
+  </Card>
+  <Card title="useDebouncedState" icon="clock">
+    Debounced state setter
+  </Card>
+  <Card title="useDebouncedCallback" icon="clock">
+    Debounce a callback function
+  </Card>
+  <Card title="useThrottledValue" icon="gauge">
+    Throttle a value
+  </Card>
+  <Card title="useThrottledState" icon="gauge">
+    Throttled state setter
+  </Card>
+  <Card title="useThrottledCallback" icon="gauge">
+    Throttle a callback function
+  </Card>
+  <Card title="useTimeout" icon="stopwatch">
+    Execute callback after delay
+  </Card>
+  <Card title="useInterval" icon="rotate">
+    Execute callback on interval
+  </Card>
+</CardGroup>
+
+### DOM & Browser
+
+<CardGroup cols={2}>
+  <Card title="useClickOutside" icon="arrow-pointer">
+    Detect clicks outside an element
+  </Card>
+  <Card title="useEventListener" icon="ear-listen">
+    Attach event listeners safely
+  </Card>
+  <Card title="useWindowEvent" icon="window-maximize">
+    Attach window event listeners
+  </Card>
+  <Card title="useResizeObserver" icon="expand">
+    Observe element size changes
+  </Card>
+  <Card title="useMutationObserver" icon="eye">
+    Observe DOM mutations
+  </Card>
+  <Card title="useIntersection" icon="compress">
+    Intersection Observer API
+  </Card>
+  <Card title="useInViewport" icon="rectangle-wide">
+    Check if element is in viewport
+  </Card>
+  <Card title="useHover" icon="hand-pointer">
+    Track hover state
+  </Card>
+  <Card title="useFocusWithin" icon="bullseye">
+    Track focus within an element
+  </Card>
+  <Card title="useFocusTrap" icon="lock">
+    Trap focus within an element
+  </Card>
+  <Card title="useScrollIntoView" icon="down">
+    Scroll element into view
+  </Card>
+  <Card title="useScrollSpy" icon="binoculars">
+    Track scroll position for navigation
+  </Card>
+</CardGroup>
+
+### Media & Device
+
+<CardGroup cols={2}>
+  <Card title="useMediaQuery" icon="mobile">
+    Match CSS media queries
+  </Card>
+  <Card title="useIsMobile" icon="mobile-screen">
+    Detect mobile devices
+  </Card>
+  <Card title="useViewportSize" icon="arrows-maximize">
+    Track viewport dimensions
+  </Card>
+  <Card title="useColorScheme" icon="moon">
+    Detect light/dark color scheme
+  </Card>
+  <Card title="useReducedMotion" icon="person-walking">
+    Detect prefers-reduced-motion
+  </Card>
+  <Card title="useOrientation" icon="mobile-screen-button">
+    Track screen orientation
+  </Card>
+  <Card title="useNetwork" icon="wifi">
+    Monitor network status
+  </Card>
+  <Card title="useOs" icon="computer">
+    Detect operating system
+  </Card>
+</CardGroup>
+
+### User Input
+
+<CardGroup cols={2}>
+  <Card title="useHotkeys" icon="keyboard">
+    Register keyboard shortcuts
+  </Card>
+  <Card title="useMouse" icon="computer-mouse">
+    Track mouse position
+  </Card>
+  <Card title="useMove" icon="arrows-up-down-left-right">
+    Track mouse movement with constraints
+  </Card>
+  <Card title="useLongPress" icon="hand-point-down">
+    Detect long press events
+  </Card>
+  <Card title="useTextSelection" icon="highlighter">
+    Track text selection
+  </Card>
+  <Card title="usePageLeave" icon="arrow-right-from-bracket">
+    Detect when cursor leaves page
+  </Card>
+</CardGroup>
+
+### Storage
+
+<CardGroup cols={2}>
+  <Card title="useLocalStorage" icon="hard-drive">
+    Sync state with localStorage
+  </Card>
+  <Card title="useSessionStorage" icon="floppy-disk">
+    Sync state with sessionStorage
+  </Card>
+</CardGroup>
+
+### Utilities
+
+<CardGroup cols={2}>
+  <Card title="useClipboard" icon="clipboard">
+    Copy to clipboard with status
+  </Card>
+  <Card title="useIdle" icon="person">
+    Detect user idle state
+  </Card>
+  <Card title="useFetch" icon="download">
+    Fetch data with loading states
+  </Card>
+  <Card title="useEyeDropper" icon="eye-dropper">
+    Color picker from screen
+  </Card>
+  <Card title="useFullscreen" icon="expand">
+    Control fullscreen mode
+  </Card>
+  <Card title="useDocumentTitle" icon="heading">
+    Update document title
+  </Card>
+  <Card title="useFavicon" icon="star">
+    Update favicon dynamically
+  </Card>
+  <Card title="useHash" icon="hashtag">
+    Sync with URL hash
+  </Card>
+  <Card title="useId" icon="fingerprint">
+    Generate unique IDs (SSR-safe)
+  </Card>
+  <Card title="useMergedRef" icon="code-merge">
+    Merge multiple refs
+  </Card>
+  <Card title="useLogger" icon="bug">
+    Debug component lifecycle
+  </Card>
+</CardGroup>
+
+## Usage Examples
+
+### State Management
+
+```tsx
+import { useToggle, useDisclosure, useListState } from '@kuzenbo/hooks';
+
+function Example() {
+  const [value, toggle] = useToggle(['light', 'dark']);
+  const [opened, { open, close, toggle: toggleModal }] = useDisclosure(false);
+  const [items, handlers] = useListState(['React', 'Vue']);
+
+  return (
+    <>
+      <button onClick={() => toggle()}>Theme: {value}</button>
+      <button onClick={open}>Open Modal</button>
+      <button onClick={() => handlers.append('Angular')}>Add Item</button>
+    </>
+  );
+}
+```
+
+### Debounce & Throttle
+
+```tsx
+import { useDebouncedValue, useThrottledCallback } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Search() {
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebouncedValue(query, 300);
+  const throttledLog = useThrottledCallback(() => console.log('Scrolling'), 1000);
+
+  // debouncedQuery updates 300ms after typing stops
+  // throttledLog runs at most once per second
+
+  return <input value={query} onChange={(e) => setQuery(e.target.value)} />;
+}
+```
+
+### DOM Interactions
+
+```tsx
+import { useClickOutside, useHover, useResizeObserver } from '@kuzenbo/hooks';
+import { useRef } from 'react';
+
+function Dropdown() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { hovered, ref: hoverRef } = useHover();
+  
+  useClickOutside(ref, () => console.log('Clicked outside'));
+  
+  const [resizeRef] = useResizeObserver<HTMLDivElement>(({ width, height }) => {
+    console.log(`Size: ${width}x${height}`);
+  });
+
+  return <div ref={ref}>Dropdown content</div>;
+}
+```
+
+### Keyboard Shortcuts
+
+```tsx
+import { useHotkeys } from '@kuzenbo/hooks';
+
+function Editor() {
+  useHotkeys([
+    ['mod+s', () => console.log('Save')],
+    ['mod+k', () => console.log('Command palette')],
+    ['escape', () => console.log('Close')],
+  ]);
+
+  return <div>Press Cmd+S to save</div>;
+}
+```
+
+### Media Queries
+
+```tsx
+import { useMediaQuery, useIsMobile, useColorScheme } from '@kuzenbo/hooks';
+
+function ResponsiveComponent() {
+  const isMobile = useIsMobile();
+  const isTablet = useMediaQuery('(min-width: 768px) and (max-width: 1024px)');
+  const colorScheme = useColorScheme();
+
+  return (
+    <div>
+      {isMobile && <MobileView />}
+      {isTablet && <TabletView />}
+      <p>Color scheme: {colorScheme}</p>
+    </div>
+  );
+}
+```
+
+## Peer Dependencies
+
+```json
+{
+  "react": "^19.0.0"
+}
+```
+
+## TypeScript
+
+All hooks are fully typed:
+
+```tsx
+import { useLocalStorage } from '@kuzenbo/hooks';
+
+interface User {
+  id: string;
+  name: string;
+}
+
+const [user, setUser] = useLocalStorage<User | null>({
+  key: 'user',
+  defaultValue: null,
+});
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Core Components" icon="box" href="/packages/core">
+    Use hooks with Kuzenbo components
+  </Card>
+</CardGroup>

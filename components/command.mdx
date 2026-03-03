@@ -1,0 +1,160 @@
+---
+title: Command
+description: Fast, composable command menu powered by cmdk.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Command } from "@kuzenbo/core";
+
+function Example() {
+  return (
+    <Command className="rounded-lg border shadow-md">
+      <Command.Input placeholder="Type a command or search..." />
+      <Command.List>
+        <Command.Empty>No results found.</Command.Empty>
+        <Command.Group heading="Suggestions">
+          <Command.Item>Calendar</Command.Item>
+          <Command.Item>Search Emoji</Command.Item>
+          <Command.Item>Calculator</Command.Item>
+        </Command.Group>
+        <Command.Separator />
+        <Command.Group heading="Settings">
+          <Command.Item>
+            Profile
+            <Command.Shortcut>⌘P</Command.Shortcut>
+          </Command.Item>
+          <Command.Item>
+            Billing
+            <Command.Shortcut>⌘B</Command.Shortcut>
+          </Command.Item>
+        </Command.Group>
+      </Command.List>
+    </Command>
+  );
+}
+```
+
+## Props
+
+### Command
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the command menu and its children.
+</ParamField>
+
+<ParamField path="value" type="string">
+  The controlled value of the selected item.
+</ParamField>
+
+<ParamField path="onValueChange" type="(value: string) => void">
+  Callback when the selected value changes.
+</ParamField>
+
+<ParamField path="filter" type="(value: string, search: string) => number">
+  Custom filter function.
+</ParamField>
+
+<ParamField path="shouldFilter" type="boolean" default="true">
+  Whether to filter items based on search.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Command.Input
+
+<ParamField path="placeholder" type="string">
+  Placeholder text for the input.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Command.List
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Command.Group
+
+<ParamField path="heading" type="string">
+  The heading for this group.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Command.Item
+
+<ParamField path="value" type="string">
+  The value for this item.
+</ParamField>
+
+<ParamField path="onSelect" type="(value: string) => void">
+  Callback when this item is selected.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the item is disabled.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Command.Shortcut
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Advanced Patterns
+
+### Command Dialog
+
+```tsx
+const [open, setOpen] = useState(false);
+
+useEffect(() => {
+  const down = (e: KeyboardEvent) => {
+    if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      setOpen((open) => !open);
+    }
+  };
+  document.addEventListener("keydown", down);
+  return () => document.removeEventListener("keydown", down);
+}, []);
+
+return (
+  <Command.Dialog open={open} onOpenChange={setOpen}>
+    <Command.Input placeholder="Type a command or search..." />
+    {/* ... */}
+  </Command.Dialog>
+);
+```
+
+### Custom Filtering
+
+```tsx
+<Command
+  filter={(value, search) => {
+    if (value.toLowerCase().includes(search.toLowerCase())) return 1;
+    return 0;
+  }}
+>
+  {/* ... */}
+</Command>
+```

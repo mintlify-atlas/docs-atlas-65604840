@@ -1,0 +1,329 @@
+---
+title: Empty
+description: Display empty states with media, messages, and call-to-action buttons
+---
+
+The Empty component displays empty state messages when there's no content to show. It supports media elements (icons or illustrations), descriptive text, and action buttons.
+
+## Import
+
+```tsx
+import { Empty } from "@kuzenbo/core";
+```
+
+## Usage
+
+```tsx
+<Empty size="md">
+  <Empty.Content>
+    <Empty.Header>
+      <Empty.Media variant="icon">
+        <InboxIcon className="size-4" />
+      </Empty.Media>
+      <Empty.Title>No messages</Empty.Title>
+      <Empty.Description>
+        You don't have any messages yet. Start a conversation to see them here.
+      </Empty.Description>
+    </Empty.Header>
+    <Empty.Button onClick={() => console.log("Create message")}>
+      Send your first message
+    </Empty.Button>
+  </Empty.Content>
+</Empty>
+```
+
+## Anatomy
+
+- `Empty` - Root container with size context and border
+- `Empty.Content` - Content wrapper
+- `Empty.Header` - Header section for media, title, and description
+- `Empty.Media` - Media container (icon or illustration)
+- `Empty.Title` - Empty state title
+- `Empty.Description` - Empty state description
+- `Empty.Button` - Call-to-action button
+
+## Props
+
+### Empty
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="md">
+  Controls the overall size affecting gap and padding:
+  
+  - `xs` - Gap 2, padding 4
+  - `sm` - Gap 3, padding 6
+  - `md` - Gap 4, padding 8
+  - `lg` - Gap 5, padding 10
+  - `xl` - Gap 6, padding 12
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Empty.Media
+
+<ParamField path="variant" type="'default' | 'icon'" default="default">
+  Visual style of the media container:
+  
+  - `default` - Transparent background, for illustrations
+  - `icon` - Muted background with rounded corners, for icons
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the inherited size for media only.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Empty.Title
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Empty.Description
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Empty.Button
+
+<ParamField path="onClick" type="function">
+  Click handler for the action button.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Empty.Header
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Empty.Content
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Examples
+
+### Basic empty state
+
+```tsx
+import { InboxIcon } from "@hugeicons/react";
+
+<Empty>
+  <Empty.Content>
+    <Empty.Header>
+      <Empty.Media variant="icon">
+        <InboxIcon />
+      </Empty.Media>
+      <Empty.Title>No items found</Empty.Title>
+      <Empty.Description>
+        There are no items to display at this time.
+      </Empty.Description>
+    </Empty.Header>
+  </Empty.Content>
+</Empty>
+```
+
+### With action button
+
+```tsx
+import { Add01Icon } from "@hugeicons/react";
+
+<Empty>
+  <Empty.Content>
+    <Empty.Header>
+      <Empty.Media variant="icon">
+        <Add01Icon />
+      </Empty.Media>
+      <Empty.Title>No projects yet</Empty.Title>
+      <Empty.Description>
+        Create your first project to get started.
+      </Empty.Description>
+    </Empty.Header>
+    <Empty.Button onClick={() => navigate("/projects/new")}>
+      Create project
+    </Empty.Button>
+  </Empty.Content>
+</Empty>
+```
+
+### With illustration
+
+Use `variant="default"` for larger illustrations:
+
+```tsx
+<Empty size="lg">
+  <Empty.Content>
+    <Empty.Header>
+      <Empty.Media variant="default">
+        <img src="/empty-illustration.svg" alt="" className="size-32" />
+      </Empty.Media>
+      <Empty.Title>Welcome to your dashboard</Empty.Title>
+      <Empty.Description>
+        Start by creating your first workspace or joining an existing one.
+      </Empty.Description>
+    </Empty.Header>
+    <div className="flex gap-2">
+      <Empty.Button onClick={onCreateWorkspace}>
+        Create workspace
+      </Empty.Button>
+      <Empty.Button onClick={onJoinWorkspace}>
+        Join workspace
+      </Empty.Button>
+    </div>
+  </Empty.Content>
+</Empty>
+```
+
+### Search results empty
+
+```tsx
+import { Search01Icon } from "@hugeicons/react";
+
+<Empty size="sm">
+  <Empty.Content>
+    <Empty.Header>
+      <Empty.Media variant="icon">
+        <Search01Icon />
+      </Empty.Media>
+      <Empty.Title>No results found</Empty.Title>
+      <Empty.Description>
+        Try adjusting your search or filter criteria.
+      </Empty.Description>
+    </Empty.Header>
+  </Empty.Content>
+</Empty>
+```
+
+### Different sizes
+
+```tsx
+<div className="space-y-4">
+  <Empty size="xs">
+    <Empty.Content>
+      <Empty.Title>Extra small</Empty.Title>
+    </Empty.Content>
+  </Empty>
+  
+  <Empty size="sm">
+    <Empty.Content>
+      <Empty.Title>Small</Empty.Title>
+    </Empty.Content>
+  </Empty>
+  
+  <Empty size="md">
+    <Empty.Content>
+      <Empty.Title>Medium</Empty.Title>
+    </Empty.Content>
+  </Empty>
+  
+  <Empty size="lg">
+    <Empty.Content>
+      <Empty.Title>Large</Empty.Title>
+    </Empty.Content>
+  </Empty>
+  
+  <Empty size="xl">
+    <Empty.Content>
+      <Empty.Title>Extra large</Empty.Title>
+    </Empty.Content>
+  </Empty>
+</div>
+```
+
+### No data state
+
+```tsx
+import { ChartColumnIcon } from "@hugeicons/react";
+
+<Empty>
+  <Empty.Content>
+    <Empty.Header>
+      <Empty.Media variant="icon">
+        <ChartColumnIcon />
+      </Empty.Media>
+      <Empty.Title>No data available</Empty.Title>
+      <Empty.Description>
+        Connect a data source to start viewing analytics.
+      </Empty.Description>
+    </Empty.Header>
+    <Empty.Button onClick={onConnectDataSource}>
+      Connect data source
+    </Empty.Button>
+  </Empty.Content>
+</Empty>
+```
+
+### Error state
+
+```tsx
+import { AlertCircleIcon } from "@hugeicons/react";
+
+<Empty>
+  <Empty.Content>
+    <Empty.Header>
+      <Empty.Media variant="icon">
+        <AlertCircleIcon className="text-danger" />
+      </Empty.Media>
+      <Empty.Title>Failed to load content</Empty.Title>
+      <Empty.Description>
+        An error occurred while loading. Please try again.
+      </Empty.Description>
+    </Empty.Header>
+    <Empty.Button onClick={onRetry}>
+      Retry
+    </Empty.Button>
+  </Empty.Content>
+</Empty>
+```
+
+### Custom styling
+
+```tsx
+<Empty className="border-dashed border-2">
+  <Empty.Content>
+    <Empty.Header>
+      <Empty.Title className="text-xl font-bold">
+        Drop files here
+      </Empty.Title>
+      <Empty.Description>
+        or click to browse
+      </Empty.Description>
+    </Empty.Header>
+  </Empty.Content>
+</Empty>
+```
+
+## Data Attributes
+
+- `[data-size]` - Reflects the current size
+- `[data-slot]` - Component identifier (empty, empty-media, etc.)
+- `[data-variant]` - On Empty.Media, reflects the variant
+
+## Accessibility
+
+- Semantic HTML structure with proper hierarchy
+- Images should have empty `alt=""` when decorative
+- Title and description provide context for screen readers
+- Buttons have clear action labels
+- Sufficient color contrast for text
+- Center alignment aids scanning and comprehension
+
+## Layout
+
+The Empty component uses flexbox for centered layout:
+
+- Centered horizontally and vertically
+- Text is center-aligned and balanced
+- Dashed border indicates interactive or empty areas
+- Rounded corners for visual consistency
+- Responsive spacing that adapts to size prop

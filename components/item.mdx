@@ -1,0 +1,236 @@
+---
+title: Item
+description: A flexible container for list items with consistent styling.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Item } from "@kuzenbo/core";
+
+function Example() {
+  return (
+    <Item>
+      <Item.Media>
+        <Avatar />
+      </Item.Media>
+      <Item.Content>
+        <Item.Title>Item Title</Item.Title>
+        <Item.Description>Item description</Item.Description>
+      </Item.Content>
+      <Item.Actions>
+        <Button size="sm">Action</Button>
+      </Item.Actions>
+    </Item>
+  );
+}
+```
+
+## Props
+
+### Item
+
+<ParamField path="variant" type="'default' | 'outline' | 'muted'" default="'default'">
+  The visual style variant.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the item.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Item.Media
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Item.Content
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Item.Title
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Item.Description
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Item.Actions
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Item.Header
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Item.Footer
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Examples
+
+### Basic Item
+
+```tsx
+<Item>
+  <Item.Content>
+    <Item.Title>Basic Item</Item.Title>
+  </Item.Content>
+</Item>
+```
+
+### With Avatar
+
+```tsx
+<Item>
+  <Item.Media>
+    <Avatar>
+      <Avatar.Image src="/avatar.jpg" />
+      <Avatar.Fallback>JD</Avatar.Fallback>
+    </Avatar>
+  </Item.Media>
+  <Item.Content>
+    <Item.Title>John Doe</Item.Title>
+    <Item.Description>Software Engineer</Item.Description>
+  </Item.Content>
+</Item>
+```
+
+### With Actions
+
+```tsx
+<Item>
+  <Item.Content>
+    <Item.Title>Task Item</Item.Title>
+    <Item.Description>Complete the documentation</Item.Description>
+  </Item.Content>
+  <Item.Actions>
+    <Button variant="ghost" size="sm">Edit</Button>
+    <Button variant="ghost" size="sm">Delete</Button>
+  </Item.Actions>
+</Item>
+```
+
+### Variants
+
+```tsx
+<div className="space-y-2">
+  <Item variant="default">
+    <Item.Content>
+      <Item.Title>Default Variant</Item.Title>
+    </Item.Content>
+  </Item>
+  <Item variant="outline">
+    <Item.Content>
+      <Item.Title>Outline Variant</Item.Title>
+    </Item.Content>
+  </Item>
+  <Item variant="muted">
+    <Item.Content>
+      <Item.Title>Muted Variant</Item.Title>
+    </Item.Content>
+  </Item>
+</div>
+```
+
+### Different Sizes
+
+```tsx
+<div className="space-y-2">
+  <Item size="xs">
+    <Item.Content>
+      <Item.Title>Extra Small</Item.Title>
+    </Item.Content>
+  </Item>
+  <Item size="sm">
+    <Item.Content>
+      <Item.Title>Small</Item.Title>
+    </Item.Content>
+  </Item>
+  <Item size="md">
+    <Item.Content>
+      <Item.Title>Medium</Item.Title>
+    </Item.Content>
+  </Item>
+  <Item size="lg">
+    <Item.Content>
+      <Item.Title>Large</Item.Title>
+    </Item.Content>
+  </Item>
+</div>
+```
+
+### With Header and Footer
+
+```tsx
+<Item>
+  <Item.Header>
+    <span className="text-xs text-muted-foreground">Posted 2 hours ago</span>
+  </Item.Header>
+  <Item.Content>
+    <Item.Title>Article Title</Item.Title>
+    <Item.Description>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </Item.Description>
+  </Item.Content>
+  <Item.Footer>
+    <Badge>Featured</Badge>
+    <Badge variant="outline">Technology</Badge>
+  </Item.Footer>
+</Item>
+```
+
+### List of Items
+
+```tsx
+<Item.Group>
+  {items.map((item) => (
+    <Item key={item.id}>
+      <Item.Media>
+        <Avatar>
+          <Avatar.Fallback>{item.initials}</Avatar.Fallback>
+        </Avatar>
+      </Item.Media>
+      <Item.Content>
+        <Item.Title>{item.title}</Item.Title>
+        <Item.Description>{item.description}</Item.Description>
+      </Item.Content>
+    </Item>
+  ))}
+</Item.Group>
+```
+
+### With Separator
+
+```tsx
+<Item.Group>
+  <Item>First Item</Item>
+  <Item.Separator />
+  <Item>Second Item</Item>
+  <Item.Separator />
+  <Item>Third Item</Item>
+</Item.Group>
+```

@@ -1,0 +1,394 @@
+---
+title: '@kuzenbo/datatable'
+description: 'Datatable primitives and state helpers for Kuzenbo'
+icon: 'table'
+---
+
+## Overview
+
+The `@kuzenbo/datatable` package provides powerful datatable components and hooks built on TanStack Table. Create feature-rich tables with sorting, filtering, pagination, column resizing, and more.
+
+<Note status="warning">
+This package is currently in preview and not yet published to npm. The API may change before the stable release.
+</Note>
+
+## Installation
+
+Once published, install with:
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/datatable @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash yarn
+yarn add @kuzenbo/datatable @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash pnpm
+pnpm add @kuzenbo/datatable @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash bun
+bun add @kuzenbo/datatable @kuzenbo/core @kuzenbo/theme react react-dom
+```
+</CodeGroup>
+
+## Exports
+
+<CardGroup cols={2}>
+  <Card title="useDatatableState" icon="code">
+    Hook for managing datatable state (sorting, filtering, pagination)
+  </Card>
+  <Card title="MockDataTable" icon="table">
+    Pre-built datatable component for prototyping
+  </Card>
+  <Card title="createMockColumns" icon="table-columns">
+    Utility to generate mock column definitions
+  </Card>
+</CardGroup>
+
+## Basic Usage
+
+### Using the Hook
+
+```tsx
+import { useDatatableState } from '@kuzenbo/datatable/hooks/use-datatable-state';
+import { Table } from '@kuzenbo/core/ui/table';
+import { useMemo } from 'react';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}
+
+const data: User[] = [
+  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
+];
+
+export function UsersTable() {
+  const columns = useMemo(() => [
+    { accessorKey: 'name', header: 'Name' },
+    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'role', header: 'Role' },
+  ], []);
+
+  const table = useDatatableState({
+    data,
+    columns,
+    enableSorting: true,
+    enableFiltering: true,
+  });
+
+  return (
+    <Table>
+      <Table.Header>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <Table.Row key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <Table.Head key={header.id}>
+                {header.column.columnDef.header}
+              </Table.Head>
+            ))}
+          </Table.Row>
+        ))}
+      </Table.Header>
+      <Table.Body>
+        {table.getRowModel().rows.map((row) => (
+          <Table.Row key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <Table.Cell key={cell.id}>
+                {cell.getValue()}
+              </Table.Cell>
+            ))}
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
+  );
+}
+```
+
+### Mock DataTable
+
+```tsx
+import { MockDataTable } from '@kuzenbo/datatable/ui/mock-data-table';
+import { createMockColumns } from '@kuzenbo/datatable/utils/create-mock-columns';
+
+export function PrototypeTable() {
+  const columns = createMockColumns(5); // 5 columns
+  const data = Array.from({ length: 20 }, (_, i) => ({
+    id: i + 1,
+    col1: `Value ${i + 1}`,
+    col2: `Data ${i + 1}`,
+    col3: Math.random() * 100,
+    col4: new Date().toLocaleDateString(),
+    col5: i % 2 === 0 ? 'Active' : 'Inactive',
+  }));
+
+  return <MockDataTable columns={columns} data={data} />;
+}
+```
+
+## Features
+
+### Sorting
+
+```tsx
+import { useDatatableState } from '@kuzenbo/datatable/hooks/use-datatable-state';
+
+const table = useDatatableState({
+  data,
+  columns,
+  enableSorting: true,
+  initialState: {
+    sorting: [
+      { id: 'name', desc: false },
+    ],
+  },
+});
+```
+
+### Filtering
+
+```tsx
+import { useDatatableState } from '@kuzenbo/datatable/hooks/use-datatable-state';
+import { Input } from '@kuzenbo/core/ui/input';
+import { useState } from 'react';
+
+export function FilterableTable() {
+  const [globalFilter, setGlobalFilter] = useState('');
+
+  const table = useDatatableState({
+    data,
+    columns,
+    enableGlobalFilter: true,
+    state: {
+      globalFilter,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+  });
+
+  return (
+    <>
+      <Input
+        placeholder="Search..."
+        value={globalFilter}
+        onChange={(e) => setGlobalFilter(e.target.value)}
+      />
+      {/* Table rendering */}
+    </>
+  );
+}
+```
+
+### Pagination
+
+```tsx
+import { useDatatableState } from '@kuzenbo/datatable/hooks/use-datatable-state';
+import { Button } from '@kuzenbo/core/ui/button';
+
+const table = useDatatableState({
+  data,
+  columns,
+  enablePagination: true,
+  initialState: {
+    pagination: {
+      pageIndex: 0,
+      pageSize: 10,
+    },
+  },
+});
+
+// Pagination controls
+<div className="flex gap-2">
+  <Button
+    onClick={() => table.previousPage()}
+    disabled={!table.getCanPreviousPage()}
+  >
+    Previous
+  </Button>
+  <span>
+    Page {table.getState().pagination.pageIndex + 1} of{' '}
+    {table.getPageCount()}
+  </span>
+  <Button
+    onClick={() => table.nextPage()}
+    disabled={!table.getCanNextPage()}
+  >
+    Next
+  </Button>
+</div>
+```
+
+### Column Resizing
+
+```tsx
+const table = useDatatableState({
+  data,
+  columns,
+  enableColumnResizing: true,
+  columnResizeMode: 'onChange',
+});
+```
+
+### Row Selection
+
+```tsx
+import { useDatatableState } from '@kuzenbo/datatable/hooks/use-datatable-state';
+import { Checkbox } from '@kuzenbo/core/ui/checkbox';
+
+const columns = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllRowsSelected()}
+        onChange={table.getToggleAllRowsSelectedHandler()}
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onChange={row.getToggleSelectedHandler()}
+      />
+    ),
+  },
+  // ... other columns
+];
+
+const table = useDatatableState({
+  data,
+  columns,
+  enableRowSelection: true,
+});
+
+const selectedRows = table.getSelectedRowModel().rows;
+```
+
+### Custom Cell Rendering
+
+```tsx
+const columns = [
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ getValue }) => {
+      const status = getValue() as string;
+      return (
+        <Badge variant={status === 'active' ? 'success' : 'default'}>
+          {status}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => (
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => handleEdit(row.original)}
+      >
+        Edit
+      </Button>
+    ),
+  },
+];
+```
+
+## Advanced Usage
+
+### Server-Side Operations
+
+```tsx
+import { useDatatableState } from '@kuzenbo/datatable/hooks/use-datatable-state';
+import { useState, useEffect } from 'react';
+
+export function ServerSideTable() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [pageCount, setPageCount] = useState(0);
+
+  const table = useDatatableState({
+    data,
+    columns,
+    pageCount,
+    manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const { pageIndex, pageSize } = table.getState().pagination;
+      const response = await fetch(
+        `/api/data?page=${pageIndex}&size=${pageSize}`
+      );
+      const { rows, totalPages } = await response.json();
+      setData(rows);
+      setPageCount(totalPages);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [table.getState().pagination]);
+
+  return loading ? <Spinner /> : <Table>{/* ... */}</Table>;
+}
+```
+
+## Dependencies
+
+- `@tanstack/react-table` - Headless table library
+- `tailwind-variants` - Styling
+- `tailwind-merge` - Class merging
+
+## Peer Dependencies
+
+```json
+{
+  "@kuzenbo/core": "^0.0.7",
+  "@kuzenbo/theme": "^0.0.7",
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0"
+}
+```
+
+## TypeScript
+
+Fully typed with TanStack Table types:
+
+```tsx
+import { useDatatableState } from '@kuzenbo/datatable/hooks/use-datatable-state';
+import type { ColumnDef } from '@tanstack/react-table';
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+}
+
+const columns: ColumnDef<Product>[] = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'price', header: 'Price' },
+];
+
+const table = useDatatableState<Product>({
+  data,
+  columns,
+});
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Table Component" icon="table" href="/components/table">
+    Learn about the base Table component
+  </Card>
+</CardGroup>

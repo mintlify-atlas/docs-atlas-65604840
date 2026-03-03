@@ -1,0 +1,265 @@
+---
+title: Popover
+description: A floating overlay that displays content relative to a trigger element.
+---
+
+A popover component for displaying rich content in a floating container positioned relative to a trigger.
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { Popover, Button } from "@kuzenbo/core";
+
+export default function PopoverExample() {
+  return (
+    <Popover>
+      <Popover.Trigger render={<Button variant="outline" />}>
+        View quota status
+      </Popover.Trigger>
+      <Popover.Content>
+        <Popover.Header>
+          <Popover.Title>Usage summary</Popover.Title>
+          <Popover.Description>
+            Workspace usage is at 82% of monthly compute quota.
+          </Popover.Description>
+        </Popover.Header>
+      </Popover.Content>
+    </Popover>
+  );
+}
+```
+
+### With Sizes
+
+```tsx
+import { Popover, Button } from "@kuzenbo/core";
+
+export default function PopoverSizes() {
+  return (
+    <div className="flex gap-2">
+      <Popover size="xs">
+        <Popover.Trigger render={<Button variant="outline" />}>
+          XS Popover
+        </Popover.Trigger>
+        <Popover.Content>
+          <Popover.Header>
+            <Popover.Title>Extra small</Popover.Title>
+          </Popover.Header>
+        </Popover.Content>
+      </Popover>
+
+      <Popover size="lg">
+        <Popover.Trigger render={<Button variant="outline" />}>
+          LG Popover
+        </Popover.Trigger>
+        <Popover.Content>
+          <Popover.Header>
+            <Popover.Title>Large popover</Popover.Title>
+          </Popover.Header>
+        </Popover.Content>
+      </Popover>
+    </div>
+  );
+}
+```
+
+### Controlled State
+
+```tsx
+import { Popover, Button } from "@kuzenbo/core";
+import { useState } from "react";
+
+export default function ControlledPopover() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <Popover.Trigger render={<Button variant="outline" />}>
+        Open popover
+      </Popover.Trigger>
+      <Popover.Content>
+        <Popover.Header>
+          <Popover.Title>Controlled popover</Popover.Title>
+          <Popover.Description>
+            Open state is controlled externally.
+          </Popover.Description>
+        </Popover.Header>
+        <Popover.Close render={<Button size="sm" variant="outline" />}>
+          Close
+        </Popover.Close>
+      </Popover.Content>
+    </Popover>
+  );
+}
+```
+
+### Composed Anatomy
+
+```tsx
+import { Popover, Button } from "@kuzenbo/core";
+
+export default function ComposedPopover() {
+  return (
+    <Popover>
+      <Popover.Trigger render={<Button variant="outline" />}>
+        Open actions
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner side="bottom" sideOffset={8}>
+          <Popover.Popup>
+            <Popover.Arrow />
+            <Popover.Viewport>
+              <Popover.Header>
+                <Popover.Title>Actions</Popover.Title>
+                <Popover.Description>
+                  Choose an action to perform.
+                </Popover.Description>
+              </Popover.Header>
+            </Popover.Viewport>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover>
+  );
+}
+```
+
+## API Reference
+
+### Popover (Root)
+
+<ParamField path="defaultOpen" type="boolean">
+  The initial open state when uncontrolled.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  The controlled open state of the popover.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback fired when the open state changes.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size variant for the popover.
+</ParamField>
+
+### Popover.Content
+
+<ParamField path="side" type="'top' | 'right' | 'bottom' | 'left'" default="'bottom'">
+  The preferred side of the trigger to render against.
+</ParamField>
+
+<ParamField path="sideOffset" type="number" default="4">
+  The distance in pixels from the trigger.
+</ParamField>
+
+<ParamField path="align" type="'start' | 'center' | 'end'" default="'center'">
+  The alignment of the popover relative to the trigger.
+</ParamField>
+
+<ParamField path="alignOffset" type="number" default="0">
+  The offset in pixels from the alignment axis.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the root size for this content.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Popover.Popup
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the root size for this popup.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Popover.Positioner
+
+<ParamField path="side" type="'top' | 'right' | 'bottom' | 'left'">
+  The preferred side of the trigger to render against.
+</ParamField>
+
+<ParamField path="sideOffset" type="number">
+  The distance in pixels from the trigger.
+</ParamField>
+
+<ParamField path="align" type="'start' | 'center' | 'end'">
+  The alignment relative to the trigger.
+</ParamField>
+
+<ParamField path="alignOffset" type="number">
+  The offset in pixels from the alignment axis.
+</ParamField>
+
+### Popover.Trigger
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the trigger.
+</ParamField>
+
+### Popover.Title
+
+<ParamField path="children" type="ReactNode">
+  The title content for the popover.
+</ParamField>
+
+### Popover.Description
+
+<ParamField path="children" type="ReactNode">
+  The description content for the popover.
+</ParamField>
+
+### Popover.Header
+
+<ParamField path="children" type="ReactNode">
+  The header content, typically contains Title and Description.
+</ParamField>
+
+### Popover.Close
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the close trigger.
+</ParamField>
+
+### Popover.Arrow
+
+Renders a visual arrow pointing to the trigger.
+
+## Component Parts
+
+- `Popover` - Root component that manages state
+- `Popover.Trigger` - Opens the popover
+- `Popover.Portal` - Portals the popover content
+- `Popover.Positioner` - Positions the popover relative to trigger
+- `Popover.Popup` - The popover container
+- `Popover.Viewport` - Content viewport
+- `Popover.Content` - Convenience wrapper that includes Portal, Positioner, Popup, and Viewport
+- `Popover.Header` - Styled header container
+- `Popover.Title` - Accessible title
+- `Popover.Description` - Accessible description
+- `Popover.Arrow` - Visual arrow indicator
+- `Popover.Close` - Closes the popover
+- `Popover.Backdrop` - Optional backdrop overlay
+
+## Accessibility
+
+- Popover implements proper ARIA attributes
+- Pressing Escape closes the popover
+- Clicking outside closes the popover
+- Focus management when opening and closing
+- Title and Description are automatically linked for screen readers

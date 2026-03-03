@@ -1,0 +1,332 @@
+---
+title: useFloatingWindow
+description: Makes an element draggable with absolute positioning and viewport constraints
+---
+
+## Usage
+
+Makes an element draggable and keeps its absolute position in sync with pointer/touch movement. Supports drag handles, axis locking, viewport constraints, drag lifecycle callbacks, and imperative repositioning.
+
+```tsx
+import { useFloatingWindow } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { ref, isDragging } = useFloatingWindow();
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: 'absolute',
+        padding: '1rem',
+        background: 'white',
+        border: '1px solid #ccc',
+        cursor: isDragging ? 'grabbing' : 'grab',
+      }}
+    >
+      Drag me anywhere
+    </div>
+  );
+}
+```
+
+## Constrain to viewport
+
+Keep the element within viewport boundaries:
+
+```tsx
+import { useFloatingWindow } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { ref } = useFloatingWindow({
+    constrainToViewport: true,
+    constrainOffset: 10, // 10px from edges
+  });
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: 'absolute',
+        padding: '1rem',
+        background: 'white',
+        border: '1px solid #ccc',
+      }}
+    >
+      Can't leave the viewport
+    </div>
+  );
+}
+```
+
+## Drag handle
+
+Only allow dragging from a specific handle element:
+
+```tsx
+import { useFloatingWindow } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { ref } = useFloatingWindow({
+    dragHandleSelector: '.drag-handle',
+  });
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: 'absolute',
+        background: 'white',
+        border: '1px solid #ccc',
+      }}
+    >
+      <div className="drag-handle" style={{ padding: '0.5rem', background: '#eee', cursor: 'grab' }}>
+        Drag here
+      </div>
+      <div style={{ padding: '1rem' }}>
+        <p>Content area (not draggable)</p>
+        <button>Click me</button>
+      </div>
+    </div>
+  );
+}
+```
+
+## Axis locking
+
+Restrict movement to a single axis:
+
+```tsx
+import { useFloatingWindow } from '@kuzenbo/hooks';
+
+function Demo() {
+  const horizontal = useFloatingWindow({ axis: 'x' });
+  const vertical = useFloatingWindow({ axis: 'y' });
+
+  return (
+    <>
+      <div
+        ref={horizontal.ref}
+        style={{
+          position: 'absolute',
+          top: 100,
+          left: 100,
+          padding: '1rem',
+          background: 'lightblue',
+        }}
+      >
+        Horizontal only
+      </div>
+      
+      <div
+        ref={vertical.ref}
+        style={{
+          position: 'absolute',
+          top: 200,
+          left: 100,
+          padding: '1rem',
+          background: 'lightcoral',
+        }}
+      >
+        Vertical only
+      </div>
+    </>
+  );
+}
+```
+
+## Initial position
+
+Set the initial position:
+
+```tsx
+import { useFloatingWindow } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { ref } = useFloatingWindow({
+    initialPosition: { top: 50, left: 100 },
+  });
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: 'absolute',
+        padding: '1rem',
+        background: 'white',
+        border: '1px solid #ccc',
+      }}
+    >
+      Positioned at top: 50, left: 100
+    </div>
+  );
+}
+```
+
+## Imperative positioning
+
+Programmatically move the element:
+
+```tsx
+import { useFloatingWindow } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { ref, setPosition } = useFloatingWindow();
+
+  return (
+    <>
+      <div style={{ marginBottom: '1rem' }}>
+        <button onClick={() => setPosition({ top: 100, left: 100 })}>
+          Move to (100, 100)
+        </button>
+        <button onClick={() => setPosition({ bottom: 50, right: 50 })}>
+          Move to bottom-right
+        </button>
+      </div>
+      
+      <div
+        ref={ref}
+        style={{
+          position: 'absolute',
+          padding: '1rem',
+          background: 'white',
+          border: '1px solid #ccc',
+        }}
+      >
+        Draggable window
+      </div>
+    </>
+  );
+}
+```
+
+## Drag callbacks
+
+Listen to drag lifecycle events:
+
+```tsx
+import { useFloatingWindow } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  
+  const { ref, isDragging } = useFloatingWindow({
+    onDragStart: () => console.log('Drag started'),
+    onDragEnd: () => console.log('Drag ended'),
+    onPositionChange: (pos) => setPosition(pos),
+  });
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: 'absolute',
+        padding: '1rem',
+        background: 'white',
+        border: '1px solid #ccc',
+      }}
+    >
+      <p>Dragging: {isDragging ? 'Yes' : 'No'}</p>
+      <p>Position: ({Math.round(position.x)}, {Math.round(position.y)})</p>
+    </div>
+  );
+}
+```
+
+## Definition
+
+```tsx
+interface FloatingWindowPosition {
+  x: number;
+  y: number;
+}
+
+interface FloatingWindowPositionConfig {
+  top?: number;
+  left?: number;
+  right?: number;
+  bottom?: number;
+}
+
+interface UseFloatingWindowOptions {
+  enabled?: boolean;
+  constrainToViewport?: boolean;
+  constrainOffset?: number;
+  dragHandleSelector?: string;
+  excludeDragHandleSelector?: string;
+  axis?: 'x' | 'y';
+  initialPosition?: FloatingWindowPositionConfig;
+  onPositionChange?: (pos: FloatingWindowPosition) => void;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
+}
+
+interface UseFloatingWindowReturnValue<T extends HTMLElement> {
+  ref: RefCallback<T | null>;
+  setPosition: (position: FloatingWindowPositionConfig) => void;
+  isDragging: boolean;
+}
+
+function useFloatingWindow<T extends HTMLElement>(
+  options?: UseFloatingWindowOptions
+): UseFloatingWindowReturnValue<T>
+```
+
+### Parameters
+
+<ParamField path="options" type="UseFloatingWindowOptions" optional>
+  <ParamField path="enabled" type="boolean" default={true}>
+    If `false`, the element cannot be dragged
+  </ParamField>
+  
+  <ParamField path="constrainToViewport" type="boolean" default={false}>
+    If `true`, the element can only move within the current viewport boundaries
+  </ParamField>
+  
+  <ParamField path="constrainOffset" type="number" default={0}>
+    The offset from the viewport edges when constraining the element. Requires `constrainToViewport: true`
+  </ParamField>
+  
+  <ParamField path="dragHandleSelector" type="string" optional>
+    Selector of an element that should be used to drag floating window. If not specified, the entire root element is used as a drag target
+  </ParamField>
+  
+  <ParamField path="excludeDragHandleSelector" type="string" optional>
+    Selector of an element within `dragHandleSelector` that should be excluded from the drag event
+  </ParamField>
+  
+  <ParamField path="axis" type="'x' | 'y'" optional>
+    If set, restricts movement to the specified axis
+  </ParamField>
+  
+  <ParamField path="initialPosition" type="FloatingWindowPositionConfig" optional>
+    Initial position. If not set, calculated from element styles
+  </ParamField>
+  
+  <ParamField path="onPositionChange" type="(pos: FloatingWindowPosition) => void" optional>
+    Called when the element position changes
+  </ParamField>
+  
+  <ParamField path="onDragStart" type="() => void" optional>
+    Called when the drag starts
+  </ParamField>
+  
+  <ParamField path="onDragEnd" type="() => void" optional>
+    Called when the drag stops
+  </ParamField>
+</ParamField>
+
+### Returns
+
+<ResponseField name="ref" type="RefCallback<T | null>">
+  Ref to attach to the draggable element
+</ResponseField>
+
+<ResponseField name="setPosition" type="(position: FloatingWindowPositionConfig) => void">
+  Function to imperatively set the element position
+</ResponseField>
+
+<ResponseField name="isDragging" type="boolean">
+  `true` if the element is currently being dragged
+</ResponseField>

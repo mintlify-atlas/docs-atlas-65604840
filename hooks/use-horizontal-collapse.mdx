@@ -1,0 +1,250 @@
+---
+title: 'useHorizontalCollapse'
+description: 'Animate horizontal expand/collapse transitions'
+---
+
+`useHorizontalCollapse` manages horizontal expand/collapse transitions and returns transition-aware props to spread onto the collapsible element.
+
+## Usage
+
+```tsx
+import { useHorizontalCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [expanded, setExpanded] = useState(false);
+  const { getCollapseProps } = useHorizontalCollapse({ expanded });
+
+  return (
+    <div style={{ display: 'flex' }}>
+      <button onClick={() => setExpanded((e) => !e)}>
+        {expanded ? 'Collapse' : 'Expand'}
+      </button>
+      <div {...getCollapseProps()}>
+        <div style={{ padding: 20, whiteSpace: 'nowrap' }}>
+          <p>This content will smoothly expand and collapse horizontally</p>
+          <p>The width is automatically calculated</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Parameters
+
+<ParamField path="input" type="UseHorizontalCollapseInput" required>
+  Horizontal collapse configuration object.
+</ParamField>
+
+<ParamField path="input.expanded" type="boolean" required>
+  Whether the content should be expanded.
+</ParamField>
+
+<ParamField path="input.transitionDuration" type="number">
+  Transition duration in milliseconds. When omitted, duration is calculated from content width.
+</ParamField>
+
+<ParamField path="input.transitionTimingFunction" type="string" default="ease">
+  CSS timing function for the transition.
+</ParamField>
+
+<ParamField path="input.onTransitionEnd" type="() => void">
+  Callback fired when the width transition finishes.
+</ParamField>
+
+<ParamField path="input.onTransitionStart" type="() => void">
+  Callback fired when a transition starts.
+</ParamField>
+
+<ParamField path="input.keepMounted" type="boolean" default="false">
+  When `true`, collapsed content stays mounted and is hidden with styles.
+</ParamField>
+
+### Returns
+
+<ResponseField name="state" type="'entering' | 'entered' | 'exiting' | 'exited'">
+  Current transition state.
+</ResponseField>
+
+<ResponseField name="getCollapseProps" type="(input?: GetHorizontalCollapsePropsInput) => GetHorizontalCollapsePropsReturnValue">
+  Function that returns props to spread onto the collapsible element.
+</ResponseField>
+
+## Sidebar Navigation
+
+```tsx
+import { useHorizontalCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Sidebar() {
+  const [expanded, setExpanded] = useState(true);
+  const { getCollapseProps } = useHorizontalCollapse({ expanded });
+
+  return (
+    <div style={{ display: 'flex' }}>
+      <nav {...getCollapseProps()}>
+        <div style={{ width: 250, padding: 20 }}>
+          <h3>Navigation</h3>
+          <ul>
+            <li>Dashboard</li>
+            <li>Settings</li>
+            <li>Profile</li>
+          </ul>
+        </div>
+      </nav>
+      <button onClick={() => setExpanded(!expanded)}>
+        {expanded ? '◀' : '▶'}
+      </button>
+      <main style={{ flex: 1, padding: 20 }}>
+        <h1>Main Content</h1>
+      </main>
+    </div>
+  );
+}
+```
+
+## Custom Duration
+
+```tsx
+import { useHorizontalCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [expanded, setExpanded] = useState(false);
+  
+  const { getCollapseProps } = useHorizontalCollapse({
+    expanded,
+    transitionDuration: 500,
+    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  });
+
+  return (
+    <div style={{ display: 'flex' }}>
+      <button onClick={() => setExpanded(!expanded)}>Toggle</button>
+      <div {...getCollapseProps()}>
+        <div style={{ padding: 20, whiteSpace: 'nowrap' }}>
+          Custom timing content
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## Toolbar Expansion
+
+```tsx
+import { useHorizontalCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function ExpandableToolbar() {
+  const [expanded, setExpanded] = useState(false);
+  const { getCollapseProps, state } = useHorizontalCollapse({ expanded });
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <button onClick={() => setExpanded(!expanded)}>⚙️</button>
+      <div {...getCollapseProps()}>
+        <div style={{ display: 'flex', gap: 8, padding: '0 16px' }}>
+          <button>Cut</button>
+          <button>Copy</button>
+          <button>Paste</button>
+          <button>Undo</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## Keep Mounted
+
+```tsx
+import { useHorizontalCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [expanded, setExpanded] = useState(false);
+  
+  const { getCollapseProps } = useHorizontalCollapse({
+    expanded,
+    keepMounted: true, // Content stays in DOM when collapsed
+  });
+
+  return (
+    <div style={{ display: 'flex' }}>
+      <button onClick={() => setExpanded(!expanded)}>Toggle</button>
+      <div {...getCollapseProps()}>
+        <div style={{ padding: 20, whiteSpace: 'nowrap' }}>
+          This content stays mounted
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## With Callbacks
+
+```tsx
+import { useHorizontalCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [expanded, setExpanded] = useState(false);
+  
+  const { getCollapseProps } = useHorizontalCollapse({
+    expanded,
+    onTransitionStart: () => console.log('Starting transition'),
+    onTransitionEnd: () => console.log('Transition complete'),
+  });
+
+  return (
+    <div style={{ display: 'flex' }}>
+      <button onClick={() => setExpanded(!expanded)}>Toggle</button>
+      <div {...getCollapseProps()}>
+        <div style={{ padding: 20 }}>Content with callbacks</div>
+      </div>
+    </div>
+  );
+}
+```
+
+## Responsive Panel
+
+```tsx
+import { useHorizontalCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function ResponsiveLayout() {
+  const [showSidebar, setShowSidebar] = useState(false);
+  const { getCollapseProps } = useHorizontalCollapse({ 
+    expanded: showSidebar,
+    transitionDuration: 300,
+  });
+
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <aside {...getCollapseProps()}>
+        <div style={{ width: 300, padding: 20, background: '#f5f5f5' }}>
+          <h2>Sidebar</h2>
+          <nav>
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+          </nav>
+        </div>
+      </aside>
+      <main style={{ flex: 1, padding: 20 }}>
+        <button onClick={() => setShowSidebar(!showSidebar)}>
+          {showSidebar ? 'Hide' : 'Show'} Sidebar
+        </button>
+        <h1>Main Content</h1>
+      </main>
+    </div>
+  );
+}
+```

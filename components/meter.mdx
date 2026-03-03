@@ -1,0 +1,229 @@
+---
+title: Meter
+description: Display a scalar measurement within a known range, such as disk usage or satisfaction level.
+---
+
+<ComponentPreview name="meter-default" />
+
+## Installation
+
+<Tabs>
+  <Tab title="CLI">
+    ```bash
+    npx @kuzenbo/cli add meter
+    ```
+  </Tab>
+  <Tab title="Manual">
+    Install the required dependencies:
+
+    ```bash
+    npm install @kuzenbo/core @base-ui/react
+    ```
+
+    Copy the component source:
+
+    <Accordion title="meter.tsx">
+      ```tsx
+      // See source at packages/core/src/ui/meter/
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Meter } from "@kuzenbo/core";
+
+export default function Example() {
+  return <Meter value={75} min={0} max={100} />;
+}
+```
+
+## Examples
+
+### With Label
+
+Add a descriptive label to the meter.
+
+```tsx
+<Meter value={80} min={0} max={100}>
+  <Meter.Label>Disk usage</Meter.Label>
+</Meter>
+```
+
+### With Value Display
+
+Show the current value numerically.
+
+```tsx
+<Meter value={65} min={0} max={100}>
+  <div className="flex items-center justify-between">
+    <Meter.Label>CPU usage</Meter.Label>
+    <Meter.Value />
+  </div>
+</Meter>
+```
+
+### Custom Range
+
+Define custom min and max values.
+
+```tsx
+<Meter value={3.8} min={1} max={5}>
+  <Meter.Label>Satisfaction (1-5 scale)</Meter.Label>
+  <Meter.Value />
+</Meter>
+```
+
+### Optimum and Thresholds
+
+Define optimal value and thresholds for semantic states.
+
+```tsx
+<Meter 
+  value={85} 
+  min={0} 
+  max={100}
+  optimum={50}
+  low={30}
+  high={70}
+>
+  <Meter.Label>Temperature</Meter.Label>
+  <Meter.Value />
+</Meter>
+```
+
+### Storage Example
+
+Display storage usage with formatted values.
+
+```tsx
+<Meter value={42} min={0} max={100}>
+  <div className="flex items-center justify-between">
+    <Meter.Label>Storage</Meter.Label>
+    <span className="text-sm text-muted-foreground">
+      42 GB of 100 GB used
+    </span>
+  </div>
+</Meter>
+```
+
+### Multiple Meters
+
+Compare multiple metrics.
+
+```tsx
+<div className="space-y-4">
+  <Meter value={75} min={0} max={100}>
+    <Meter.Label>Memory</Meter.Label>
+    <Meter.Value />
+  </Meter>
+  
+  <Meter value={42} min={0} max={100}>
+    <Meter.Label>CPU</Meter.Label>
+    <Meter.Value />
+  </Meter>
+  
+  <Meter value={88} min={0} max={100}>
+    <Meter.Label>Disk</Meter.Label>
+    <Meter.Value />
+  </Meter>
+</div>
+```
+
+## API Reference
+
+### Meter
+
+Based on Base UI Meter component.
+
+<ParamField path="value" type="number" required>
+  Current value of the meter.
+</ParamField>
+
+<ParamField path="min" type="number" default="0">
+  Minimum value.
+</ParamField>
+
+<ParamField path="max" type="number" default="100">
+  Maximum value.
+</ParamField>
+
+<ParamField path="optimum" type="number">
+  Optimal value within the range.
+</ParamField>
+
+<ParamField path="low" type="number">
+  Upper bound of the low range.
+</ParamField>
+
+<ParamField path="high" type="number">
+  Lower bound of the high range.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Meter.Track
+
+The track container for the meter indicator.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Meter.Indicator
+
+The visual indicator showing the current value.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Meter.Label
+
+Descriptive label for the meter.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Meter.Value
+
+Displays the current meter value.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Meter vs Progress
+
+**Use Meter when:**
+- Measuring a static or current value (disk usage, rating)
+- The value doesn't change over time
+- You're showing a gauge or level
+
+**Use Progress when:**
+- Tracking completion of a task
+- The value changes over time toward completion
+- You're showing upload/download progress
+
+## Accessibility
+
+- Uses `role="meter"` for proper semantics
+- `aria-valuemin`, `aria-valuemax`, and `aria-valuenow` are set automatically
+- `aria-valuetext` provides formatted value to screen readers
+- Threshold states (optimum, low, high) are exposed to assistive technology
+- Always include a visible label
+
+## Best Practices
+
+- Use meters for static measurements, not task progress
+- Always provide a descriptive label
+- Show numerical value when precision matters
+- Use optimum/low/high for semantic meaning
+- Consider color coding for different value ranges
+- Format values appropriately (percentages, units, etc.)
+- Don't use meters for time-based progress

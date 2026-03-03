@@ -1,0 +1,240 @@
+---
+title: "useHeadroom"
+description: "Control sticky header visibility based on scroll position and direction for auto-hiding navigation bars."
+---
+
+## Overview
+
+`useHeadroom` computes headroom visibility state for sticky surfaces based on scroll position and direction. Invokes lifecycle callbacks when the surface becomes fixed, pinned, or released.
+
+This hook also exports `useScrollDirection` which detects whether the user is currently scrolling upward.
+
+## Installation
+
+```npm
+npm i @kuzenbo/hooks
+```
+
+## Import
+
+```tsx
+import { useHeadroom, useScrollDirection } from "@kuzenbo/hooks";
+```
+
+## Usage
+
+### Basic Auto-hiding Header
+
+```tsx
+import { useHeadroom } from "@kuzenbo/hooks";
+
+export function AutoHideHeader() {
+  const pinned = useHeadroom({ fixedAt: 100 });
+
+  return (
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 bg-background border-b transition-transform duration-300 ${
+        pinned ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
+      <div className="container mx-auto px-4 py-4">
+        <h1 className="text-xl font-bold">My Website</h1>
+      </div>
+    </header>
+  );
+}
+```
+
+### With Callbacks
+
+```tsx
+import { useHeadroom } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function HeaderWithCallbacks() {
+  const [state, setState] = useState("released");
+
+  const pinned = useHeadroom({
+    fixedAt: 50,
+    onPin: () => setState("pinned"),
+    onFix: () => setState("fixed"),
+    onRelease: () => setState("released"),
+  });
+
+  return (
+    <div>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 bg-background border-b transition-transform ${
+          pinned ? "translate-y-0" : "-translate-y-full"
+        }`}
+      >
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <h1 className="font-semibold">Brand</h1>
+            <span className="text-xs text-muted-foreground">State: {state}</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Add spacing for fixed header */}
+      <div className="h-16" />
+    </div>
+  );
+}
+```
+
+### Scroll Direction Only
+
+```tsx
+import { useScrollDirection } from "@kuzenbo/hooks";
+
+export function ScrollDirectionIndicator() {
+  const isScrollingUp = useScrollDirection();
+
+  return (
+    <div className="fixed bottom-4 right-4 px-4 py-2 bg-background border rounded-lg shadow-lg">
+      <p className="text-sm">
+        Scrolling: {isScrollingUp ? "↑ Up" : "↓ Down"}
+      </p>
+    </div>
+  );
+}
+```
+
+### Custom Fixed Threshold
+
+```tsx
+import { useHeadroom } from "@kuzenbo/hooks";
+
+export function CustomThresholdHeader() {
+  const pinned = useHeadroom({ fixedAt: 200 });
+
+  return (
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur transition-all duration-300 ${
+        pinned
+          ? "translate-y-0 shadow-lg"
+          : "-translate-y-full shadow-none"
+      }`}
+    >
+      <nav className="container mx-auto px-4 py-4">
+        <ul className="flex gap-6">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+  );
+}
+```
+
+### Smart Navigation
+
+```tsx
+import { useHeadroom } from "@kuzenbo/hooks";
+
+export function SmartNavigation() {
+  const pinned = useHeadroom({
+    fixedAt: 0,
+    onPin: () => console.log("Navigation visible"),
+    onRelease: () => console.log("Navigation hidden"),
+  });
+
+  return (
+    <>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 bg-primary text-primary-foreground transition-transform duration-200 ${
+          pinned ? "translate-y-0" : "-translate-y-full"
+        }`}
+      >
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <span className="font-bold">Logo</span>
+            <div className="flex gap-4">
+              <a href="#features">Features</a>
+              <a href="#pricing">Pricing</a>
+              <a href="#docs">Docs</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main>
+        <div className="h-screen flex items-center justify-center bg-gradient-to-b from-blue-500 to-purple-600 text-white">
+          <h1 className="text-5xl font-bold">Scroll down to see auto-hide</h1>
+        </div>
+        <div className="h-screen bg-muted" />
+      </main>
+    </>
+  );
+}
+```
+
+## API Reference
+
+### useHeadroom
+
+```tsx
+function useHeadroom(
+  options?: UseHeadroomInput
+): boolean
+```
+
+<ParamField path="options" type="UseHeadroomInput">
+  Headroom behavior configuration
+
+  <ParamField path="options.fixedAt" type="number" default={0}>
+    Scroll threshold (in px) where the surface is considered fixed
+  </ParamField>
+
+  <ParamField path="options.onPin" type="() => void">
+    Called when the surface transitions into pinned state
+  </ParamField>
+
+  <ParamField path="options.onFix" type="() => void">
+    Called while the surface is at or above the fixed threshold
+  </ParamField>
+
+  <ParamField path="options.onRelease" type="() => void">
+    Called when the surface transitions out of pinned state
+  </ParamField>
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  `true` when the header should be pinned (visible), `false` when it should be released (hidden)
+</ResponseField>
+
+### useScrollDirection
+
+```tsx
+function useScrollDirection(): boolean
+```
+
+<ResponseField name="return" type="boolean">
+  `true` when scrolling upward, `false` when scrolling downward
+</ResponseField>
+
+## Type Definitions
+
+```tsx
+interface UseHeadroomInput {
+  fixedAt?: number;
+  onPin?: () => void;
+  onFix?: () => void;
+  onRelease?: () => void;
+}
+```
+
+## Caveats
+
+- Scroll direction updates are paused during active resize to reduce noisy state changes
+- Uses a 300ms debounce for resize events
+- The hook combines scroll position and scroll direction to determine pinned state
+- `onFix` is called continuously while at or above the threshold
+- `onPin` and `onRelease` are called only on state transitions
+
+## SSR and RSC Notes
+
+- Use this hook in Client Components only
+- Do not call it from React Server Components

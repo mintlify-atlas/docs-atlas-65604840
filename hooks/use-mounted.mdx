@@ -1,0 +1,80 @@
+---
+title: useMounted
+description: Indicates whether the component has completed its first client-side mount
+---
+
+## Usage
+
+Indicates whether the component has completed its first client-side mount. Returns `false` during SSR and the first render, then `true` after the component mounts. This is useful for avoiding hydration mismatches.
+
+```tsx
+import { useMounted } from '@kuzenbo/hooks';
+
+function Demo() {
+  const mounted = useMounted();
+
+  return (
+    <div>
+      <p>Status: {mounted ? 'Mounted' : 'Not mounted yet'}</p>
+    </div>
+  );
+}
+```
+
+## Prevent hydration mismatch
+
+Render client-only content after mount:
+
+```tsx
+import { useMounted } from '@kuzenbo/hooks';
+
+function Demo() {
+  const mounted = useMounted();
+
+  return (
+    <div>
+      {mounted ? (
+        <p>Client-only content: {new Date().toLocaleString()}</p>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+  );
+}
+```
+
+## Conditional data fetching
+
+Fetch data only on the client:
+
+```tsx
+import { useMounted } from '@kuzenbo/hooks';
+import { useEffect, useState } from 'react';
+
+function Demo() {
+  const mounted = useMounted();
+  const [data, setData] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (mounted) {
+      fetch('/api/data')
+        .then((res) => res.json())
+        .then(setData);
+    }
+  }, [mounted]);
+
+  return <div>{mounted ? data : 'Loading...'}</div>;
+}
+```
+
+## Definition
+
+```tsx
+function useMounted(): boolean
+```
+
+### Returns
+
+<ResponseField name="mounted" type="boolean">
+  `false` during SSR and first render, `true` after mount completes
+</ResponseField>

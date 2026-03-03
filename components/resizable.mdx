@@ -1,0 +1,195 @@
+---
+title: Resizable
+description: A container with draggable panels that can be resized by the user.
+---
+
+## Overview
+
+The Resizable component provides a container with multiple panels that users can resize by dragging handles between them. Built on `react-resizable-panels`, it supports both horizontal and vertical layouts with optional size constraints.
+
+## Usage
+
+```tsx
+import { ResizablePanelGroup } from "@kuzenbo/core";
+
+export default function Example() {
+  return (
+    <ResizablePanelGroup className="border-border bg-card h-48 max-w-2xl rounded-md border">
+      <ResizablePanelGroup.Panel defaultSize={55}>
+        <div className="grid h-full gap-1 p-4 text-sm">
+          <div className="font-medium">Approval timeline</div>
+          <div className="text-muted-foreground">
+            14 requests are ready for same-day finance validation.
+          </div>
+        </div>
+      </ResizablePanelGroup.Panel>
+      <ResizablePanelGroup.Handle withHandle />
+      <ResizablePanelGroup.Panel defaultSize={45}>
+        <div className="grid h-full gap-1 p-4 text-sm">
+          <div className="font-medium">Escalation queue</div>
+          <div className="text-muted-foreground">
+            3 contracts are blocked by regional compliance checks.
+          </div>
+        </div>
+      </ResizablePanelGroup.Panel>
+    </ResizablePanelGroup>
+  );
+}
+```
+
+## With Size Constraints
+
+Control minimum and maximum sizes for each panel:
+
+```tsx
+import { ResizablePanelGroup } from "@kuzenbo/core";
+
+export default function MinMaxConstraints() {
+  return (
+    <ResizablePanelGroup className="border-border bg-card h-52 max-w-3xl rounded-md border">
+      <ResizablePanelGroup.Panel defaultSize={30} maxSize={45} minSize={20}>
+        <div className="p-4 text-sm">
+          <div className="font-medium">Accounts</div>
+          <div className="text-muted-foreground">
+            Fixed-width navigation rail
+          </div>
+        </div>
+      </ResizablePanelGroup.Panel>
+      <ResizablePanelGroup.Handle withHandle />
+      <ResizablePanelGroup.Panel defaultSize={45} minSize={30}>
+        <div className="p-4 text-sm">
+          <div className="font-medium">Approval workspace</div>
+          <div className="text-muted-foreground">
+            Drag handles while maintaining min and max panel limits.
+          </div>
+        </div>
+      </ResizablePanelGroup.Panel>
+      <ResizablePanelGroup.Handle withHandle />
+      <ResizablePanelGroup.Panel defaultSize={25} maxSize={35} minSize={15}>
+        <div className="p-4 text-sm">
+          <div className="font-medium">Audit notes</div>
+          <div className="text-muted-foreground">
+            Context panel for reviewers
+          </div>
+        </div>
+      </ResizablePanelGroup.Panel>
+    </ResizablePanelGroup>
+  );
+}
+```
+
+## Vertical Panels
+
+The component automatically switches to vertical layout:
+
+```tsx
+import { ResizablePanelGroup } from "@kuzenbo/core";
+
+export default function VerticalPanels() {
+  return (
+    <ResizablePanelGroup 
+      direction="vertical"
+      className="border-border bg-card h-72 max-w-xl rounded-md border"
+    >
+      <ResizablePanelGroup.Panel defaultSize={55} minSize={35}>
+        <div className="grid h-full gap-1 p-4 text-sm">
+          <div className="font-medium">Morning standup notes</div>
+          <div className="text-muted-foreground">
+            Vendor incidents, release blockers, and SLA highlights.
+          </div>
+        </div>
+      </ResizablePanelGroup.Panel>
+      <ResizablePanelGroup.Handle withHandle />
+      <ResizablePanelGroup.Panel defaultSize={45} minSize={25}>
+        <div className="grid h-full gap-1 p-4 text-sm">
+          <div className="font-medium">Action items</div>
+          <div className="text-muted-foreground">
+            Owners and due dates for unresolved approvals.
+          </div>
+        </div>
+      </ResizablePanelGroup.Panel>
+    </ResizablePanelGroup>
+  );
+}
+```
+
+## Props
+
+### ResizablePanelGroup
+
+<ParamField path="direction" type="'horizontal' | 'vertical'" default="horizontal">
+  The direction of the panel layout.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the panel group.
+</ParamField>
+
+The ResizablePanelGroup extends all props from `react-resizable-panels`'s `Group` component.
+
+### ResizablePanelGroup.Panel
+
+<ParamField path="defaultSize" type="number">
+  The initial size of the panel as a percentage of the total group size (0-100).
+</ParamField>
+
+<ParamField path="minSize" type="number">
+  The minimum size of the panel as a percentage (0-100).
+</ParamField>
+
+<ParamField path="maxSize" type="number">
+  The maximum size of the panel as a percentage (0-100).
+</ParamField>
+
+<ParamField path="collapsible" type="boolean">
+  Whether the panel can be collapsed to its minimum size.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the panel.
+</ParamField>
+
+The Panel extends all props from `react-resizable-panels`'s `Panel` component.
+
+### ResizablePanelGroup.Handle
+
+<ParamField path="withHandle" type="boolean">
+  Whether to show a visual handle indicator for the resize control.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the handle.
+</ParamField>
+
+The Handle extends all props from `react-resizable-panels`'s `Separator` component.
+
+## Styling
+
+The component automatically adjusts its layout based on the `direction` prop:
+
+- **Horizontal**: Panels are arranged side-by-side
+- **Vertical**: Panels are stacked vertically
+
+Handles rotate automatically for vertical layouts.
+
+## Accessibility
+
+The component includes:
+- `data-slot="resizable-panel-group"` on the group container
+- `data-slot="resizable-panel"` on each panel
+- `data-slot="resizable-handle"` on each handle
+- `data-panel-group-direction` attribute indicating layout direction
+- Keyboard navigation support from `react-resizable-panels`
+- Focus visible styles on handles
+
+## Import Aliases
+
+You can also import subcomponents directly:
+
+```tsx
+import { 
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle 
+} from "@kuzenbo/core";
+```

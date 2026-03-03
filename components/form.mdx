@@ -1,0 +1,114 @@
+---
+title: Form
+description: A semantic form container that handles validation and submission events.
+---
+
+## Import
+
+```tsx
+import { Form } from "@kuzenbo/core";
+```
+
+## Usage
+
+The `Form` component is a wrapper around the native `<form>` element with built-in validation support. It works seamlessly with `Field` components to create accessible, validated forms.
+
+```tsx
+import { Button, Field, Form } from "@kuzenbo/core";
+
+const workspaceNameValidation = (value: unknown) => {
+  if (typeof value !== "string" || value.trim().length < 3) {
+    return "Workspace name must be at least 3 characters";
+  }
+  return null;
+};
+
+const adminEmailValidation = (value: unknown) => {
+  if (typeof value !== "string" || !value.includes("@")) {
+    return "Enter a valid admin email";
+  }
+  return null;
+};
+
+export default function WorkspaceSetup() {
+  return (
+    <Form>
+      <Field name="workspaceName" validate={workspaceNameValidation}>
+        <Field.Label htmlFor="workspace-name">Workspace name</Field.Label>
+        <Field.Control
+          id="workspace-name"
+          placeholder="Acme Security Platform"
+        />
+        <Field.Error />
+      </Field>
+      <Field name="adminEmail" validate={adminEmailValidation}>
+        <Field.Label htmlFor="admin-email">Admin email</Field.Label>
+        <Field.Control
+          id="admin-email"
+          placeholder="admin@acme.io"
+          type="email"
+        />
+        <Field.Description>
+          We'll send setup checklists and SSO instructions to this inbox.
+        </Field.Description>
+        <Field.Error />
+      </Field>
+      <Button type="submit">Create workspace</Button>
+    </Form>
+  );
+}
+```
+
+## Props
+
+The `Form` component extends all props from `@base-ui/react/form`.
+
+<ParamField path="children" type="ReactNode">
+  Form content, typically `Field` components and submit buttons.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the form element.
+</ParamField>
+
+<ParamField path="onSubmit" type="(event: FormSubmitEvent) => void">
+  Callback fired when the form is submitted and validation passes.
+</ParamField>
+
+<ParamField path="validationMode" type="'onBlur' | 'onChange' | 'onSubmit'" default="onSubmit">
+  Controls when field validation is triggered.
+</ParamField>
+
+## Composition
+
+The `Form` component provides a `Root` export for explicit composition:
+
+```tsx
+<Form.Root>
+  <Field name="email">
+    <Field.Label>Email</Field.Label>
+    <Field.Control type="email" />
+  </Field>
+</Form.Root>
+```
+
+## Types
+
+```tsx
+export type FormProps<
+  Values extends Record<string, unknown> = Record<string, unknown>
+> = FormRootProps<Values>;
+
+export type FormActions = BaseForm.Actions;
+export type FormState = BaseForm.State;
+export type FormSubmitEventDetails = BaseForm.SubmitEventDetails;
+export type FormSubmitEventReason = BaseForm.SubmitEventReason;
+export type FormValidationMode = BaseForm.ValidationMode;
+```
+
+## Accessibility
+
+- Uses semantic `<form>` element for proper form submission behavior
+- Automatically manages ARIA attributes for validation states
+- Integrates with `Field` for accessible error messaging
+- Supports keyboard navigation and submission with Enter key

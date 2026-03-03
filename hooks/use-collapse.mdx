@@ -1,0 +1,224 @@
+---
+title: 'useCollapse'
+description: 'Animate vertical expand/collapse transitions'
+---
+
+`useCollapse` manages vertical expand/collapse transitions and returns transition-aware props to spread onto the collapsible element.
+
+## Usage
+
+```tsx
+import { useCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [expanded, setExpanded] = useState(false);
+  const { getCollapseProps } = useCollapse({ expanded });
+
+  return (
+    <div>
+      <button onClick={() => setExpanded((e) => !e)}>
+        {expanded ? 'Collapse' : 'Expand'}
+      </button>
+      <div {...getCollapseProps()}>
+        <div style={{ padding: 20 }}>
+          <p>This content will smoothly expand and collapse</p>
+          <p>The height is automatically calculated</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Parameters
+
+<ParamField path="input" type="UseCollapseInput" required>
+  Collapse configuration object.
+</ParamField>
+
+<ParamField path="input.expanded" type="boolean" required>
+  Whether the content should be expanded.
+</ParamField>
+
+<ParamField path="input.transitionDuration" type="number">
+  Transition duration in milliseconds. When omitted, duration is calculated from content height.
+</ParamField>
+
+<ParamField path="input.transitionTimingFunction" type="string" default="ease">
+  CSS timing function for the transition.
+</ParamField>
+
+<ParamField path="input.onTransitionEnd" type="() => void">
+  Callback fired when the height transition finishes.
+</ParamField>
+
+<ParamField path="input.onTransitionStart" type="() => void">
+  Callback fired when a transition starts.
+</ParamField>
+
+<ParamField path="input.keepMounted" type="boolean" default="false">
+  When `true`, collapsed content stays mounted and is hidden with styles.
+</ParamField>
+
+### Returns
+
+<ResponseField name="state" type="'entering' | 'entered' | 'exiting' | 'exited'">
+  Current transition state.
+</ResponseField>
+
+<ResponseField name="getCollapseProps" type="(input?: GetCollapsePropsInput) => GetCollapsePropsReturnValue">
+  Function that returns props to spread onto the collapsible element.
+</ResponseField>
+
+## Accordion
+
+```tsx
+import { useCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Accordion() {
+  const [openItem, setOpenItem] = useState<number | null>(null);
+
+  const items = [
+    { title: 'Section 1', content: 'Content for section 1' },
+    { title: 'Section 2', content: 'Content for section 2' },
+    { title: 'Section 3', content: 'Content for section 3' },
+  ];
+
+  return (
+    <div>
+      {items.map((item, index) => (
+        <AccordionItem
+          key={index}
+          title={item.title}
+          content={item.content}
+          expanded={openItem === index}
+          onToggle={() => setOpenItem(openItem === index ? null : index)}
+        />
+      ))}
+    </div>
+  );
+}
+
+function AccordionItem({ title, content, expanded, onToggle }) {
+  const { getCollapseProps } = useCollapse({ expanded });
+
+  return (
+    <div>
+      <button onClick={onToggle}>{title}</button>
+      <div {...getCollapseProps()}>
+        <div style={{ padding: 16 }}>{content}</div>
+      </div>
+    </div>
+  );
+}
+```
+
+## Custom Duration
+
+```tsx
+import { useCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [expanded, setExpanded] = useState(false);
+  
+  const { getCollapseProps } = useCollapse({
+    expanded,
+    transitionDuration: 1000,
+    transitionTimingFunction: 'ease-in-out',
+  });
+
+  return (
+    <div>
+      <button onClick={() => setExpanded(!expanded)}>Toggle</button>
+      <div {...getCollapseProps()}>
+        <div style={{ padding: 20 }}>Slow transition content</div>
+      </div>
+    </div>
+  );
+}
+```
+
+## Keep Mounted
+
+```tsx
+import { useCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [expanded, setExpanded] = useState(false);
+  
+  const { getCollapseProps, state } = useCollapse({
+    expanded,
+    keepMounted: true, // Content stays in DOM when collapsed
+  });
+
+  return (
+    <div>
+      <button onClick={() => setExpanded(!expanded)}>Toggle</button>
+      <p>State: {state}</p>
+      <div {...getCollapseProps()}>
+        <div style={{ padding: 20 }}>This content stays mounted</div>
+      </div>
+    </div>
+  );
+}
+```
+
+## With Callbacks
+
+```tsx
+import { useCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [expanded, setExpanded] = useState(false);
+  
+  const { getCollapseProps } = useCollapse({
+    expanded,
+    onTransitionStart: () => console.log('Transition started'),
+    onTransitionEnd: () => console.log('Transition ended'),
+  });
+
+  return (
+    <div>
+      <button onClick={() => setExpanded(!expanded)}>Toggle</button>
+      <div {...getCollapseProps()}>
+        <div style={{ padding: 20 }}>Content with callbacks</div>
+      </div>
+    </div>
+  );
+}
+```
+
+## Custom Styles
+
+```tsx
+import { useCollapse } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [expanded, setExpanded] = useState(false);
+  const { getCollapseProps } = useCollapse({ expanded });
+
+  return (
+    <div>
+      <button onClick={() => setExpanded(!expanded)}>Toggle</button>
+      <div
+        {...getCollapseProps({
+          style: {
+            border: '1px solid #ccc',
+            borderRadius: 4,
+          },
+        })}
+      >
+        <div style={{ padding: 20 }}>Styled collapse content</div>
+      </div>
+    </div>
+  );
+}
+```

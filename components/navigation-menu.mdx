@@ -1,0 +1,241 @@
+---
+title: "Navigation Menu"
+description: "Build accessible dropdown navigation menus with @kuzenbo/core NavigationMenu, featuring hover and focus triggers."
+---
+
+## Overview
+
+`NavigationMenu` is a Base UI-powered navigation system for building complex menu structures with dropdown content panels.
+
+- Use it for site-wide navigation with nested content.
+- Supports keyboard navigation and hover interactions.
+- Includes automatic viewport positioning for dropdown panels.
+
+Built on Base UI NavigationMenu with integrated popup management.
+
+## Installation
+
+```npm
+npm i @kuzenbo/core
+```
+
+## Import
+
+```tsx
+import {
+  NavigationMenu,
+  NavigationMenuArrow,
+  NavigationMenuBackdrop,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@kuzenbo/core/ui/navigation-menu";
+```
+
+## Basic Example
+
+```tsx
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@kuzenbo/core/ui/navigation-menu";
+
+export function BasicNavigationMenu() {
+  return (
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="grid gap-3 p-6 w-[400px]">
+              <NavigationMenuLink href="/products/analytics">
+                Analytics
+              </NavigationMenuLink>
+              <NavigationMenuLink href="/products/insights">
+                Insights
+              </NavigationMenuLink>
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        
+        <NavigationMenuItem>
+          <NavigationMenuLink href="/pricing">
+            Pricing
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
+}
+```
+
+## Advanced Example
+
+```tsx
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@kuzenbo/core/ui/navigation-menu";
+
+export function AdvancedNavigationMenu() {
+  return (
+    <NavigationMenu size="lg">
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>Features</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="grid grid-cols-2 gap-4 p-6 w-[600px]">
+              <div className="space-y-3">
+                <h4 className="font-medium text-sm">For Developers</h4>
+                <NavigationMenuLink href="/features/api">
+                  API Platform
+                </NavigationMenuLink>
+                <NavigationMenuLink href="/features/sdk">
+                  SDK Libraries
+                </NavigationMenuLink>
+              </div>
+              <div className="space-y-3">
+                <h4 className="font-medium text-sm">For Teams</h4>
+                <NavigationMenuLink href="/features/collaboration">
+                  Collaboration
+                </NavigationMenuLink>
+                <NavigationMenuLink href="/features/security">
+                  Enterprise Security
+                </NavigationMenuLink>
+              </div>
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
+}
+```
+
+## Size Scale
+
+`NavigationMenu` supports `xs | sm | md | lg | xl` sizing that affects trigger and content sizing.
+
+```tsx
+import { NavigationMenu } from "@kuzenbo/core/ui/navigation-menu";
+
+export function SizedNavigationMenu() {
+  return (
+    <NavigationMenu size="sm">
+      <NavigationMenuList>
+        {/* Menu items */}
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
+}
+```
+
+## API Reference
+
+### NavigationMenu
+
+Root menu container with size context.
+
+<ParamField path="size" type="InputSize" default="md">
+  Size of the navigation menu: `xs | sm | md | lg | xl`.
+</ParamField>
+
+### NavigationMenuList
+
+Horizontal list container for menu items.
+
+### NavigationMenuItem
+
+Individual menu item that can contain a trigger or direct link.
+
+<ParamField path="value" type="string">
+  Unique identifier for the menu item.
+</ParamField>
+
+### NavigationMenuTrigger
+
+Interactive trigger button with dropdown arrow indicator.
+
+<ParamField path="size" type="InputSize" default="md">
+  Size override for the trigger.
+</ParamField>
+
+### NavigationMenuContent
+
+Dropdown content panel positioned below the trigger.
+
+<ParamField path="size" type="InputSize" default="md">
+  Size override for the content.
+</ParamField>
+
+### NavigationMenuLink
+
+Direct navigation link within menu or content.
+
+<ParamField path="size" type="InputSize" default="md">
+  Size override for the link.
+</ParamField>
+
+<ParamField path="active" type="boolean" default={false}>
+  Whether this link represents the current page.
+</ParamField>
+
+### NavigationMenuViewport
+
+Positioned container for dropdown content (automatically included in root).
+
+### NavigationMenuIndicator
+
+Animated active state indicator (optional).
+
+### NavigationMenuArrow
+
+Pointing arrow for dropdown content (optional).
+
+### NavigationMenuBackdrop
+
+Overlay backdrop for mobile or modal contexts (optional).
+
+## Accessibility
+
+- Base UI handles ARIA menu semantics and keyboard navigation.
+- Use clear, descriptive labels for triggers.
+- Ensure dropdown content is keyboard accessible.
+- Support both hover and click interactions for flexibility.
+
+## SSR and RSC Notes
+
+- NavigationMenu is client-interactive (`"use client"`).
+- The viewport portal renders content outside the main tree for positioning.
+- Use client boundaries when integrating into server components.
+
+## Styling and Tokens
+
+- Default styles use semantic tokens (`bg-background`, `text-foreground`, `hover:bg-muted`).
+- Trigger includes automatic chevron rotation on open state.
+- Content panels can be styled with grid layouts for multi-column menus.
+
+## Troubleshooting
+
+- Dropdown not appearing: ensure `NavigationMenuContent` is inside a `NavigationMenuItem` with a `NavigationMenuTrigger`.
+- Content misaligned: the viewport is automatically positioned; avoid custom absolute positioning.
+- Keyboard navigation broken: verify Base UI event handlers are not prevented.
+
+## Related Links
+
+- [Navigation List](/components/navigation-list)
+- [Menubar](/components/menubar)
+- [Dropdown Menu](/components/dropdown-menu)
+- [Breadcrumb](/components/breadcrumb)

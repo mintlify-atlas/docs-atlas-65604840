@@ -1,0 +1,167 @@
+---
+title: useColorScheme
+description: Detect user's color scheme preference (dark or light)
+---
+
+Reads the user's `prefers-color-scheme` media query and returns a normalized scheme value for application theming. Built on top of `useMediaQuery`.
+
+## Usage
+
+```tsx
+import { useColorScheme } from '@kuzenbo/hooks';
+
+function Demo() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <div className={colorScheme === 'dark' ? 'dark-theme' : 'light-theme'}>
+      Current theme: {colorScheme}
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useColorScheme(
+  initialValue?: UseColorSchemeValue,
+  options?: UseMediaQueryOptions
+): UseColorSchemeValue
+
+type UseColorSchemeValue = 'dark' | 'light'
+```
+
+## Parameters
+
+<ParamField path="initialValue" type="'dark' | 'light'" optional>
+  Optional fallback scheme used before the media query resolves. Useful for SSR.
+</ParamField>
+
+<ParamField path="options" type="UseMediaQueryOptions" optional>
+  Optional media-query behavior options forwarded to `useMediaQuery`.
+
+  <ParamField path="options.getInitialValueInEffect" type="boolean" optional>
+    If `true`, reads the initial value in an effect for SSR safety. Defaults to `true`.
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+<ResponseField name="colorScheme" type="'dark' | 'light'">
+  The current color scheme preference. Returns `'dark'` if the user prefers dark mode, otherwise `'light'`.
+</ResponseField>
+
+## Examples
+
+### Basic Theme Toggle
+
+```tsx
+import { useColorScheme } from '@kuzenbo/hooks';
+
+function ThemeProvider({ children }) {
+  const colorScheme = useColorScheme();
+
+  return (
+    <div data-theme={colorScheme}>
+      {children}
+    </div>
+  );
+}
+```
+
+### Dynamic Styles Based on Scheme
+
+```tsx
+import { useColorScheme } from '@kuzenbo/hooks';
+
+function Card() {
+  const colorScheme = useColorScheme();
+
+  const styles = {
+    backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#ffffff',
+    color: colorScheme === 'dark' ? '#ffffff' : '#000000',
+  };
+
+  return (
+    <div style={styles}>
+      Card content
+    </div>
+  );
+}
+```
+
+### With Initial Value for SSR
+
+```tsx
+import { useColorScheme } from '@kuzenbo/hooks';
+
+function SSRSafeTheme() {
+  const colorScheme = useColorScheme('light');
+
+  return (
+    <div className={`theme-${colorScheme}`}>
+      Content
+    </div>
+  );
+}
+```
+
+### Icon Based on Color Scheme
+
+```tsx
+import { useColorScheme } from '@kuzenbo/hooks';
+
+function ThemeIcon() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <div>
+      {colorScheme === 'dark' ? '🌙' : '☀️'}
+    </div>
+  );
+}
+```
+
+### Conditional Component Rendering
+
+```tsx
+import { useColorScheme } from '@kuzenbo/hooks';
+
+function ConditionalThemeComponent() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <div>
+      {colorScheme === 'dark' ? (
+        <DarkModeComponent />
+      ) : (
+        <LightModeComponent />
+      )}
+    </div>
+  );
+}
+```
+
+### Chart Theming
+
+```tsx
+import { useColorScheme } from '@kuzenbo/hooks';
+
+function ThemedChart() {
+  const colorScheme = useColorScheme();
+
+  const chartColors = colorScheme === 'dark'
+    ? ['#60a5fa', '#34d399', '#fbbf24']
+    : ['#2563eb', '#059669', '#d97706'];
+
+  return <Chart colors={chartColors} data={data} />;
+}
+```
+
+## Notes
+
+- The hook uses the `prefers-color-scheme: dark` media query internally
+- Returns `'light'` when the media query doesn't match or isn't supported
+- Updates automatically when the user changes their system theme preference
+- Works on all modern browsers that support the `prefers-color-scheme` media query

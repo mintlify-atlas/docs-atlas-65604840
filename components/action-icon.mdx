@@ -1,0 +1,159 @@
+---
+title: Action Icon
+description: A square button optimized for displaying icons.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { ActionIcon } from "@kuzenbo/core";
+import { PlusIcon } from "lucide-react";
+
+function Example() {
+  return (
+    <ActionIcon aria-label="Add item">
+      <PlusIcon />
+    </ActionIcon>
+  );
+}
+```
+
+## Props
+
+<ParamField path="variant" type="'default' | 'outline' | 'ghost' | 'link' | 'danger' | 'secondary' | 'success' | 'warning' | 'info'" default="'default'">
+  The visual style variant.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the action icon.
+</ParamField>
+
+<ParamField path="isLoading" type="boolean">
+  Whether to show a loading spinner.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the button is disabled.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Examples
+
+### Basic Usage
+
+```tsx
+<ActionIcon aria-label="Settings">
+  <SettingsIcon />
+</ActionIcon>
+```
+
+### Variants
+
+```tsx
+<div className="flex gap-2">
+  <ActionIcon variant="default">
+    <PlusIcon />
+  </ActionIcon>
+  <ActionIcon variant="outline">
+    <PlusIcon />
+  </ActionIcon>
+  <ActionIcon variant="ghost">
+    <PlusIcon />
+  </ActionIcon>
+  <ActionIcon variant="danger">
+    <TrashIcon />
+  </ActionIcon>
+</div>
+```
+
+### Sizes
+
+```tsx
+<div className="flex items-center gap-2">
+  <ActionIcon size="xs">
+    <PlusIcon />
+  </ActionIcon>
+  <ActionIcon size="sm">
+    <PlusIcon />
+  </ActionIcon>
+  <ActionIcon size="md">
+    <PlusIcon />
+  </ActionIcon>
+  <ActionIcon size="lg">
+    <PlusIcon />
+  </ActionIcon>
+  <ActionIcon size="xl">
+    <PlusIcon />
+  </ActionIcon>
+</div>
+```
+
+### Loading State
+
+```tsx
+const [loading, setLoading] = useState(false);
+
+<ActionIcon isLoading={loading} onClick={() => setLoading(true)}>
+  <SaveIcon />
+</ActionIcon>
+```
+
+### Disabled State
+
+```tsx
+<ActionIcon disabled>
+  <DownloadIcon />
+</ActionIcon>
+```
+
+### As Link
+
+```tsx
+<ActionIcon asChild>
+  <a href="/settings" aria-label="Settings">
+    <SettingsIcon />
+  </a>
+</ActionIcon>
+```
+
+### Icon Button Group
+
+```tsx
+import { ButtonGroup } from "@kuzenbo/core";
+
+<ButtonGroup>
+  <ActionIcon aria-label="Align left">
+    <AlignLeftIcon />
+  </ActionIcon>
+  <ActionIcon aria-label="Align center">
+    <AlignCenterIcon />
+  </ActionIcon>
+  <ActionIcon aria-label="Align right">
+    <AlignRightIcon />
+  </ActionIcon>
+</ButtonGroup>
+```
+
+### With Tooltip
+
+```tsx
+import { Tooltip } from "@kuzenbo/core";
+
+<Tooltip>
+  <Tooltip.Trigger asChild>
+    <ActionIcon aria-label="Delete">
+      <TrashIcon />
+    </ActionIcon>
+  </Tooltip.Trigger>
+  <Tooltip.Content>Delete item</Tooltip.Content>
+</Tooltip>
+```

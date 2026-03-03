@@ -1,0 +1,81 @@
+---
+title: useShallowEffect
+description: Runs an effect only when dependencies change by shallow comparison
+---
+
+## Usage
+
+Runs an effect callback only when dependencies change by shallow comparison. Each dependency entry is compared with the previous one via `shallowEqual`. This is useful when working with objects or arrays that may have the same content but different references.
+
+```tsx
+import { useShallowEffect } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [filters, setFilters] = useState({ category: 'all', search: '' });
+
+  useShallowEffect(() => {
+    console.log('Filters changed:', filters);
+    // This only runs when the actual values change,
+    // not when a new object with same values is created
+  }, [filters]);
+
+  const updateCategory = (category: string) => {
+    setFilters({ ...filters, category });
+  };
+
+  return (
+    <div>
+      <button onClick={() => updateCategory('books')}>Books</button>
+      <button onClick={() => updateCategory('movies')}>Movies</button>
+    </div>
+  );
+}
+```
+
+## With array dependencies
+
+Compare arrays by shallow equality:
+
+```tsx
+import { useShallowEffect } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [items, setItems] = useState([1, 2, 3]);
+
+  useShallowEffect(() => {
+    console.log('Items array changed:', items);
+  }, [items]);
+
+  const addItem = () => {
+    setItems([...items, items.length + 1]);
+  };
+
+  return (
+    <div>
+      <p>Items: {items.join(', ')}</p>
+      <button onClick={addItem}>Add Item</button>
+    </div>
+  );
+}
+```
+
+## Definition
+
+```tsx
+function useShallowEffect(
+  cb: () => void,
+  dependencies?: DependencyList
+): void
+```
+
+### Parameters
+
+<ParamField path="cb" type="() => void">
+  Effect callback to run after a shallow dependency change
+</ParamField>
+
+<ParamField path="dependencies" type="DependencyList" optional>
+  Dependency list to compare shallowly
+</ParamField>

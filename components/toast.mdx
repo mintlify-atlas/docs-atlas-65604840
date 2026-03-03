@@ -1,0 +1,313 @@
+---
+title: Toast
+description: Display temporary notifications that appear and dismiss automatically.
+---
+
+<ComponentPreview name="toast-default" />
+
+## Installation
+
+<Tabs>
+  <Tab title="CLI">
+    ```bash
+    npx @kuzenbo/cli add toast
+    ```
+  </Tab>
+  <Tab title="Manual">
+    Install the required dependencies:
+
+    ```bash
+    npm install @kuzenbo/notifications
+    ```
+
+    Copy the component source:
+
+    <Accordion title="toast.tsx">
+      ```tsx
+      // See source at packages/notifications/src/ui/toast/
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { ToastProvider, useToast } from "@kuzenbo/notifications";
+
+function App() {
+  return (
+    <ToastProvider>
+      <YourApp />
+    </ToastProvider>
+  );
+}
+
+function YourComponent() {
+  const toast = useToast();
+
+  return (
+    <button onClick={() => toast.add({ title: "Toast notification" })}>
+      Show Toast
+    </button>
+  );
+}
+```
+
+## Examples
+
+### Toast Types
+
+Use semantic methods for different notification types.
+
+```tsx
+const toast = useToast();
+
+// Success toast
+toast.success({
+  title: "Success",
+  description: "Your changes have been saved."
+});
+
+// Error toast
+toast.error({
+  title: "Error",
+  description: "Something went wrong."
+});
+
+// Warning toast
+toast.warning({
+  title: "Warning",
+  description: "Your trial is expiring soon."
+});
+
+// Info toast
+toast.info({
+  title: "Info",
+  description: "This feature is in beta."
+});
+
+// Loading toast
+toast.loading({
+  title: "Loading",
+  description: "Please wait..."
+});
+```
+
+### Promise Toast
+
+Automatically handle loading, success, and error states.
+
+```tsx
+const toast = useToast();
+
+toast.promise(
+  fetchData(),
+  {
+    loading: { title: "Fetching data..." },
+    success: { title: "Data loaded successfully" },
+    error: { title: "Failed to load data" }
+  }
+);
+```
+
+### Update Toast
+
+Update an existing toast programmatically.
+
+```tsx
+const toast = useToast();
+
+const toastId = toast.add({
+  title: "Processing...",
+  type: "loading"
+});
+
+// Later, update it
+toast.update(toastId, {
+  title: "Done!",
+  type: "success"
+});
+```
+
+### Close Toast
+
+Manually close a toast.
+
+```tsx
+const toast = useToast();
+
+const toastId = toast.add({ title: "Click to dismiss" });
+
+// Close it
+toast.close(toastId);
+```
+
+### Stacked Toasts
+
+Multiple toasts stack automatically.
+
+<ComponentPreview name="toast-stacked" />
+
+```tsx
+const toast = useToast();
+
+toast.add({ title: "First notification" });
+toast.add({ title: "Second notification" });
+toast.add({ title: "Third notification" });
+```
+
+### Anchored Toasts
+
+Position toasts relative to specific elements.
+
+<ComponentPreview name="toast-anchored" />
+
+```tsx
+import { Toast } from "@kuzenbo/notifications";
+
+<Toast.Root toast={toast}>
+  <Toast.Positioner anchor={anchorRef}>
+    <Toast.Content>
+      <Toast.Title>Anchored toast</Toast.Title>
+      <Toast.Description>Positioned near the trigger.</Toast.Description>
+    </Toast.Content>
+  </Toast.Positioner>
+</Toast.Root>
+```
+
+### Toast Sizes
+
+Control toast size with the `size` prop.
+
+```tsx
+const toast = useToast();
+
+toast.add({
+  title: "Small toast",
+  size: "sm"
+});
+
+toast.add({
+  title: "Large toast",
+  size: "lg"
+});
+```
+
+## API Reference
+
+### useToast
+
+Hook that returns toast manager methods.
+
+#### Methods
+
+<ParamField path="add" type="(options: ToastOptions) => string">
+  Add a new toast and return its ID.
+</ParamField>
+
+<ParamField path="success" type="(options: ToastOptions) => string">
+  Add a success toast.
+</ParamField>
+
+<ParamField path="error" type="(options: ToastOptions) => string">
+  Add an error toast.
+</ParamField>
+
+<ParamField path="warning" type="(options: ToastOptions) => string">
+  Add a warning toast.
+</ParamField>
+
+<ParamField path="info" type="(options: ToastOptions) => string">
+  Add an info toast.
+</ParamField>
+
+<ParamField path="loading" type="(options: ToastOptions) => string">
+  Add a loading toast.
+</ParamField>
+
+<ParamField path="promise" type="<T>(promise: Promise<T>, options: PromiseOptions) => Promise<T>">
+  Create a promise-based toast with loading, success, and error states.
+</ParamField>
+
+<ParamField path="update" type="(toastId: string, options: UpdateOptions) => void">
+  Update an existing toast.
+</ParamField>
+
+<ParamField path="close" type="(toastId: string) => void">
+  Close a specific toast.
+</ParamField>
+
+<ParamField path="toasts" type="readonly Toast[]">
+  Array of all active toasts.
+</ParamField>
+
+### ToastProvider
+
+<ParamField path="size" type="UISize" default="md">
+  Default size for all toasts.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+### Toast.Root
+
+<ParamField path="toast" type="Toast" required>
+  Toast object from the toast manager.
+</ParamField>
+
+<ParamField path="size" type="UISize" default="md">
+  Size of the toast.
+</ParamField>
+
+### Toast.Content
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Toast.Title
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Toast.Description
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Toast.Action
+
+Container for action buttons.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Toast.Close
+
+Close button for dismissing toasts.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Accessibility
+
+- Toasts use ARIA live regions for screen reader announcements
+- Toasts can be dismissed with keyboard (Escape key)
+- Focus management preserves user context
+- Sufficient duration for users to read content
+- Color is not the only indicator of toast type
+
+## Best Practices
+
+- Use toasts for temporary, non-critical notifications
+- Don't use toasts for critical errors requiring user action
+- Keep toast messages concise (1-2 lines)
+- Provide meaningful titles and descriptions
+- Set appropriate auto-dismiss durations
+- Limit the number of simultaneous toasts
+- Use promise toasts for async operations

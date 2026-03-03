@@ -1,0 +1,301 @@
+---
+title: useNetwork
+description: Monitor network status and connection information
+---
+
+Reports online/offline state and, when supported, Network Information API values. Automatically updates on browser online/offline events and connection changes.
+
+## Usage
+
+```tsx
+import { useNetwork } from '@kuzenbo/hooks';
+
+function Demo() {
+  const network = useNetwork();
+
+  return (
+    <div>
+      <p>Status: {network.online ? 'Online' : 'Offline'}</p>
+      {network.effectiveType && <p>Connection: {network.effectiveType}</p>}
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useNetwork(): UseNetworkReturnValue
+```
+
+## Parameters
+
+This hook takes no parameters.
+
+## Return Value
+
+<ResponseField name="online" type="boolean">
+  Whether the browser is online. Always available.
+</ResponseField>
+
+<ResponseField name="downlink" type="number | undefined">
+  Effective bandwidth estimate in megabits per second. Available when Network Information API is supported.
+</ResponseField>
+
+<ResponseField name="downlinkMax" type="number | undefined">
+  Maximum downlink speed in megabits per second. Available when Network Information API is supported.
+</ResponseField>
+
+<ResponseField name="effectiveType" type="'slow-2g' | '2g' | '3g' | '4g' | undefined">
+  Effective connection type. Available when Network Information API is supported.
+</ResponseField>
+
+<ResponseField name="rtt" type="number | undefined">
+  Estimated round-trip time in milliseconds. Available when Network Information API is supported.
+</ResponseField>
+
+<ResponseField name="saveData" type="boolean | undefined">
+  Whether the user has requested a reduced data usage mode. Available when Network Information API is supported.
+</ResponseField>
+
+<ResponseField name="type" type="'bluetooth' | 'cellular' | 'ethernet' | 'wifi' | 'wimax' | 'none' | 'other' | 'unknown' | undefined">
+  Network connection type. Available when Network Information API is supported.
+</ResponseField>
+
+## Examples
+
+### Online Status Indicator
+
+```tsx
+import { useNetwork } from '@kuzenbo/hooks';
+
+function OnlineStatus() {
+  const network = useNetwork();
+
+  return (
+    <div
+      style={{
+        padding: '8px 16px',
+        background: network.online ? '#22c55e' : '#ef4444',
+        color: 'white',
+      }}
+    >
+      {network.online ? '● Online' : '● Offline'}
+    </div>
+  );
+}
+```
+
+### Connection Type Display
+
+```tsx
+import { useNetwork } from '@kuzenbo/hooks';
+
+function ConnectionInfo() {
+  const network = useNetwork();
+
+  return (
+    <div>
+      <h3>Connection Details</h3>
+      <p>Status: {network.online ? 'Online' : 'Offline'}</p>
+      {network.effectiveType && (
+        <p>Speed: {network.effectiveType.toUpperCase()}</p>
+      )}
+      {network.downlink && (
+        <p>Downlink: {network.downlink} Mbps</p>
+      )}
+      {network.rtt !== undefined && (
+        <p>Latency: {network.rtt}ms</p>
+      )}
+      {network.type && (
+        <p>Type: {network.type}</p>
+      )}
+    </div>
+  );
+}
+```
+
+### Adaptive Content Loading
+
+```tsx
+import { useNetwork } from '@kuzenbo/hooks';
+
+function AdaptiveImage({ src, lowQualitySrc }) {
+  const network = useNetwork();
+
+  const shouldLoadLowQuality =
+    !network.online ||
+    network.saveData ||
+    network.effectiveType === 'slow-2g' ||
+    network.effectiveType === '2g';
+
+  return (
+    <img
+      src={shouldLoadLowQuality ? lowQualitySrc : src}
+      alt="Adaptive quality"
+    />
+  );
+}
+```
+
+### Offline Warning
+
+```tsx
+import { useNetwork } from '@kuzenbo/hooks';
+
+function OfflineWarning({ children }) {
+  const network = useNetwork();
+
+  if (!network.online) {
+    return (
+      <div>
+        <div style={{ padding: '16px', background: '#fef3c7' }}>
+          ⚠️ You are currently offline. Some features may not be available.
+        </div>
+        {children}
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+```
+
+### Data Saver Mode
+
+```tsx
+import { useNetwork } from '@kuzenbo/hooks';
+
+function VideoPlayer({ videoUrl, posterUrl }) {
+  const network = useNetwork();
+
+  if (network.saveData) {
+    return (
+      <div>
+        <img src={posterUrl} alt="Video poster" />
+        <p>Video playback disabled (Data Saver mode active)</p>
+      </div>
+    );
+  }
+
+  return <video src={videoUrl} controls />;
+}
+```
+
+### Adaptive Polling Interval
+
+```tsx
+import { useNetwork } from '@kuzenbo/hooks';
+import { useEffect, useState } from 'react';
+
+function LiveDataFeed() {
+  const network = useNetwork();
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    if (!network.online) return;
+
+    // Adjust polling based on connection quality
+    const interval =
+      network.effectiveType === '4g'
+        ? 1000
+        : network.effectiveType === '3g'
+          ? 3000
+          : 10000;
+
+    const id = setInterval(async () => {
+      const response = await fetch('/api/data');
+      const newData = await response.json();
+      setData(newData);
+    }, interval);
+
+    return () => clearInterval(id);
+  }, [network.online, network.effectiveType]);
+
+  return <div>{JSON.stringify(data)}</div>;
+}
+```
+
+### Quality Selector
+
+```tsx
+import { useNetwork } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+type Quality = 'low' | 'medium' | 'high' | 'auto';
+
+function VideoQualitySelector() {
+  const network = useNetwork();
+  const [quality, setQuality] = useState<Quality>('auto');
+
+  useEffect(() => {
+    if (quality === 'auto') {
+      if (network.effectiveType === '4g') {
+        setQuality('high');
+      } else if (network.effectiveType === '3g') {
+        setQuality('medium');
+      } else {
+        setQuality('low');
+      }
+    }
+  }, [network.effectiveType, quality]);
+
+  return (
+    <div>
+      <select value={quality} onChange={(e) => setQuality(e.target.value as Quality)}>
+        <option value="auto">Auto</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+      <p>Current quality: {quality}</p>
+    </div>
+  );
+}
+```
+
+### Connection Monitor
+
+```tsx
+import { useNetwork } from '@kuzenbo/hooks';
+import { useEffect, useState } from 'react';
+
+function ConnectionMonitor() {
+  const network = useNetwork();
+  const [events, setEvents] = useState<string[]>([]);
+
+  useEffect(() => {
+    const status = network.online ? 'connected' : 'disconnected';
+    setEvents((prev) => [
+      `${new Date().toLocaleTimeString()}: ${status}`,
+      ...prev.slice(0, 9),
+    ]);
+  }, [network.online]);
+
+  return (
+    <div>
+      <h3>Connection Log</h3>
+      <ul>
+        {events.map((event, i) => (
+          <li key={i}>{event}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+## Browser Support
+
+- `online` status is supported in all modern browsers
+- Network Information API (`downlink`, `effectiveType`, `rtt`, etc.) has limited browser support:
+  - Supported: Chrome, Edge, Opera, Samsung Internet
+  - Not supported: Firefox, Safari
+- Properties will be `undefined` when the API is not available
+
+## Notes
+
+- The hook automatically listens to `online`, `offline`, and connection `change` events
+- Initial `online` state defaults to `true`
+- Network Information API values update when the connection changes
+- Useful for adaptive loading strategies and offline-first applications

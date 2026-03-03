@@ -1,0 +1,169 @@
+---
+title: Button
+description: A clickable button component with multiple variants and sizes for triggering actions.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+## Usage
+
+```tsx
+import { Button } from "@kuzenbo/core";
+
+function App() {
+  return <Button>Create invoice</Button>;
+}
+```
+
+## Examples
+
+### Variants
+
+Buttons support multiple visual variants for different use cases.
+
+```tsx
+import { Button } from "@kuzenbo/core";
+
+function VariantsExample() {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Button variant="default">Create invoice</Button>
+      <Button variant="outline">Review SLA</Button>
+      <Button variant="secondary">Save draft</Button>
+      <Button variant="ghost">Skip for now</Button>
+      <Button variant="danger">Revoke API key</Button>
+      <Button variant="link">View audit trail</Button>
+    </div>
+  );
+}
+```
+
+### Sizes
+
+Buttons are available in five size variants.
+
+```tsx
+import { Button } from "@kuzenbo/core";
+
+function SizesExample() {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Button size="xs">Quick note</Button>
+      <Button size="sm">Assign task</Button>
+      <Button size="md">Create ticket</Button>
+      <Button size="lg">Export report</Button>
+      <Button size="xl">Schedule onboarding</Button>
+    </div>
+  );
+}
+```
+
+### With Icons
+
+Buttons can include icons before or after the label.
+
+```tsx
+import { Button } from "@kuzenbo/core";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { SearchIcon, ArrowRight01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
+
+function IconsExample() {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Button size="sm" variant="outline">
+        <HugeiconsIcon icon={SearchIcon} />
+        Find customer record
+      </Button>
+      <Button>
+        Create renewal quote
+        <HugeiconsIcon icon={ArrowRight01Icon} />
+      </Button>
+      <Button variant="secondary">
+        <HugeiconsIcon icon={Tick02Icon} />
+        Approve contract
+      </Button>
+    </div>
+  );
+}
+```
+
+### Loading State
+
+Buttons can display a loading spinner to indicate pending operations.
+
+```tsx
+import { Button } from "@kuzenbo/core";
+
+function LoadingExample() {
+  return (
+    <Button isLoading>Provisioning workspace</Button>
+  );
+}
+```
+
+### Disabled
+
+Disabled buttons are non-interactive and visually muted.
+
+```tsx
+import { Button } from "@kuzenbo/core";
+
+function DisabledExample() {
+  return (
+    <Button disabled>Access restricted</Button>
+  );
+}
+```
+
+## Props
+
+Button extends all native HTML button props and Base UI Button props.
+
+<ParamField path="variant" type="string" default="default">
+  Visual variant of the button.
+  
+  Options: `"default"` | `"outline"` | `"secondary"` | `"ghost"` | `"danger"` | `"link"`
+</ParamField>
+
+<ParamField path="size" type="string" default="md">
+  Size variant of the button.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="isLoading" type="boolean" default="false">
+  When true, displays a loading spinner and disables interaction.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the button and makes it non-interactive.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the button.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  The content to display inside the button.
+</ParamField>
+
+## TypeScript
+
+```tsx
+import type { ButtonProps } from "@kuzenbo/core";
+
+const CustomButton = (props: ButtonProps) => {
+  return <Button {...props} />;
+};
+```
+
+## Accessibility
+
+- Button uses semantic `<button>` element
+- Supports keyboard navigation with Enter and Space
+- Loading state maintains focus but prevents interaction
+- Disabled state prevents all interactions and focus

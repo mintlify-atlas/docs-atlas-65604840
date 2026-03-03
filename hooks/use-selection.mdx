@@ -1,0 +1,211 @@
+---
+title: useSelection
+description: Manages a set-like selection over a provided data collection
+---
+
+## Usage
+
+Manages a set-like selection over a provided data collection. Includes helpers for selecting, deselecting, toggling, resetting, and checking aggregate selection state.
+
+```tsx
+import { useSelection } from '@kuzenbo/hooks';
+
+function Demo() {
+  const items = ['Apple', 'Banana', 'Cherry', 'Date'];
+  const [selection, handlers] = useSelection({ data: items });
+
+  return (
+    <div>
+      {items.map((item) => (
+        <div key={item}>
+          <input
+            type="checkbox"
+            checked={selection.includes(item)}
+            onChange={() => handlers.toggle(item)}
+          />
+          <label>{item}</label>
+        </div>
+      ))}
+      <p>Selected: {selection.join(', ')}</p>
+    </div>
+  );
+}
+```
+
+## Select all / deselect all
+
+Use the provided helpers to check and manage bulk selection:
+
+```tsx
+import { useSelection } from '@kuzenbo/hooks';
+
+function Demo() {
+  const items = ['Item 1', 'Item 2', 'Item 3'];
+  const [selection, handlers] = useSelection({ data: items });
+
+  const handleSelectAll = () => {
+    if (handlers.isAllSelected()) {
+      handlers.resetSelection();
+    } else {
+      handlers.setSelection(items);
+    }
+  };
+
+  return (
+    <div>
+      <div>
+        <input
+          type="checkbox"
+          checked={handlers.isAllSelected()}
+          indeterminate={handlers.isSomeSelected() && !handlers.isAllSelected()}
+          onChange={handleSelectAll}
+        />
+        <label>Select All</label>
+      </div>
+      
+      {items.map((item) => (
+        <div key={item}>
+          <input
+            type="checkbox"
+            checked={selection.includes(item)}
+            onChange={() => handlers.toggle(item)}
+          />
+          <label>{item}</label>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## With default selection
+
+Provide initial selected items:
+
+```tsx
+import { useSelection } from '@kuzenbo/hooks';
+
+function Demo() {
+  const items = ['Red', 'Green', 'Blue'];
+  const [selection, handlers] = useSelection({
+    data: items,
+    defaultSelection: ['Red', 'Blue'],
+  });
+
+  return (
+    <div>
+      {items.map((item) => (
+        <div key={item}>
+          <input
+            type="checkbox"
+            checked={selection.includes(item)}
+            onChange={() => handlers.toggle(item)}
+          />
+          <label>{item}</label>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Reset on data change
+
+Clear selection when data changes:
+
+```tsx
+import { useSelection } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [dataSet, setDataSet] = useState<string[]>(['A', 'B', 'C']);
+  const [selection, handlers] = useSelection({
+    data: dataSet,
+    resetSelectionOnDataChange: true,
+  });
+
+  return (
+    <div>
+      <button onClick={() => setDataSet(['X', 'Y', 'Z'])}>
+        Load New Data
+      </button>
+      
+      {dataSet.map((item) => (
+        <div key={item}>
+          <input
+            type="checkbox"
+            checked={selection.includes(item)}
+            onChange={() => handlers.toggle(item)}
+          />
+          <label>{item}</label>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Definition
+
+```tsx
+interface UseSelectionInput<T> {
+  data: T[];
+  defaultSelection?: T[];
+  resetSelectionOnDataChange?: boolean;
+}
+
+interface UseSelectionHandlers<T> {
+  select: (selected: T) => void;
+  deselect: (deselected: T) => void;
+  toggle: (toggled: T) => void;
+  isAllSelected: () => boolean;
+  isSomeSelected: () => boolean;
+  setSelection: (selection: T[]) => void;
+  resetSelection: () => void;
+}
+
+type UseSelectionReturnValue<T> = readonly [
+  T[],
+  UseSelectionHandlers<T>
+]
+
+function useSelection<T>(
+  input: UseSelectionInput<T>
+): UseSelectionReturnValue<T>
+```
+
+### Parameters
+
+<ParamField path="input" type="UseSelectionInput<T>">
+  <ParamField path="data" type="T[]" required>
+    Source items that selection state is evaluated against
+  </ParamField>
+  
+  <ParamField path="defaultSelection" type="T[]" optional>
+    Items selected on first render
+  </ParamField>
+  
+  <ParamField path="resetSelectionOnDataChange" type="boolean" optional>
+    Clears selection whenever `data` changes when enabled
+  </ParamField>
+</ParamField>
+
+### Returns
+
+Returns a tuple `[selection, handlers]`:
+
+<ResponseField name="selection" type="T[]">
+  Array of currently selected items
+</ResponseField>
+
+<ResponseField name="handlers" type="UseSelectionHandlers<T>">
+  Object containing selection management functions:
+  
+  - `select(item: T)`: Add an item to the selection
+  - `deselect(item: T)`: Remove an item from the selection
+  - `toggle(item: T)`: Toggle an item's selection state
+  - `isAllSelected()`: Returns `true` if all items from `data` are selected
+  - `isSomeSelected()`: Returns `true` if at least one item from `data` is selected
+  - `setSelection(selection: T[])`: Set the selection to a specific array of items
+  - `resetSelection()`: Clear all selections
+</ResponseField>

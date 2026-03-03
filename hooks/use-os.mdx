@@ -1,0 +1,291 @@
+---
+title: useOs
+description: Detect the user's operating system
+---
+
+Detects the current operating system from the browser user agent.
+
+## Usage
+
+```tsx
+import { useOs } from '@kuzenbo/hooks';
+
+function Demo() {
+  const os = useOs();
+
+  return (
+    <div>
+      Detected OS: {os}
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useOs(options?: UseOsOptions): UseOSReturnValue
+
+type UseOSReturnValue =
+  | 'undetermined'
+  | 'macos'
+  | 'ios'
+  | 'windows'
+  | 'android'
+  | 'linux'
+  | 'chromeos'
+```
+
+## Parameters
+
+<ParamField path="options" type="UseOsOptions" optional>
+  Hook configuration.
+
+  <ParamField path="options.getValueInEffect" type="boolean" optional>
+    If `true`, detect OS in an effect for SSR safety; otherwise detect during initial render. Defaults to `true`.
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+<ResponseField name="os" type="UseOSReturnValue">
+  Detected operating system. Possible values:
+  - `'undetermined'` - OS could not be detected or code is running on server
+  - `'macos'` - macOS
+  - `'ios'` - iOS (iPhone/iPad/iPod)
+  - `'windows'` - Windows
+  - `'android'` - Android
+  - `'linux'` - Linux
+  - `'chromeos'` - Chrome OS
+</ResponseField>
+
+## Examples
+
+### OS-Specific Instructions
+
+```tsx
+import { useOs } from '@kuzenbo/hooks';
+
+function KeyboardShortcuts() {
+  const os = useOs();
+
+  const modifierKey = os === 'macos' || os === 'ios' ? '⌘' : 'Ctrl';
+
+  return (
+    <div>
+      <h3>Keyboard Shortcuts</h3>
+      <p>Save: {modifierKey} + S</p>
+      <p>Copy: {modifierKey} + C</p>
+      <p>Paste: {modifierKey} + V</p>
+    </div>
+  );
+}
+```
+
+### Platform-Specific Download
+
+```tsx
+import { useOs } from '@kuzenbo/hooks';
+
+function DownloadButton() {
+  const os = useOs();
+
+  const downloadLinks = {
+    macos: '/downloads/app-macos.dmg',
+    windows: '/downloads/app-windows.exe',
+    linux: '/downloads/app-linux.AppImage',
+    ios: 'https://apps.apple.com/app/myapp',
+    android: 'https://play.google.com/store/apps/myapp',
+    chromeos: '/downloads/app-chrome.crx',
+    undetermined: '/downloads',
+  };
+
+  const downloadUrl = downloadLinks[os];
+
+  return (
+    <a href={downloadUrl} download>
+      Download for {os}
+    </a>
+  );
+}
+```
+
+### Conditional Feature Display
+
+```tsx
+import { useOs } from '@kuzenbo/hooks';
+
+function AppFeatures() {
+  const os = useOs();
+
+  const isMobile = os === 'ios' || os === 'android';
+
+  return (
+    <div>
+      <h2>Features</h2>
+      <ul>
+        <li>Cloud Sync</li>
+        <li>Offline Mode</li>
+        {!isMobile && <li>Desktop Notifications</li>}
+        {isMobile && <li>Touch Gestures</li>}
+        {os === 'macos' && <li>Touch Bar Support</li>}
+      </ul>
+    </div>
+  );
+}
+```
+
+### OS Badge Display
+
+```tsx
+import { useOs } from '@kuzenbo/hooks';
+
+function OSBadge() {
+  const os = useOs();
+
+  const osIcons = {
+    macos: '🍎',
+    ios: '📱',
+    windows: '🪟',
+    android: '🤖',
+    linux: '🐧',
+    chromeos: '💻',
+    undetermined: '❓',
+  };
+
+  const osLabels = {
+    macos: 'macOS',
+    ios: 'iOS',
+    windows: 'Windows',
+    android: 'Android',
+    linux: 'Linux',
+    chromeos: 'Chrome OS',
+    undetermined: 'Unknown',
+  };
+
+  return (
+    <div
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '4px 12px',
+        background: '#f3f4f6',
+        borderRadius: '16px',
+      }}
+    >
+      <span>{osIcons[os]}</span>
+      <span>{osLabels[os]}</span>
+    </div>
+  );
+}
+```
+
+### Copy Command with OS Detection
+
+```tsx
+import { useOs } from '@kuzenbo/hooks';
+import { useClipboard } from '@kuzenbo/hooks';
+
+function InstallInstructions() {
+  const os = useOs();
+  const clipboard = useClipboard();
+
+  const commands = {
+    macos: 'brew install myapp',
+    windows: 'winget install myapp',
+    linux: 'sudo apt install myapp',
+    chromeos: 'Not available for Chrome OS',
+    ios: 'Install from App Store',
+    android: 'Install from Play Store',
+    undetermined: 'npm install -g myapp',
+  };
+
+  const command = commands[os];
+
+  return (
+    <div>
+      <code>{command}</code>
+      <button onClick={() => clipboard.copy(command)}>
+        {clipboard.copied ? 'Copied!' : 'Copy'}
+      </button>
+    </div>
+  );
+}
+```
+
+### Multi-Platform Support Message
+
+```tsx
+import { useOs } from '@kuzenbo/hooks';
+
+function PlatformSupport() {
+  const os = useOs();
+
+  const supportedPlatforms = ['macos', 'windows', 'linux'];
+  const isSupported = supportedPlatforms.includes(os);
+
+  return (
+    <div>
+      {isSupported ? (
+        <p>✅ Your platform ({os}) is fully supported!</p>
+      ) : (
+        <p>⚠️ Limited support for {os}. Desktop platforms recommended.</p>
+      )}
+    </div>
+  );
+}
+```
+
+### SSR-Safe Detection
+
+```tsx
+import { useOs } from '@kuzenbo/hooks';
+
+function SSRSafeComponent() {
+  const os = useOs({ getValueInEffect: true });
+
+  if (os === 'undetermined') {
+    return <div>Detecting your platform...</div>;
+  }
+
+  return <div>Platform: {os}</div>;
+}
+```
+
+### Analytics Tracking
+
+```tsx
+import { useOs } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+function AnalyticsTracker() {
+  const os = useOs();
+
+  useEffect(() => {
+    if (os !== 'undetermined') {
+      // Send OS info to analytics
+      analytics.track('page_view', { os });
+    }
+  }, [os]);
+
+  return null;
+}
+```
+
+## Detection Logic
+
+- **iOS**: Detected by `iPhone`, `iPad`, or `iPod` in user agent, or macOS with touch support
+- **macOS**: Detected by `Macintosh`, `MacIntel`, `MacPPC`, or `Mac68K` patterns
+- **Windows**: Detected by `Win32`, `Win64`, `Windows`, or `WinCE` patterns
+- **Android**: Detected by `Android` in user agent
+- **Chrome OS**: Detected by `CrOS` in user agent
+- **Linux**: Detected by `Linux` in user agent (excluding Android and Chrome OS)
+
+## Notes
+
+- Detection is based on user agent string parsing
+- User agents can be spoofed or modified by browser extensions
+- Returns `'undetermined'` on the server or when detection fails
+- For SSR safety, use `getValueInEffect: true` (default)
+- Useful for platform-specific UI, instructions, and download links

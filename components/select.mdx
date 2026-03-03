@@ -1,0 +1,326 @@
+---
+title: Select
+description: A dropdown select component for choosing from a list of options with search and keyboard navigation.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+## Usage
+
+```tsx
+import { Select } from "@kuzenbo/core";
+
+function App() {
+  return (
+    <Select>
+      <Select.Trigger className="min-w-48">
+        <Select.Value placeholder="Select option" />
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="a">Option A</Select.Item>
+        <Select.Item value="b">Option B</Select.Item>
+        <Select.Item value="c">Option C</Select.Item>
+      </Select.Content>
+    </Select>
+  );
+}
+```
+
+## Examples
+
+### With Groups and Labels
+
+Organize options into labeled groups.
+
+```tsx
+import { Select } from "@kuzenbo/core";
+
+function GroupsExample() {
+  return (
+    <Select>
+      <Select.Trigger className="min-w-48">
+        <Select.Value placeholder="Select option" />
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Group>
+          <Select.Label>Suggestions</Select.Label>
+          <Select.Item value="a">Option A</Select.Item>
+          <Select.Item value="b">Option B</Select.Item>
+        </Select.Group>
+        <Select.Separator />
+        <Select.Group>
+          <Select.Label>Settings</Select.Label>
+          <Select.Item value="c">Option C</Select.Item>
+        </Select.Group>
+      </Select.Content>
+    </Select>
+  );
+}
+```
+
+### Sizes
+
+Selects are available in five size variants.
+
+```tsx
+import { Select } from "@kuzenbo/core";
+
+function SizesExample() {
+  return (
+    <div className="grid gap-3">
+      <Select size="xs">
+        <Select.Trigger className="min-w-48">
+          <Select.Value placeholder="XS select" />
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Item value="a">Option A</Select.Item>
+        </Select.Content>
+      </Select>
+
+      <Select size="sm">
+        <Select.Trigger className="min-w-48">
+          <Select.Value placeholder="SM select" />
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Item value="a">Option A</Select.Item>
+        </Select.Content>
+      </Select>
+
+      <Select size="md">
+        <Select.Trigger className="min-w-48">
+          <Select.Value placeholder="MD select" />
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Item value="a">Option A</Select.Item>
+        </Select.Content>
+      </Select>
+
+      <Select size="lg">
+        <Select.Trigger className="min-w-48">
+          <Select.Value placeholder="LG select" />
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Item value="a">Option A</Select.Item>
+        </Select.Content>
+      </Select>
+
+      <Select size="xl">
+        <Select.Trigger className="min-w-48">
+          <Select.Value placeholder="XL select" />
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Item value="a">Option A</Select.Item>
+        </Select.Content>
+      </Select>
+    </div>
+  );
+}
+```
+
+### Controlled
+
+Manage the selected value with React state.
+
+```tsx
+import { Select } from "@kuzenbo/core";
+import { useState } from "react";
+
+function ControlledExample() {
+  const [value, setValue] = useState("b");
+
+  return (
+    <Select value={value} onValueChange={setValue}>
+      <Select.Trigger className="min-w-48">
+        <Select.Value placeholder="Select option" />
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="a">Option A</Select.Item>
+        <Select.Item value="b">Option B</Select.Item>
+        <Select.Item value="c">Option C</Select.Item>
+      </Select.Content>
+    </Select>
+  );
+}
+```
+
+### Disabled Options
+
+Individual options can be disabled.
+
+```tsx
+import { Select } from "@kuzenbo/core";
+
+function DisabledOptionsExample() {
+  return (
+    <Select>
+      <Select.Trigger className="min-w-48">
+        <Select.Value placeholder="Select tier" />
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="starter">Starter</Select.Item>
+        <Select.Item value="pro">Pro</Select.Item>
+        <Select.Item value="enterprise" disabled>
+          Enterprise (contact sales)
+        </Select.Item>
+      </Select.Content>
+    </Select>
+  );
+}
+```
+
+### Multiple Selection
+
+Enable multiple selection mode.
+
+```tsx
+import { Select } from "@kuzenbo/core";
+import { useState } from "react";
+
+function MultipleExample() {
+  const [values, setValues] = useState<string[]>([]);
+
+  return (
+    <Select multiple value={values} onValueChange={setValues}>
+      <Select.Trigger className="min-w-48">
+        <Select.Value placeholder="Select regions" />
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="us">United States</Select.Item>
+        <Select.Item value="eu">Europe</Select.Item>
+        <Select.Item value="apac">Asia Pacific</Select.Item>
+      </Select.Content>
+    </Select>
+  );
+}
+```
+
+## Props
+
+### Select
+
+Select extends Base UI Select.Root props.
+
+<ParamField path="size" type="string" default="md">
+  Size variant applied to trigger and content.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="value" type="Value">
+  Controlled selected value.
+</ParamField>
+
+<ParamField path="defaultValue" type="Value">
+  Default selected value for uncontrolled usage.
+</ParamField>
+
+<ParamField path="onValueChange" type="(value: Value) => void">
+  Callback fired when the selected value changes.
+</ParamField>
+
+<ParamField path="multiple" type="boolean" default="false">
+  When true, allows selecting multiple values.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the entire select.
+</ParamField>
+
+<ParamField path="children" type="ReactNode" required>
+  Select trigger, content, and other elements.
+</ParamField>
+
+## Subcomponents
+
+### Select.Trigger
+
+The button that opens the select dropdown.
+
+```tsx
+<Select.Trigger className="min-w-48">
+  <Select.Value placeholder="Choose..." />
+</Select.Trigger>
+```
+
+### Select.Value
+
+Displays the selected value or placeholder text.
+
+### Select.Content
+
+The dropdown panel containing select items.
+
+### Select.Item
+
+An individual selectable option.
+
+```tsx
+<Select.Item value="option-1">Option 1</Select.Item>
+```
+
+### Select.Group
+
+Groups related items together.
+
+### Select.Label
+
+A label for a group of items.
+
+### Select.Separator
+
+A visual separator between groups.
+
+### Select.Portal
+
+Renders content in a portal (default behavior).
+
+### Select.Positioner
+
+Controls popup positioning.
+
+### Select.Backdrop
+
+Optional backdrop overlay.
+
+### Select.Icon
+
+The dropdown indicator icon.
+
+### Select.Arrow
+
+An optional arrow pointing to the trigger.
+
+### Select.ScrollUpButton / Select.ScrollDownButton
+
+Buttons for scrolling long lists.
+
+## TypeScript
+
+```tsx
+import type {
+  SelectProps,
+  SelectTriggerProps,
+  SelectValueProps,
+  SelectContentProps,
+  SelectItemProps,
+  SelectGroupProps,
+  SelectLabelProps,
+} from "@kuzenbo/core";
+
+const CustomSelect = <Value,>(props: SelectProps<Value, false>) => {
+  return <Select {...props} />;
+};
+```
+
+## Accessibility
+
+- Select uses semantic ARIA combobox pattern
+- Supports keyboard navigation with arrow keys, Enter, and Escape
+- Typeahead search for quick option finding
+- Proper focus management between trigger and popup
+- Disabled options are skipped in navigation
+- Screen reader announcements for selection changes

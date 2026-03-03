@@ -1,0 +1,115 @@
+---
+title: Spacer
+description: A flexible spacing component for creating consistent gaps in layouts.
+---
+
+## Overview
+
+The Spacer component provides flexible spacing between elements. It can expand to fill available space or maintain a fixed size, supporting both horizontal and vertical orientations.
+
+## Usage
+
+### Flexible Spacer
+
+By default, a horizontal spacer expands to fill available space:
+
+```tsx
+import { Spacer } from "@kuzenbo/core";
+
+export default function Example() {
+  return (
+    <div className="border-border bg-card flex w-[420px] items-center rounded-md border px-3 py-2 text-sm">
+      <span>Procurement Alerts</span>
+      <Spacer />
+      <span className="text-muted-foreground">3 unresolved</span>
+    </div>
+  );
+}
+```
+
+## Fixed Size Spacing
+
+### Horizontal Stack
+
+Use a fixed size for consistent spacing between inline elements:
+
+```tsx
+import { Spacer } from "@kuzenbo/core";
+
+export default function InlineStack() {
+  return (
+    <div className="border-border bg-card flex items-center rounded-md border px-3 py-2 text-sm">
+      <span>Requests</span>
+      <Spacer size={20} />
+      <span>Approvals</span>
+      <Spacer size={20} />
+      <span>Reconciliations</span>
+    </div>
+  );
+}
+```
+
+### Vertical Stack
+
+For vertical spacing, set the orientation:
+
+```tsx
+import { Spacer } from "@kuzenbo/core";
+
+export default function VerticalStack() {
+  return (
+    <div className="border-border bg-card inline-flex flex-col rounded-md border p-3 text-sm">
+      <span>Finance review</span>
+      <Spacer orientation="vertical" size={14} />
+      <span>Legal review</span>
+      <Spacer orientation="vertical" size={14} />
+      <span>Release approval</span>
+    </div>
+  );
+}
+```
+
+## Props
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="horizontal">
+  The direction of spacing. Horizontal spacers expand horizontally, vertical spacers expand vertically.
+</ParamField>
+
+<ParamField path="size" type="string | number">
+  Fixed size for the spacer. Can be a number (pixels) or a CSS length string (e.g., `"1rem"`, `"20px"`).
+  
+  When `size` is provided:
+  - Horizontal spacer: width is set to `size`, height is `1px`
+  - Vertical spacer: height is set to `size`, width is `1px`
+  
+  When `size` is not provided:
+  - Horizontal spacer: expands to fill available space using `flex: 1`
+  - Vertical spacer: no automatic expansion (set explicit height or use within flex container)
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the spacer.
+</ParamField>
+
+<ParamField path="style" type="React.CSSProperties">
+  Inline styles to apply. The component will merge these with computed spacing styles.
+</ParamField>
+
+The Spacer component extends all standard HTML `div` element props (`ComponentProps<"div">`).
+
+## Behavior
+
+### Flexible vs Fixed
+
+- **Without `size` prop**: Horizontal spacer expands to fill available space (useful for pushing content to edges)
+- **With `size` prop**: Creates fixed-width or fixed-height gap (useful for consistent spacing)
+
+### Size Values
+
+The `size` prop accepts:
+- Numbers: interpreted as pixels (e.g., `20` = `"20px"`)
+- Strings: any valid CSS length (e.g., `"1rem"`, `"2em"`, `"20px"`)
+
+## Accessibility
+
+The component includes a `data-slot="spacer"` attribute for styling and testing purposes. Spacers are purely visual and do not affect document structure or screen reader navigation.

@@ -1,0 +1,187 @@
+---
+title: useDocumentTitle
+description: Update the document title dynamically
+---
+
+Updates `document.title` when a non-empty title value is provided. The incoming value is trimmed before assignment and ignored when it resolves to an empty string.
+
+## Usage
+
+```tsx
+import { useDocumentTitle } from '@kuzenbo/hooks';
+
+function Demo() {
+  useDocumentTitle('My Page Title');
+
+  return <div>Page content</div>;
+}
+```
+
+## Function Signature
+
+```tsx
+function useDocumentTitle(title: string): void
+```
+
+## Parameters
+
+<ParamField path="title" type="string" required>
+  Next document title. The value is trimmed before assignment. Empty strings (after trimming) are ignored.
+</ParamField>
+
+## Return Value
+
+This hook does not return a value.
+
+## Examples
+
+### Basic Page Title
+
+```tsx
+import { useDocumentTitle } from '@kuzenbo/hooks';
+
+function AboutPage() {
+  useDocumentTitle('About Us');
+
+  return (
+    <div>
+      <h1>About Us</h1>
+      <p>Company information...</p>
+    </div>
+  );
+}
+```
+
+### Dynamic Title Based on State
+
+```tsx
+import { useDocumentTitle } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+
+  useDocumentTitle(user ? `${user.name} - Profile` : 'Loading...');
+
+  // Fetch user data...
+
+  return <div>{/* User profile content */}</div>;
+}
+```
+
+### Notification Counter
+
+```tsx
+import { useDocumentTitle } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function InboxPage() {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useDocumentTitle(
+    unreadCount > 0 ? `(${unreadCount}) Inbox` : 'Inbox'
+  );
+
+  return (
+    <div>
+      <h1>Inbox</h1>
+      {/* Inbox content */}
+    </div>
+  );
+}
+```
+
+### Form with Unsaved Changes
+
+```tsx
+import { useDocumentTitle } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function EditForm() {
+  const [hasChanges, setHasChanges] = useState(false);
+
+  useDocumentTitle(hasChanges ? '* Edit Document' : 'Edit Document');
+
+  return (
+    <form onChange={() => setHasChanges(true)}>
+      {/* Form fields */}
+    </form>
+  );
+}
+```
+
+### Multi-Step Form
+
+```tsx
+import { useDocumentTitle } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function MultiStepForm() {
+  const [step, setStep] = useState(1);
+
+  const steps = ['Contact Info', 'Address', 'Payment', 'Review'];
+  useDocumentTitle(`Step ${step}: ${steps[step - 1]}`);
+
+  return (
+    <div>
+      <h1>{steps[step - 1]}</h1>
+      {/* Step content */}
+    </div>
+  );
+}
+```
+
+### Search Results Title
+
+```tsx
+import { useDocumentTitle } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function SearchResults({ query }) {
+  const [results, setResults] = useState([]);
+
+  useDocumentTitle(
+    query ? `"${query}" - Search Results` : 'Search'
+  );
+
+  return (
+    <div>
+      <h1>Search Results for "{query}"</h1>
+      {/* Results list */}
+    </div>
+  );
+}
+```
+
+### Product Details Page
+
+```tsx
+import { useDocumentTitle } from '@kuzenbo/hooks';
+import { useEffect, useState } from 'react';
+
+function ProductPage({ productId }) {
+  const [product, setProduct] = useState(null);
+
+  useDocumentTitle(
+    product ? `${product.name} - $${product.price}` : 'Loading Product...'
+  );
+
+  return (
+    <div>
+      {product && (
+        <>
+          <h1>{product.name}</h1>
+          <p>${product.price}</p>
+        </>
+      )}
+    </div>
+  );
+}
+```
+
+## Notes
+
+- The title value is trimmed automatically before being set
+- Empty strings (after trimming) are ignored and won't update the title
+- Works isomorphically (safe for SSR)
+- Updates whenever the `title` parameter changes

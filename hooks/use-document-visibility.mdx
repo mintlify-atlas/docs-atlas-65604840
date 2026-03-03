@@ -1,0 +1,224 @@
+---
+title: useDocumentVisibility
+description: Track browser tab visibility state
+---
+
+Tracks the current browser tab visibility state. Subscribes to the `visibilitychange` event and keeps the returned value in sync with `document.visibilityState`.
+
+## Usage
+
+```tsx
+import { useDocumentVisibility } from '@kuzenbo/hooks';
+
+function Demo() {
+  const visibilityState = useDocumentVisibility();
+
+  return (
+    <div>
+      Tab is: {visibilityState}
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useDocumentVisibility(): DocumentVisibilityState
+
+type DocumentVisibilityState = 'visible' | 'hidden'
+```
+
+## Parameters
+
+This hook takes no parameters.
+
+## Return Value
+
+<ResponseField name="visibilityState" type="DocumentVisibilityState">
+  Current document visibility state. Returns `'visible'` when the tab is active, `'hidden'` when the tab is in the background.
+</ResponseField>
+
+## Examples
+
+### Pause Video When Tab Hidden
+
+```tsx
+import { useDocumentVisibility } from '@kuzenbo/hooks';
+import { useEffect, useRef } from 'react';
+
+function VideoPlayer() {
+  const visibilityState = useDocumentVisibility();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (visibilityState === 'hidden') {
+      videoRef.current?.pause();
+    }
+  }, [visibilityState]);
+
+  return <video ref={videoRef} src="/video.mp4" controls />;
+}
+```
+
+### Pause Animations When Hidden
+
+```tsx
+import { useDocumentVisibility } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function AnimatedCounter() {
+  const visibilityState = useDocumentVisibility();
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (visibilityState === 'hidden') return;
+
+    const interval = setInterval(() => {
+      setCount((c) => c + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [visibilityState]);
+
+  return <div>Count: {count}</div>;
+}
+```
+
+### Track Tab Switch Events
+
+```tsx
+import { useDocumentVisibility } from '@kuzenbo/hooks';
+import { useEffect, useRef } from 'react';
+
+function TabSwitchTracker() {
+  const visibilityState = useDocumentVisibility();
+  const hiddenTime = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (visibilityState === 'hidden') {
+      hiddenTime.current = Date.now();
+    } else if (hiddenTime.current) {
+      const timeAway = Date.now() - hiddenTime.current;
+      console.log(`User was away for ${timeAway}ms`);
+      hiddenTime.current = null;
+    }
+  }, [visibilityState]);
+
+  return <div>Visibility: {visibilityState}</div>;
+}
+```
+
+### Reduce API Polling When Hidden
+
+```tsx
+import { useDocumentVisibility } from '@kuzenbo/hooks';
+import { useEffect, useState } from 'react';
+
+function LiveDataFeed() {
+  const visibilityState = useDocumentVisibility();
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    // Poll every 1s when visible, every 30s when hidden
+    const interval = visibilityState === 'visible' ? 1000 : 30000;
+
+    const id = setInterval(async () => {
+      const response = await fetch('/api/data');
+      const newData = await response.json();
+      setData(newData);
+    }, interval);
+
+    return () => clearInterval(id);
+  }, [visibilityState]);
+
+  return <div>{JSON.stringify(data)}</div>;
+}
+```
+
+### Show Notification When Tab Hidden
+
+```tsx
+import { useDocumentVisibility } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+function NotificationHandler({ hasNewMessage }) {
+  const visibilityState = useDocumentVisibility();
+
+  useEffect(() => {
+    if (visibilityState === 'hidden' && hasNewMessage) {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('New message received!');
+      }
+    }
+  }, [visibilityState, hasNewMessage]);
+
+  return null;
+}
+```
+
+### Pause Game When Tab Hidden
+
+```tsx
+import { useDocumentVisibility } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function Game() {
+  const visibilityState = useDocumentVisibility();
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (visibilityState === 'hidden') {
+      setIsPaused(true);
+    }
+  }, [visibilityState]);
+
+  return (
+    <div>
+      {isPaused ? (
+        <div>
+          <h2>Game Paused</h2>
+          <button onClick={() => setIsPaused(false)}>Resume</button>
+        </div>
+      ) : (
+        <div>{/* Game content */}</div>
+      )}
+    </div>
+  );
+}
+```
+
+### Analytics Tracking
+
+```tsx
+import { useDocumentVisibility } from '@kuzenbo/hooks';
+import { useEffect, useRef } from 'react';
+
+function AnalyticsTracker() {
+  const visibilityState = useDocumentVisibility();
+  const sessionStart = useRef(Date.now());
+
+  useEffect(() => {
+    if (visibilityState === 'hidden') {
+      const sessionDuration = Date.now() - sessionStart.current;
+      // Send analytics
+      fetch('/api/analytics', {
+        method: 'POST',
+        body: JSON.stringify({ sessionDuration }),
+      });
+    } else {
+      sessionStart.current = Date.now();
+    }
+  }, [visibilityState]);
+
+  return null;
+}
+```
+
+## Notes
+
+- Initial state is set to `'visible'`
+- Automatically updates when the user switches tabs or minimizes the browser
+- Works across all modern browsers
+- Useful for optimizing performance by pausing expensive operations when the tab is hidden
+- Can be used to improve battery life on mobile devices

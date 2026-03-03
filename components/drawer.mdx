@@ -1,0 +1,305 @@
+---
+title: Drawer
+description: A swipeable drawer component for mobile-first interfaces with support for gestures and snap points.
+---
+
+A highly customizable drawer component that supports swipe gestures, snap points, and multiple preset configurations including bottom sheets, side panels, and action sheets.
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { Drawer, Button } from "@kuzenbo/core";
+
+export default function DrawerExample() {
+  return (
+    <Drawer.Root swipeDirection="left">
+      <Drawer.Trigger render={<Button variant="outline" size="xl" />}>
+        Open workspace details
+      </Drawer.Trigger>
+      <Drawer.Portal>
+        <Drawer.Backdrop className="fixed inset-0 min-h-dvh" />
+        <Drawer.Viewport className="fixed inset-0 flex items-center justify-start">
+          <Drawer.Popup>
+            <Drawer.Content>
+              <Drawer.Title>Workspace details</Drawer.Title>
+              <Drawer.Description>
+                Review member roles and notification rules.
+              </Drawer.Description>
+              <Drawer.Actions>
+                <Button>Save changes</Button>
+                <Drawer.Close render={<Button variant="outline" />}>
+                  Cancel
+                </Drawer.Close>
+              </Drawer.Actions>
+            </Drawer.Content>
+          </Drawer.Popup>
+        </Drawer.Viewport>
+      </Drawer.Portal>
+    </Drawer.Root>
+  );
+}
+```
+
+### Bottom Sheet Preset
+
+```tsx
+import { Drawer, Button } from "@kuzenbo/core";
+
+export default function BottomSheetExample() {
+  return (
+    <Drawer.Root>
+      <Drawer.Trigger render={<Button variant="outline" />}>
+        Open settings
+      </Drawer.Trigger>
+      <Drawer.BottomSheet>
+        <Drawer.Handle />
+        <Drawer.Title>Settings</Drawer.Title>
+        <Drawer.Description>
+          Manage your account preferences.
+        </Drawer.Description>
+      </Drawer.BottomSheet>
+    </Drawer.Root>
+  );
+}
+```
+
+### Side Panel Preset
+
+```tsx
+import { Drawer, Button } from "@kuzenbo/core";
+
+export default function SidePanelExample() {
+  return (
+    <Drawer.Root>
+      <Drawer.Trigger render={<Button variant="outline" />}>
+        Open filters
+      </Drawer.Trigger>
+      <Drawer.SidePanel side="left">
+        <Drawer.Title>Filters</Drawer.Title>
+        <Drawer.Description>
+          Refine your search results.
+        </Drawer.Description>
+      </Drawer.SidePanel>
+    </Drawer.Root>
+  );
+}
+```
+
+### Action Sheet Preset
+
+```tsx
+import { Drawer, Button } from "@kuzenbo/core";
+
+export default function ActionSheetExample() {
+  return (
+    <Drawer.Root>
+      <Drawer.Trigger render={<Button variant="outline" />}>
+        More actions
+      </Drawer.Trigger>
+      <Drawer.ActionSheet>
+        <Drawer.Actions>
+          <Button>Share</Button>
+          <Button>Download</Button>
+          <Button variant="danger">Delete</Button>
+        </Drawer.Actions>
+      </Drawer.ActionSheet>
+    </Drawer.Root>
+  );
+}
+```
+
+### Detached Trigger
+
+Control drawer state programmatically using `createDrawerHandle`:
+
+```tsx
+import { Drawer, createDrawerHandle, Button } from "@kuzenbo/core";
+
+const drawerHandle = createDrawerHandle();
+
+export default function DetachedExample() {
+  return (
+    <>
+      <Button onClick={() => drawerHandle.open()}>Open drawer</Button>
+      <Drawer.Root handle={drawerHandle}>
+        <Drawer.BottomSheet>
+          <Drawer.Title>Detached drawer</Drawer.Title>
+        </Drawer.BottomSheet>
+      </Drawer.Root>
+    </>
+  );
+}
+```
+
+## API Reference
+
+### Drawer (Root)
+
+<ParamField path="defaultOpen" type="boolean">
+  The initial open state when uncontrolled.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  The controlled open state of the drawer.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback fired when the open state changes.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size variant for the drawer content.
+</ParamField>
+
+<ParamField path="swipeDirection" type="'up' | 'down' | 'left' | 'right'">
+  The direction the drawer can be swiped to open/close.
+</ParamField>
+
+<ParamField path="handle" type="DrawerHandle">
+  External handle created with `createDrawerHandle()` for programmatic control.
+</ParamField>
+
+### Drawer.Content
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the root size for this content.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Drawer.Popup
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the root size for this popup.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Drawer.BottomSheet
+
+Convenience preset for bottom sheet pattern.
+
+<ParamField path="children" type="ReactNode">
+  The content of the bottom sheet.
+</ParamField>
+
+### Drawer.SidePanel
+
+Convenience preset for side panel pattern.
+
+<ParamField path="side" type="'left' | 'right'" default="'right'">
+  Which side the panel slides in from.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  The content of the side panel.
+</ParamField>
+
+### Drawer.ActionSheet
+
+Convenience preset for action sheet pattern.
+
+<ParamField path="children" type="ReactNode">
+  The content of the action sheet.
+</ParamField>
+
+### Drawer.IndentShell
+
+Convenience preset for indent effect pattern.
+
+<ParamField path="children" type="ReactNode">
+  The content with indent effect.
+</ParamField>
+
+### Drawer.Trigger
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the trigger.
+</ParamField>
+
+### Drawer.Handle
+
+Visual drag handle indicator for swipeable drawers.
+
+### Drawer.Title
+
+<ParamField path="children" type="ReactNode">
+  The title content for the drawer.
+</ParamField>
+
+### Drawer.Description
+
+<ParamField path="children" type="ReactNode">
+  The description content for the drawer.
+</ParamField>
+
+### Drawer.Actions
+
+<ParamField path="children" type="ReactNode">
+  Container for action buttons.
+</ParamField>
+
+### Drawer.Close
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the close trigger.
+</ParamField>
+
+## Component Parts
+
+- `Drawer` (or `Drawer.Root`) - Root component that manages state
+- `Drawer.Trigger` - Opens the drawer
+- `Drawer.Portal` - Portals the drawer content
+- `Drawer.Backdrop` - The overlay backdrop
+- `Drawer.Viewport` - Positions the drawer
+- `Drawer.Popup` - The drawer container with swipe behavior
+- `Drawer.Content` - Content container with size variants
+- `Drawer.Handle` - Visual drag handle
+- `Drawer.Header` - Styled header container
+- `Drawer.Title` - Accessible title
+- `Drawer.Description` - Accessible description
+- `Drawer.Actions` - Action buttons container
+- `Drawer.Close` - Closes the drawer
+- `Drawer.BottomSheet` - Preset for bottom sheet
+- `Drawer.SidePanel` - Preset for side panel
+- `Drawer.ActionSheet` - Preset for action sheet
+- `Drawer.IndentShell` - Preset for indent effect
+- `Drawer.Indent` - Custom indent wrapper
+- `Drawer.IndentBackground` - Indent background layer
+- `Drawer.Provider` - Context provider for nested drawers
+
+## Utilities
+
+### createDrawerHandle
+
+Creates an external handle for programmatic drawer control:
+
+```tsx
+const handle = createDrawerHandle<PayloadType>();
+
+// Open with optional payload
+handle.open({ userId: 123 });
+
+// Close
+handle.close();
+```
+
+## Accessibility
+
+- Drawer implements proper focus management
+- Focus is trapped within the drawer when open
+- Pressing Escape closes the drawer
+- Focus returns to the trigger when closed
+- Supports swipe gestures for mobile accessibility

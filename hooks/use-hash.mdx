@@ -1,0 +1,269 @@
+---
+title: useHash
+description: Synchronize React state with the URL hash
+---
+
+Synchronizes React state with `window.location.hash` and updates state on browser hash changes. The setter always writes a normalized value prefixed with `#`.
+
+## Usage
+
+```tsx
+import { useHash } from '@kuzenbo/hooks';
+
+function Demo() {
+  const [hash, setHash] = useHash();
+
+  return (
+    <div>
+      <p>Current hash: {hash}</p>
+      <button onClick={() => setHash('section-1')}>Go to Section 1</button>
+      <button onClick={() => setHash('section-2')}>Go to Section 2</button>
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useHash(
+  options?: UseHashInput
+): UseHashReturnValue
+
+type UseHashReturnValue = [string, (value: string) => void]
+```
+
+## Parameters
+
+<ParamField path="options" type="UseHashInput" optional>
+  Configuration for when the initial hash value should be read.
+
+  <ParamField path="options.getInitialValueInEffect" type="boolean" optional>
+    If `true`, reads the initial hash in an effect to avoid render-time access. Defaults to `true`.
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+Returns a tuple with two elements:
+
+<ResponseField name="[0]" type="string">
+  Current hash value from the URL, including the `#` prefix.
+</ResponseField>
+
+<ResponseField name="[1]" type="(value: string) => void">
+  Function to set the hash. Automatically adds `#` prefix if not provided.
+</ResponseField>
+
+## Examples
+
+### Section Navigation
+
+```tsx
+import { useHash } from '@kuzenbo/hooks';
+
+function TableOfContents() {
+  const [hash, setHash] = useHash();
+
+  const sections = [
+    { id: 'intro', title: 'Introduction' },
+    { id: 'features', title: 'Features' },
+    { id: 'installation', title: 'Installation' },
+    { id: 'usage', title: 'Usage' },
+  ];
+
+  return (
+    <nav>
+      {sections.map((section) => (
+        <button
+          key={section.id}
+          onClick={() => setHash(section.id)}
+          style={{
+            fontWeight: hash === `#${section.id}` ? 'bold' : 'normal',
+          }}
+        >
+          {section.title}
+        </button>
+      ))}
+    </nav>
+  );
+}
+```
+
+### Tab Navigation
+
+```tsx
+import { useHash } from '@kuzenbo/hooks';
+
+function TabbedInterface() {
+  const [hash, setHash] = useHash({ getInitialValueInEffect: false });
+
+  const currentTab = hash.replace('#', '') || 'overview';
+
+  return (
+    <div>
+      <div>
+        <button onClick={() => setHash('overview')}>Overview</button>
+        <button onClick={() => setHash('settings')}>Settings</button>
+        <button onClick={() => setHash('history')}>History</button>
+      </div>
+      <div>
+        {currentTab === 'overview' && <OverviewTab />}
+        {currentTab === 'settings' && <SettingsTab />}
+        {currentTab === 'history' && <HistoryTab />}
+      </div>
+    </div>
+  );
+}
+```
+
+### Scroll to Section
+
+```tsx
+import { useHash } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+function ScrollableContent() {
+  const [hash] = useHash();
+
+  useEffect(() => {
+    if (hash) {
+      const element = document.querySelector(hash);
+      element?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [hash]);
+
+  return (
+    <div>
+      <section id="section-1">
+        <h2>Section 1</h2>
+      </section>
+      <section id="section-2">
+        <h2>Section 2</h2>
+      </section>
+      <section id="section-3">
+        <h2>Section 3</h2>
+      </section>
+    </div>
+  );
+}
+```
+
+### Modal State in URL
+
+```tsx
+import { useHash } from '@kuzenbo/hooks';
+
+function ModalApp() {
+  const [hash, setHash] = useHash();
+
+  const isModalOpen = hash === '#modal';
+
+  return (
+    <div>
+      <button onClick={() => setHash('modal')}>Open Modal</button>
+      {isModalOpen && (
+        <div className="modal">
+          <h2>Modal Content</h2>
+          <button onClick={() => setHash('')}>Close</button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### Filter State in Hash
+
+```tsx
+import { useHash } from '@kuzenbo/hooks';
+import { useMemo } from 'react';
+
+function FilteredList({ items }) {
+  const [hash, setHash] = useHash();
+
+  const filter = hash.replace('#', '') || 'all';
+
+  const filteredItems = useMemo(() => {
+    if (filter === 'all') return items;
+    return items.filter((item) => item.category === filter);
+  }, [items, filter]);
+
+  return (
+    <div>
+      <div>
+        <button onClick={() => setHash('all')}>All</button>
+        <button onClick={() => setHash('active')}>Active</button>
+        <button onClick={() => setHash('completed')}>Completed</button>
+      </div>
+      <ul>
+        {filteredItems.map((item) => (
+          <li key={item.id}>{item.title}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### Breadcrumb Navigation
+
+```tsx
+import { useHash } from '@kuzenbo/hooks';
+
+function Breadcrumbs() {
+  const [hash, setHash] = useHash();
+
+  const parts = hash.replace('#', '').split('/').filter(Boolean);
+
+  return (
+    <nav>
+      <button onClick={() => setHash('')}>Home</button>
+      {parts.map((part, index) => {
+        const path = parts.slice(0, index + 1).join('/');
+        return (
+          <span key={path}>
+            {' / '}
+            <button onClick={() => setHash(path)}>{part}</button>
+          </span>
+        );
+      })}
+    </nav>
+  );
+}
+```
+
+### Accordion with Hash
+
+```tsx
+import { useHash } from '@kuzenbo/hooks';
+
+function Accordion({ items }) {
+  const [hash, setHash] = useHash();
+
+  const activeId = hash.replace('#', '');
+
+  return (
+    <div>
+      {items.map((item) => (
+        <div key={item.id}>
+          <button
+            onClick={() => setHash(activeId === item.id ? '' : item.id)}
+          >
+            {item.title}
+          </button>
+          {activeId === item.id && <div>{item.content}</div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Notes
+
+- The setter automatically prefixes values with `#` if not present
+- Updates to the hash trigger browser history entries (navigable with back/forward)
+- The hook listens to `hashchange` events for external hash updates
+- Initial value is empty string (`''`) when `getInitialValueInEffect` is `true`
+- Useful for deep linking and shareable UI states

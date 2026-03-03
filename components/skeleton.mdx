@@ -1,0 +1,181 @@
+---
+title: Skeleton
+description: Placeholder loading state that mimics the structure of content being loaded.
+---
+
+<ComponentPreview name="skeleton-default" />
+
+## Installation
+
+<Tabs>
+  <Tab title="CLI">
+    ```bash
+    npx @kuzenbo/cli add skeleton
+    ```
+  </Tab>
+  <Tab title="Manual">
+    Install the required dependencies:
+
+    ```bash
+    npm install @kuzenbo/core
+    ```
+
+    Copy the component source:
+
+    <Accordion title="skeleton.tsx">
+      ```tsx
+      // See source at packages/core/src/ui/skeleton/
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Skeleton } from "@kuzenbo/core";
+
+export default function Example() {
+  return (
+    <div className="space-y-2">
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-3/4" />
+    </div>
+  );
+}
+```
+
+## Examples
+
+### Card Skeleton
+
+Mimic a card layout with skeleton elements.
+
+```tsx
+<div className="border rounded-lg p-4 space-y-3">
+  <Skeleton className="h-10 w-10 rounded-full" />
+  <div className="space-y-2">
+    <Skeleton className="h-4 w-full" />
+    <Skeleton className="h-4 w-5/6" />
+    <Skeleton className="h-4 w-4/6" />
+  </div>
+  <div className="flex gap-2">
+    <Skeleton className="h-8 w-16" />
+    <Skeleton className="h-8 w-16" />
+  </div>
+</div>
+```
+
+### List Skeleton
+
+Create skeleton for list items.
+
+```tsx
+<div className="space-y-4">
+  {Array.from({ length: 3 }).map((_, i) => (
+    <div key={i} className="flex items-center gap-3">
+      <Skeleton className="h-12 w-12 rounded-full" />
+      <div className="flex-1 space-y-2">
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-3 w-1/2" />
+      </div>
+    </div>
+  ))}
+</div>
+```
+
+### Table Skeleton
+
+Skeleton for table rows.
+
+```tsx
+<table className="w-full">
+  <tbody>
+    {Array.from({ length: 5 }).map((_, i) => (
+      <tr key={i}>
+        <td className="p-2">
+          <Skeleton className="h-4 w-full" />
+        </td>
+        <td className="p-2">
+          <Skeleton className="h-4 w-full" />
+        </td>
+        <td className="p-2">
+          <Skeleton className="h-4 w-20" />
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+```
+
+### Avatar with Text
+
+Combine circular and rectangular skeletons.
+
+```tsx
+<div className="flex items-center gap-3">
+  <Skeleton className="h-16 w-16 rounded-full" />
+  <div className="flex-1 space-y-2">
+    <Skeleton className="h-5 w-32" />
+    <Skeleton className="h-4 w-24" />
+  </div>
+</div>
+```
+
+### Image Skeleton
+
+Placeholder for images with aspect ratio.
+
+```tsx
+<Skeleton className="aspect-video w-full rounded-lg" />
+```
+
+### Conditional Rendering
+
+Show skeleton while loading, then real content.
+
+```tsx
+function UserProfile({ isLoading, user }) {
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-3 w-48" />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h3>{user.name}</h3>
+      <p>{user.email}</p>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Skeleton
+
+<ParamField path="className" type="string">
+  Additional CSS classes for size, shape, and spacing.
+</ParamField>
+
+## Accessibility
+
+- Skeleton has `data-slot="skeleton"` for styling hooks
+- Purely visual, no ARIA attributes needed
+- Ensure loading state is announced to screen readers via separate live region
+- Use `aria-busy="true"` on the container while loading
+
+## Best Practices
+
+- Match skeleton structure to actual content layout
+- Use appropriate shapes (rectangles for text, circles for avatars)
+- Maintain aspect ratios for images and media
+- Show skeletons for predictable loading times
+- Don't use skeletons for instant/fast loading
+- Combine with spinners for user-initiated actions
+- Keep animation subtle to avoid distraction
+- Group related skeleton elements logically

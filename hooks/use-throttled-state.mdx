@@ -1,0 +1,156 @@
+---
+title: 'useThrottledState'
+description: 'Manages local state with throttled updates triggered through the setter'
+icon: 'gauge-high'
+---
+
+Keeps local state but throttles state updates triggered through the returned setter. Pending throttled updates are cleared on unmount.
+
+## Signature
+
+```typescript
+function useThrottledState<T>(
+  defaultValue: T,
+  wait: number
+): readonly [T, (value: T) => void]
+```
+
+## Parameters
+
+<ParamField path="defaultValue" type="T" required>
+  Initial state value.
+</ParamField>
+
+<ParamField path="wait" type="number" required>
+  Throttle window in milliseconds for setter calls.
+</ParamField>
+
+## Returns
+
+<ResponseField name="result" type="readonly [T, (value: T) => void]">
+  A tuple containing the current value and a throttled setter function.
+  
+  <Expandable title="Tuple">
+    <ResponseField name="0" type="T">
+      The current state value.
+    </ResponseField>
+    <ResponseField name="1" type="(value: T) => void">
+      Throttled setter function that updates the state at most once per wait period.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Usage
+
+### Throttled counter
+
+```tsx
+import { useThrottledState } from '@kuzenbo/hooks';
+
+function Counter() {
+  const [count, setCount] = useThrottledState(0, 1000);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>
+        Increment (throttled)
+      </button>
+    </div>
+  );
+}
+```
+
+### Throttled slider
+
+```tsx
+import { useThrottledState } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+function VolumeControl() {
+  const [volume, setVolume] = useThrottledState(50, 100);
+
+  useEffect(() => {
+    // Update audio volume
+    const audio = document.querySelector('audio');
+    if (audio) {
+      audio.volume = volume / 100;
+    }
+  }, [volume]);
+
+  return (
+    <div>
+      <label>Volume: {volume}%</label>
+      <input
+        type="range"
+        min="0"
+        max="100"
+        value={volume}
+        onChange={(e) => setVolume(Number(e.target.value))}
+      />
+    </div>
+  );
+}
+```
+
+### Throttled position tracking
+
+```tsx
+import { useThrottledState } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+function MouseTracker() {
+  const [position, setPosition] = useThrottledState({ x: 0, y: 0 }, 100);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setPosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  return (
+    <div>
+      Mouse position: {position.x}, {position.y}
+    </div>
+  );
+}
+```
+
+### Throttled form updates
+
+```tsx
+import { useThrottledState } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+function AutoSaveForm() {
+  const [formData, setFormData] = useThrottledState(
+    { name: '', email: '' },
+    2000
+  );
+
+  useEffect(() => {
+    if (formData.name || formData.email) {
+      fetch('/api/autosave', {
+        method: 'POST',
+        body: JSON.stringify(formData)
+      });
+    }
+  }, [formData]);
+
+  return (
+    <form>
+      <input
+        placeholder="Name"
+        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+      />
+      <input
+        placeholder="Email"
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+      />
+    </form>
+  );
+}
+```

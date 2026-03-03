@@ -1,0 +1,315 @@
+---
+title: DropdownMenu
+description: A menu component that displays a list of actions or options triggered by a button.
+---
+
+A dropdown menu displays a list of actions or options when triggered, supporting nested submenus, checkboxes, radio groups, and keyboard navigation.
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { DropdownMenu, Button } from "@kuzenbo/core";
+
+export default function DropdownMenuExample() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button variant="outline" />}>
+        Workspace: Acme Platform
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Group>
+          <DropdownMenu.Label>Workspace actions</DropdownMenu.Label>
+          <DropdownMenu.Item>Open workspace settings</DropdownMenu.Item>
+          <DropdownMenu.Item>Invite teammate</DropdownMenu.Item>
+        </DropdownMenu.Group>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item variant="danger">Leave workspace</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+```
+
+### With Checkbox Items
+
+```tsx
+import { DropdownMenu, Button } from "@kuzenbo/core";
+
+export default function CheckboxExample() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button variant="outline" />}>
+        Columns
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Group>
+          <DropdownMenu.Label>Table columns</DropdownMenu.Label>
+          <DropdownMenu.CheckboxItem defaultChecked>
+            Status
+          </DropdownMenu.CheckboxItem>
+          <DropdownMenu.CheckboxItem defaultChecked>
+            Owner
+          </DropdownMenu.CheckboxItem>
+          <DropdownMenu.CheckboxItem>
+            Priority
+          </DropdownMenu.CheckboxItem>
+        </DropdownMenu.Group>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+```
+
+### With Submenu
+
+```tsx
+import { DropdownMenu, Button } from "@kuzenbo/core";
+
+export default function SubmenuExample() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button variant="outline" />}>
+        Options
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Item>Open dashboard</DropdownMenu.Item>
+        <DropdownMenu.Sub>
+          <DropdownMenu.SubTrigger>Switch workspace</DropdownMenu.SubTrigger>
+          <DropdownMenu.SubContent>
+            <DropdownMenu.Item>Acme Platform</DropdownMenu.Item>
+            <DropdownMenu.Item>Security Ops</DropdownMenu.Item>
+            <DropdownMenu.Item>Customer Success</DropdownMenu.Item>
+          </DropdownMenu.SubContent>
+        </DropdownMenu.Sub>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item>Settings</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+```
+
+### With Shortcuts
+
+```tsx
+import { DropdownMenu, Button } from "@kuzenbo/core";
+
+export default function ShortcutsExample() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button variant="outline" />}>
+        Actions
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Group>
+          <DropdownMenu.Label>Release workflow</DropdownMenu.Label>
+          <DropdownMenu.Item>
+            Start release
+            <DropdownMenu.Shortcut>⌘R</DropdownMenu.Shortcut>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item>
+            Rollback
+            <DropdownMenu.Shortcut>⇧⌘R</DropdownMenu.Shortcut>
+          </DropdownMenu.Item>
+        </DropdownMenu.Group>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+```
+
+### Composed Anatomy
+
+```tsx
+import { DropdownMenu, Button } from "@kuzenbo/core";
+
+export default function ComposedDropdown() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button variant="outline" />}>
+        Account
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Backdrop />
+        <DropdownMenu.Positioner>
+          <DropdownMenu.Popup>
+            <DropdownMenu.Arrow />
+            <DropdownMenu.Group>
+              <DropdownMenu.Label>Account</DropdownMenu.Label>
+              <DropdownMenu.Item>Profile</DropdownMenu.Item>
+              <DropdownMenu.LinkItem href="/billing">
+                Billing
+              </DropdownMenu.LinkItem>
+            </DropdownMenu.Group>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item variant="danger">Sign out</DropdownMenu.Item>
+          </DropdownMenu.Popup>
+        </DropdownMenu.Positioner>
+      </DropdownMenu.Portal>
+    </DropdownMenu>
+  );
+}
+```
+
+## API Reference
+
+### DropdownMenu (Root)
+
+<ParamField path="defaultOpen" type="boolean">
+  The initial open state when uncontrolled.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  The controlled open state of the menu.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback fired when the open state changes.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size variant for the menu.
+</ParamField>
+
+### DropdownMenu.Content
+
+<ParamField path="side" type="'top' | 'right' | 'bottom' | 'left'" default="'bottom'">
+  The preferred side of the trigger to render against.
+</ParamField>
+
+<ParamField path="sideOffset" type="number" default="4">
+  The distance in pixels from the trigger.
+</ParamField>
+
+<ParamField path="align" type="'start' | 'center' | 'end'" default="'start'">
+  The alignment of the menu relative to the trigger.
+</ParamField>
+
+<ParamField path="alignOffset" type="number" default="0">
+  The offset in pixels from the alignment axis.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the root size for this content.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### DropdownMenu.Item
+
+<ParamField path="variant" type="'default' | 'danger'" default="'default'">
+  The visual variant of the item.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the item is disabled.
+</ParamField>
+
+<ParamField path="onSelect" type="() => void">
+  Callback fired when the item is selected.
+</ParamField>
+
+### DropdownMenu.CheckboxItem
+
+<ParamField path="checked" type="boolean">
+  The controlled checked state.
+</ParamField>
+
+<ParamField path="defaultChecked" type="boolean">
+  The initial checked state when uncontrolled.
+</ParamField>
+
+<ParamField path="onCheckedChange" type="(checked: boolean) => void">
+  Callback fired when the checked state changes.
+</ParamField>
+
+### DropdownMenu.RadioGroup
+
+<ParamField path="value" type="string">
+  The controlled value of the selected radio item.
+</ParamField>
+
+<ParamField path="defaultValue" type="string">
+  The initial value when uncontrolled.
+</ParamField>
+
+<ParamField path="onValueChange" type="(value: string) => void">
+  Callback fired when the value changes.
+</ParamField>
+
+### DropdownMenu.RadioItem
+
+<ParamField path="value" type="string" required>
+  The value of this radio item.
+</ParamField>
+
+### DropdownMenu.LinkItem
+
+<ParamField path="href" type="string" required>
+  The URL to navigate to.
+</ParamField>
+
+### DropdownMenu.Label
+
+<ParamField path="children" type="ReactNode">
+  The label content.
+</ParamField>
+
+### DropdownMenu.Separator
+
+Visual separator between menu items.
+
+### DropdownMenu.Shortcut
+
+<ParamField path="children" type="ReactNode">
+  The keyboard shortcut text.
+</ParamField>
+
+### DropdownMenu.Trigger
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the trigger.
+</ParamField>
+
+## Component Parts
+
+- `DropdownMenu` - Root component that manages state
+- `DropdownMenu.Trigger` - Opens the menu
+- `DropdownMenu.Portal` - Portals the menu content
+- `DropdownMenu.Positioner` - Positions the menu relative to trigger
+- `DropdownMenu.Popup` - The menu container
+- `DropdownMenu.Content` - Convenience wrapper
+- `DropdownMenu.Item` - A menu item
+- `DropdownMenu.CheckboxItem` - A checkable menu item
+- `DropdownMenu.RadioGroup` - Groups radio items
+- `DropdownMenu.RadioItem` - A radio menu item
+- `DropdownMenu.LinkItem` - A navigation menu item
+- `DropdownMenu.Label` - A non-interactive label
+- `DropdownMenu.Separator` - Visual separator
+- `DropdownMenu.Shortcut` - Keyboard shortcut indicator
+- `DropdownMenu.Sub` - Submenu root
+- `DropdownMenu.SubTrigger` - Opens a submenu
+- `DropdownMenu.SubContent` - Submenu content
+- `DropdownMenu.Group` - Groups related items
+- `DropdownMenu.Arrow` - Visual arrow indicator
+- `DropdownMenu.Backdrop` - Optional backdrop overlay
+
+## Accessibility
+
+- Full keyboard navigation support
+- Arrow keys navigate between items
+- Enter or Space activates items
+- Escape closes the menu
+- Type-ahead to focus items
+- Proper ARIA attributes
+- Focus management on open/close

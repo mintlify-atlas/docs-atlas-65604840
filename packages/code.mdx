@@ -1,0 +1,402 @@
+---
+title: '@kuzenbo/code'
+description: 'Code preview snippet primitives and hooks for Kuzenbo'
+icon: 'code'
+---
+
+## Overview
+
+The `@kuzenbo/code` package provides comprehensive code display and editing components powered by Shiki syntax highlighting and CodeMirror. Perfect for documentation sites, playgrounds, and developer tools.
+
+<Note status="warning">
+This package is currently in preview and not yet published to npm. The API may change before the stable release.
+</Note>
+
+## Installation
+
+Once published, install with:
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/code @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash yarn
+yarn add @kuzenbo/code @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash pnpm
+pnpm add @kuzenbo/code @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash bun
+bun add @kuzenbo/code @kuzenbo/core @kuzenbo/theme react react-dom
+```
+</CodeGroup>
+
+## Components
+
+<CardGroup cols={2}>
+  <Card title="CodeBlock" icon="code">
+    Syntax-highlighted code display
+  </Card>
+  <Card title="CodeDiffBlock" icon="code-compare">
+    Show code differences
+  </Card>
+  <Card title="CodePreview" icon="window">
+    Live preview with code
+  </Card>
+  <Card title="CodeTabs" icon="folder-tree">
+    Tabbed code examples
+  </Card>
+  <Card title="CodeWindow" icon="browser">
+    Code in a window frame
+  </Card>
+  <Card title="TerminalBlock" icon="terminal">
+    Terminal-style output
+  </Card>
+  <Card title="FileTree" icon="folder-tree">
+    Interactive file browser
+  </Card>
+  <Card title="Playground" icon="play">
+    Interactive code playground
+  </Card>
+  <Card title="PackageManagerTabs" icon="box">
+    npm/yarn/pnpm/bun install tabs
+  </Card>
+  <Card title="InlineCodeHighlight" icon="highlighter">
+    Inline syntax highlighting
+  </Card>
+</CardGroup>
+
+## Basic Usage
+
+### Code Block
+
+```tsx
+import { CodeBlock } from '@kuzenbo/code/ui/code-block';
+
+const code = `
+function hello(name: string) {
+  console.log(\`Hello, \${name}!\`);
+}
+`;
+
+export function Example() {
+  return (
+    <CodeBlock
+      code={code}
+      language="typescript"
+      showLineNumbers
+      highlightLines={[2]}
+    />
+  );
+}
+```
+
+### Code Diff
+
+```tsx
+import { CodeDiffBlock } from '@kuzenbo/code/ui/code-diff-block';
+
+const oldCode = `const name = 'World';`;
+const newCode = `const name = 'Kuzenbo';`;
+
+export function DiffExample() {
+  return (
+    <CodeDiffBlock
+      oldCode={oldCode}
+      newCode={newCode}
+      language="typescript"
+    />
+  );
+}
+```
+
+### Code Preview
+
+```tsx
+import { CodePreview } from '@kuzenbo/code/ui/code-preview';
+import { Button } from '@kuzenbo/core/ui/button';
+
+const code = `<Button>Click me</Button>`;
+
+export function PreviewExample() {
+  return (
+    <CodePreview code={code} language="tsx">
+      <Button>Click me</Button>
+    </CodePreview>
+  );
+}
+```
+
+### Code Tabs
+
+```tsx
+import { CodeTabs } from '@kuzenbo/code/ui/code-tabs';
+
+const files = [
+  {
+    name: 'App.tsx',
+    language: 'tsx',
+    code: `export function App() { return <div>Hello</div>; }`,
+  },
+  {
+    name: 'styles.css',
+    language: 'css',
+    code: `.container { padding: 1rem; }`,
+  },
+];
+
+export function TabsExample() {
+  return <CodeTabs files={files} />;
+}
+```
+
+### Package Manager Tabs
+
+```tsx
+import { PackageManagerTabs } from '@kuzenbo/code/ui/package-manager-tabs';
+
+export function InstallExample() {
+  return (
+    <PackageManagerTabs
+      npm="npm install @kuzenbo/core"
+      yarn="yarn add @kuzenbo/core"
+      pnpm="pnpm add @kuzenbo/core"
+      bun="bun add @kuzenbo/core"
+    />
+  );
+}
+```
+
+### Terminal Block
+
+```tsx
+import { TerminalBlock } from '@kuzenbo/code/ui/terminal-block';
+
+const output = `
+$ npm run build
+✓ Built in 1.2s
+✓ 127 modules transformed
+`;
+
+export function TerminalExample() {
+  return <TerminalBlock output={output} />;
+}
+```
+
+### File Tree
+
+```tsx
+import { FileTree } from '@kuzenbo/code/ui/file-tree';
+
+const files = [
+  {
+    id: '1',
+    name: 'src',
+    type: 'folder',
+    children: [
+      { id: '2', name: 'App.tsx', type: 'file' },
+      { id: '3', name: 'index.ts', type: 'file' },
+    ],
+  },
+  { id: '4', name: 'package.json', type: 'file' },
+];
+
+export function TreeExample() {
+  return <FileTree files={files} onFileClick={(file) => console.log(file)} />;
+}
+```
+
+## Playground
+
+### Interactive Playground
+
+```tsx
+import { Playground } from '@kuzenbo/code/ui/playground';
+import { Button } from '@kuzenbo/core/ui/button';
+
+const initialCode = `
+import { Button } from '@kuzenbo/core/ui/button';
+
+export function Demo() {
+  return <Button>Click me</Button>;
+}
+`;
+
+export function PlaygroundExample() {
+  return (
+    <Playground
+      code={initialCode}
+      scope={{ Button }}
+      showEditor
+      showPreview
+    />
+  );
+}
+```
+
+### Playground with Controls
+
+```tsx
+import { usePlaygroundState } from '@kuzenbo/code/playground/use-playground-state';
+import { Button } from '@kuzenbo/core/ui/button';
+
+const controls = [
+  {
+    name: 'variant',
+    type: 'select',
+    options: ['solid', 'outline', 'ghost'],
+    defaultValue: 'solid',
+  },
+  {
+    name: 'size',
+    type: 'select',
+    options: ['sm', 'md', 'lg'],
+    defaultValue: 'md',
+  },
+];
+
+export function ControlledPlayground() {
+  const playground = usePlaygroundState({
+    component: Button,
+    controls,
+  });
+
+  return <Playground {...playground} />;
+}
+```
+
+## Syntax Highlighting
+
+### Shiki Highlighter
+
+```tsx
+import { highlightCode } from '@kuzenbo/code/shiki/highlight-code';
+
+const highlighted = await highlightCode({
+  code: 'const x = 42;',
+  language: 'typescript',
+  theme: 'github-dark',
+});
+```
+
+### Custom Transformers
+
+```tsx
+import { shikiTransformers } from '@kuzenbo/code/shiki/shiki-transformers';
+
+const highlighted = await highlightCode({
+  code,
+  language: 'typescript',
+  transformers: [
+    shikiTransformers.highlightLines([1, 3, 5]),
+    shikiTransformers.focusLines([2, 4]),
+  ],
+});
+```
+
+## Line Highlighting
+
+```tsx
+import { CodeBlock } from '@kuzenbo/code/ui/code-block';
+
+<CodeBlock
+  code={code}
+  language="typescript"
+  highlightLines={[1, 3, 5]}
+  focusLines={[2, 4]}
+  showLineNumbers
+/>
+```
+
+## Code Window
+
+```tsx
+import { CodeWindow } from '@kuzenbo/code/ui/code-window';
+
+<CodeWindow
+  title="App.tsx"
+  code={code}
+  language="tsx"
+  showControls
+  theme="dark"
+/>
+```
+
+## Inline Code
+
+```tsx
+import { InlineCodeHighlight } from '@kuzenbo/code/ui/inline-code-highlight';
+
+export function InlineExample() {
+  return (
+    <p>
+      Use the <InlineCodeHighlight code="useState" language="tsx" /> hook.
+    </p>
+  );
+}
+```
+
+## Theming
+
+Code blocks automatically adapt to your theme:
+
+```tsx
+import { CodeBlock } from '@kuzenbo/code/ui/code-block';
+
+// Automatically uses light/dark theme
+<CodeBlock code={code} language="typescript" />
+
+// Force specific theme
+<CodeBlock code={code} language="typescript" theme="github-dark" />
+```
+
+## Dependencies
+
+- `shiki` - Syntax highlighting
+- `@shikijs/transformers` - Code transformers
+- `@uiw/react-codemirror` - Code editor
+- `react-diff-viewer-continued` - Diff viewer
+- `diff` - Diff algorithm
+- `react-arborist` - File tree
+- `anser` - ANSI to HTML
+- `@kuzenbo/core` - Core components
+
+## Peer Dependencies
+
+```json
+{
+  "@kuzenbo/core": "^0.0.7",
+  "@kuzenbo/theme": "^0.0.7",
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0"
+}
+```
+
+## TypeScript
+
+Fully typed code components:
+
+```tsx
+import { CodeBlock } from '@kuzenbo/code/ui/code-block';
+import type { CodeBlockProps } from '@kuzenbo/code/ui/code-block';
+
+const MyCodeBlock: React.FC<{ code: string }> = ({ code }) => {
+  const props: CodeBlockProps = {
+    code,
+    language: 'typescript',
+    showLineNumbers: true,
+  };
+  return <CodeBlock {...props} />;
+};
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Core Components" icon="box" href="/packages/core">
+    Explore other UI components
+  </Card>
+</CardGroup>

@@ -1,0 +1,146 @@
+---
+title: Carousel
+description: A carousel component for cycling through elements.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Carousel } from "@kuzenbo/core";
+
+function Example() {
+  return (
+    <Carousel className="w-full max-w-xs">
+      <Carousel.Content>
+        <Carousel.Item>
+          <div className="p-1">
+            <Card>
+              <CardContent className="flex aspect-square items-center justify-center p-6">
+                <span className="text-4xl font-semibold">1</span>
+              </CardContent>
+            </Card>
+          </div>
+        </Carousel.Item>
+        <Carousel.Item>
+          <div className="p-1">
+            <Card>
+              <CardContent className="flex aspect-square items-center justify-center p-6">
+                <span className="text-4xl font-semibold">2</span>
+              </CardContent>
+            </Card>
+          </div>
+        </Carousel.Item>
+      </Carousel.Content>
+      <Carousel.Previous />
+      <Carousel.Next />
+    </Carousel>
+  );
+}
+```
+
+## Props
+
+### Carousel
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="'horizontal'">
+  The orientation of the carousel.
+</ParamField>
+
+<ParamField path="opts" type="EmblaOptionsType">
+  Options for the Embla carousel instance.
+</ParamField>
+
+<ParamField path="setApi" type="(api: CarouselApi) => void">
+  Callback to receive the carousel API instance.
+</ParamField>
+
+<ParamField path="plugins" type="EmblaPluginType[]">
+  Embla carousel plugins to use.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Carousel.Content
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Carousel.Item
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Carousel.Previous / Carousel.Next
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+<ParamField path="variant" type="string">
+  Button variant to use.
+</ParamField>
+
+<ParamField path="size" type="string">
+  Button size to use.
+</ParamField>
+
+## Advanced Patterns
+
+### Autoplay
+
+```tsx
+import { useEffect, useState } from "react";
+import type { CarouselApi } from "@kuzenbo/core";
+
+function AutoplayCarousel() {
+  const [api, setApi] = useState<CarouselApi>();
+
+  useEffect(() => {
+    if (!api) return;
+
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [api]);
+
+  return (
+    <Carousel setApi={setApi} opts={{ loop: true }}>
+      {/* ... */}
+    </Carousel>
+  );
+}
+```
+
+### Thumbnail Navigation
+
+```tsx
+const [api, setApi] = useState<CarouselApi>();
+const [current, setCurrent] = useState(0);
+
+useEffect(() => {
+  if (!api) return;
+
+  setCurrent(api.selectedScrollSnap());
+  api.on("select", () => setCurrent(api.selectedScrollSnap()));
+}, [api]);
+```
+
+### Vertical Orientation
+
+```tsx
+<Carousel orientation="vertical" className="h-96">
+  {/* ... */}
+</Carousel>
+```

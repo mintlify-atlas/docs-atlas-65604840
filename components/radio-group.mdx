@@ -1,0 +1,296 @@
+---
+title: RadioGroup
+description: A group of radio buttons for selecting a single option from multiple choices.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+## Usage
+
+```tsx
+import { RadioGroup } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function App() {
+  return (
+    <RadioGroup defaultValue="monthly">
+      <Label className="flex items-center gap-2">
+        <RadioGroup.Item value="monthly" />
+        Monthly billing
+      </Label>
+      <Label className="flex items-center gap-2">
+        <RadioGroup.Item value="annual" />
+        Annual billing
+      </Label>
+    </RadioGroup>
+  );
+}
+```
+
+## Examples
+
+### Controlled RadioGroup
+
+Manage selection state with React.
+
+```tsx
+import { RadioGroup } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useState } from "react";
+
+function ControlledExample() {
+  const [billingCycle, setBillingCycle] = useState("annual");
+
+  return (
+    <div className="grid gap-2">
+      <RadioGroup value={billingCycle} onValueChange={setBillingCycle}>
+        <Label className="flex items-center gap-2">
+          <RadioGroup.Item value="monthly" />
+          Monthly ($49 per seat)
+        </Label>
+        <Label className="flex items-center gap-2">
+          <RadioGroup.Item value="annual" />
+          Annual ($39 per seat - 20% savings)
+        </Label>
+        <Label className="flex items-center gap-2">
+          <RadioGroup.Item value="multi-year" />
+          24-month agreement ($34 per seat)
+        </Label>
+      </RadioGroup>
+      <p className="text-muted-foreground text-sm">
+        Selected: {billingCycle}
+      </p>
+    </div>
+  );
+}
+```
+
+### Sizes
+
+Radio items are available in five size variants.
+
+```tsx
+import { RadioGroup } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function SizesExample() {
+  return (
+    <div className="grid gap-4">
+      <RadioGroup defaultValue="xs-standard">
+        <Label className="flex items-center gap-2">
+          <RadioGroup.Item size="xs" value="xs-standard" />
+          XS standard review
+        </Label>
+      </RadioGroup>
+      <RadioGroup defaultValue="sm-standard">
+        <Label className="flex items-center gap-2">
+          <RadioGroup.Item size="sm" value="sm-standard" />
+          SM standard review
+        </Label>
+      </RadioGroup>
+      <RadioGroup defaultValue="md-standard">
+        <Label className="flex items-center gap-2">
+          <RadioGroup.Item size="md" value="md-standard" />
+          MD standard review
+        </Label>
+      </RadioGroup>
+      <RadioGroup defaultValue="lg-standard">
+        <Label className="flex items-center gap-2">
+          <RadioGroup.Item size="lg" value="lg-standard" />
+          LG standard review
+        </Label>
+      </RadioGroup>
+      <RadioGroup defaultValue="xl-standard">
+        <Label className="flex items-center gap-2">
+          <RadioGroup.Item size="xl" value="xl-standard" />
+          XL standard review
+        </Label>
+      </RadioGroup>
+    </div>
+  );
+}
+```
+
+### Disabled Option
+
+Individual radio items can be disabled.
+
+```tsx
+import { RadioGroup } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function DisabledOptionExample() {
+  return (
+    <RadioGroup defaultValue="monthly">
+      <Label className="flex items-center gap-2">
+        <RadioGroup.Item value="monthly" />
+        Monthly invoicing
+      </Label>
+      <Label className="flex items-center gap-2">
+        <RadioGroup.Item value="quarterly" />
+        Quarterly invoicing
+      </Label>
+      <Label className="flex items-center gap-2">
+        <RadioGroup.Item value="annual" disabled />
+        Annual invoicing (requires legal sign-off)
+      </Label>
+    </RadioGroup>
+  );
+}
+```
+
+### Horizontal Layout
+
+Use flexbox or grid to arrange radio items horizontally.
+
+```tsx
+import { RadioGroup } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function HorizontalLayoutExample() {
+  return (
+    <RadioGroup
+      className="grid grid-cols-3 gap-2"
+      defaultValue="us"
+    >
+      <Label className="border-border flex items-center gap-2 rounded-md border px-3 py-2">
+        <RadioGroup.Item value="us" />
+        US
+      </Label>
+      <Label className="border-border flex items-center gap-2 rounded-md border px-3 py-2">
+        <RadioGroup.Item value="eu" />
+        EU
+      </Label>
+      <Label className="border-border flex items-center gap-2 rounded-md border px-3 py-2">
+        <RadioGroup.Item value="apac" />
+        APAC
+      </Label>
+    </RadioGroup>
+  );
+}
+```
+
+### Custom Indicator
+
+Customize the radio indicator appearance.
+
+```tsx
+import { RadioGroup } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function CustomIndicatorExample() {
+  return (
+    <RadioGroup defaultValue="finance">
+      <div className="flex items-center gap-2">
+        <RadioGroup.Item value="finance">
+          <RadioGroup.Indicator>
+            <span className="bg-primary block size-2 rounded-full" />
+          </RadioGroup.Indicator>
+        </RadioGroup.Item>
+        <Label>Finance-led approval path</Label>
+      </div>
+      <div className="flex items-center gap-2">
+        <RadioGroup.Item value="operations">
+          <RadioGroup.Indicator>
+            <span className="bg-primary block size-2 rounded-full" />
+          </RadioGroup.Indicator>
+        </RadioGroup.Item>
+        <Label>Operations-led approval path</Label>
+      </div>
+    </RadioGroup>
+  );
+}
+```
+
+## Props
+
+### RadioGroup
+
+RadioGroup extends Base UI RadioGroup props.
+
+<ParamField path="value" type="unknown">
+  Controlled value of the selected radio item.
+</ParamField>
+
+<ParamField path="defaultValue" type="unknown">
+  Default selected value for uncontrolled usage.
+</ParamField>
+
+<ParamField path="onValueChange" type="(value: unknown) => void">
+  Callback fired when the selected value changes.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the radio group container.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Radio items and other content.
+</ParamField>
+
+### RadioGroup.Item
+
+RadioGroup.Item extends Base UI Radio props.
+
+<ParamField path="value" type="unknown" required>
+  The value of this radio item.
+</ParamField>
+
+<ParamField path="size" type="string" default="md">
+  Size variant of the radio item.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables this radio item.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the radio item.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Custom indicator content. Defaults to a filled circle indicator.
+</ParamField>
+
+## Subcomponents
+
+### RadioGroup.Indicator
+
+The visual indicator shown when the radio item is selected.
+
+```tsx
+<RadioGroup.Item value="option">
+  <RadioGroup.Indicator size="xs">
+    <CustomDotIcon />
+  </RadioGroup.Indicator>
+</RadioGroup.Item>
+```
+
+## TypeScript
+
+```tsx
+import type {
+  RadioGroupProps,
+  RadioGroupItemProps,
+  RadioGroupIndicatorProps,
+} from "@kuzenbo/core";
+
+const CustomRadioGroup = <T,>(props: RadioGroupProps<T>) => {
+  return <RadioGroup {...props} />;
+};
+```
+
+## Accessibility
+
+- RadioGroup uses semantic ARIA radiogroup role
+- Radio items use ARIA radio role
+- Supports keyboard navigation with arrow keys
+- Only one item can be selected at a time
+- Disabled items are skipped in keyboard navigation
+- Proper focus management and visual focus indicators

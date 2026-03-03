@@ -1,0 +1,104 @@
+---
+title: Introduction
+description: Kuzenbo is an open source React UI suite with composable primitives, token-first theming, and focused packages for charts, notifications, dates, data tables, code surfaces, and AI UI workflows.
+---
+
+# Introduction
+
+Kuzenbo is an open source React UI suite with composable primitives, token-first theming, and focused packages for charts, notifications, dates, data tables, code surfaces, and AI UI workflows.
+
+## Why Kuzenbo
+
+<CardGroup cols={2}>
+  <Card title="Composable primitives" icon="blocks">
+    Composable primitives with predictable styling contracts.
+  </Card>
+  <Card title="Semantic theme tokens" icon="palette">
+    Semantic theme tokens that stay consistent across light and dark mode.
+  </Card>
+  <Card title="Focused packages" icon="package">
+    Focused packages so you install only what your product needs.
+  </Card>
+  <Card title="Docs-first adoption" icon="book">
+    Docs-first adoption with practical examples and component-level guidance.
+  </Card>
+</CardGroup>
+
+## Getting started
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install Kuzenbo and get your development environment ready.
+  </Card>
+  <Card title="Quick start" icon="rocket" href="/quickstart">
+    Build your first Kuzenbo app in 60 seconds.
+  </Card>
+  <Card title="Theming" icon="moon" href="/theming">
+    Learn how to customize themes and implement light/dark mode.
+  </Card>
+  <Card title="Styling" icon="paintbrush" href="/styling">
+    Understand the styling system and customization options.
+  </Card>
+</CardGroup>
+
+## Package ecosystem
+
+Kuzenbo is designed as a modular system. Install only what you need:
+
+### Core runtime
+
+The foundation for building Kuzenbo apps.
+
+- **@kuzenbo/core** - Main UI primitives and composition building blocks
+- **@kuzenbo/theme** - Theme runtime, bootstrap script, semantic tokens
+- **@kuzenbo/hooks** - Standalone React hooks (no theme dependency)
+- **@kuzenbo/styles** - Optional baseline global CSS
+
+### UI packages
+
+Specialized component packages for specific use cases.
+
+- **@kuzenbo/charts** - Chart primitives and prebuilt chart components
+- **@kuzenbo/notifications** - Toast and notification primitives
+- **@kuzenbo/date** - Calendar and date primitives (preview)
+- **@kuzenbo/datatable** - Table UI scaffolding and state helpers (preview)
+- **@kuzenbo/code** - Code snippet components and helpers (preview)
+- **@kuzenbo/ai** - AI UI primitives and prompt helpers (preview)
+- **@kuzenbo/tiptap** - Rich text editor primitives for Tiptap (preview)
+
+<Note>
+All UI packages require pairing with `@kuzenbo/theme` in the same app runtime.
+</Note>
+
+## Fast onboarding path
+
+Get from install to production-ready UI quickly:
+
+<Steps>
+  <Step title="Install packages">
+    Install the core runtime pair to get started.
+  </Step>
+  <Step title="Add theme provider">
+    Wrap your app with `ThemeProvider` and add the bootstrap script.
+  </Step>
+  <Step title="Import styles">
+    Import prebuilt theme CSS and optional baseline styles.
+  </Step>
+  <Step title="Start building">
+    Use composable primitives to build your UI.
+  </Step>
+</Steps>
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="Installation" icon="download" href="/installation">
+    Set up your environment
+  </Card>
+  <Card title="Quick start" icon="rocket" href="/quickstart">
+    Build your first app
+  </Card>
+  <Card title="Components" icon="grid" href="/components/button">
+    Explore all components
+  </Card>
+</CardGroup>

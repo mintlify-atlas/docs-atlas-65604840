@@ -1,0 +1,104 @@
+---
+title: Affix
+description: Position an element at a fixed location on the viewport.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Affix } from "@kuzenbo/core";
+import { Button } from "@kuzenbo/core";
+
+function Example() {
+  return (
+    <Affix position={{ bottom: 20, right: 20 }}>
+      <Button>Scroll to top</Button>
+    </Affix>
+  );
+}
+```
+
+## Props
+
+<ParamField path="position" type="AffixPosition" default="{ bottom: 0, right: 0 }">
+  Position of the affix element. Can specify `top`, `bottom`, `left`, `right` as numbers (px) or strings.
+</ParamField>
+
+<ParamField path="withinPortal" type="boolean" default="true">
+  Whether to render the affix within a portal.
+</ParamField>
+
+<ParamField path="portalProps" type="BasePortalProps">
+  Props passed to the Portal component when `withinPortal` is true.
+</ParamField>
+
+<ParamField path="zIndex" type="CSSProperties['zIndex']">
+  Custom z-index value. Defaults to the `--kb-z-affix` CSS variable.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Position Interface
+
+```tsx
+interface AffixPosition {
+  top?: number | string;
+  bottom?: number | string;
+  left?: number | string;
+  right?: number | string;
+}
+```
+
+## Examples
+
+### Bottom Right (Default)
+
+```tsx
+<Affix>
+  <Button>Fixed Button</Button>
+</Affix>
+```
+
+### Top Center
+
+```tsx
+<Affix position={{ top: 20, left: "50%" }} style={{ transform: "translateX(-50%)" }}>
+  <Alert>Important notification</Alert>
+</Affix>
+```
+
+### Bottom Left
+
+```tsx
+<Affix position={{ bottom: 40, left: 40 }}>
+  <Button variant="outline" size="lg">
+    Help
+  </Button>
+</Affix>
+```
+
+### Custom Z-Index
+
+```tsx
+<Affix position={{ top: 0, right: 0 }} zIndex={9999}>
+  <Button>Always on top</Button>
+</Affix>
+```
+
+### Without Portal
+
+```tsx
+<div className="relative">
+  <Affix withinPortal={false} position={{ top: 10, right: 10 }}>
+    <Button size="sm">Relative to parent</Button>
+  </Affix>
+</div>
+```

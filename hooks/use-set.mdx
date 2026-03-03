@@ -1,0 +1,248 @@
+---
+title: useSet
+description: Stores a Set in a stable ref with extended set operations
+---
+
+## Overview
+
+Stores a Set in a stable ref and re-renders the component when the Set is mutated. Extended helpers (`union`, `intersection`, `difference`, `symmetricDifference`) return new Sets without mutating the current one.
+
+## Import
+
+```tsx
+import { useSet } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useSet<T>(
+  values?: T[]
+): UseSetValue<T>;
+```
+
+## Parameters
+
+<ParamField path="values" type="T[]">
+  Optional initial values for the Set
+</ParamField>
+
+## Return Value
+
+<ResponseField name="set" type="UseSetValue<T>">
+  A Set instance with extended operations that triggers re-renders on mutations
+  
+  <ResponseField name="add" type="(value: T) => UseSetValue<T>">
+    Adds a value to the set (triggers re-render)
+  </ResponseField>
+  
+  <ResponseField name="delete" type="(value: T) => boolean">
+    Removes a value from the set (triggers re-render)
+  </ResponseField>
+  
+  <ResponseField name="clear" type="() => void">
+    Removes all values from the set (triggers re-render)
+  </ResponseField>
+  
+  <ResponseField name="union" type="<U>(other: SetLike<U>) => Set<T | U>">
+    Returns a new Set containing all values from both sets
+  </ResponseField>
+  
+  <ResponseField name="intersection" type="<U>(other: SetLike<U>) => Set<T & U>">
+    Returns a new Set containing only values present in both sets
+  </ResponseField>
+  
+  <ResponseField name="difference" type="<U>(other: SetLike<U>) => Set<T>">
+    Returns a new Set containing values in this set but not in the other
+  </ResponseField>
+  
+  <ResponseField name="symmetricDifference" type="<U>(other: SetLike<U>) => Set<T | U>">
+    Returns a new Set containing values in either set but not in both
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Basic Set Operations
+
+```tsx
+import { useSet } from '@kuzenbo/hooks';
+
+function TagManager() {
+  const tags = useSet(['react', 'typescript']);
+
+  return (
+    <div>
+      <h3>Tags ({tags.size})</h3>
+      <div>
+        {Array.from(tags).map((tag) => (
+          <span key={tag}>
+            {tag}
+            <button onClick={() => tags.delete(tag)}>×</button>
+          </span>
+        ))}
+      </div>
+      <button onClick={() => tags.add('javascript')}>Add JavaScript</button>
+      <button onClick={() => tags.add('node')}>Add Node</button>
+      <button onClick={() => tags.clear()}>Clear All</button>
+    </div>
+  );
+}
+```
+
+### Selected Items
+
+```tsx
+import { useSet } from '@kuzenbo/hooks';
+
+interface Item {
+  id: string;
+  name: string;
+}
+
+function ItemSelector({ items }: { items: Item[] }) {
+  const selectedIds = useSet<string>();
+
+  const toggleSelection = (id: string) => {
+    if (selectedIds.has(id)) {
+      selectedIds.delete(id);
+    } else {
+      selectedIds.add(id);
+    }
+  };
+
+  return (
+    <div>
+      <p>Selected: {selectedIds.size} items</p>
+      {items.map((item) => (
+        <div key={item.id}>
+          <input
+            type="checkbox"
+            checked={selectedIds.has(item.id)}
+            onChange={() => toggleSelection(item.id)}
+          />
+          {item.name}
+        </div>
+      ))}
+      <button onClick={() => selectedIds.clear()}>Clear Selection</button>
+    </div>
+  );
+}
+```
+
+### Set Operations Example
+
+```tsx
+import { useSet } from '@kuzenbo/hooks';
+
+function SetOperations() {
+  const setA = useSet([1, 2, 3, 4]);
+  const setB = useSet([3, 4, 5, 6]);
+
+  const union = setA.union(setB); // {1, 2, 3, 4, 5, 6}
+  const intersection = setA.intersection(setB); // {3, 4}
+  const difference = setA.difference(setB); // {1, 2}
+  const symmetricDiff = setA.symmetricDifference(setB); // {1, 2, 5, 6}
+
+  return (
+    <div>
+      <div>
+        <h3>Set A</h3>
+        <p>{Array.from(setA).join(', ')}</p>
+        <button onClick={() => setA.add(Math.floor(Math.random() * 10))}>
+          Add Random
+        </button>
+      </div>
+      
+      <div>
+        <h3>Set B</h3>
+        <p>{Array.from(setB).join(', ')}</p>
+        <button onClick={() => setB.add(Math.floor(Math.random() * 10))}>
+          Add Random
+        </button>
+      </div>
+      
+      <div>
+        <h3>Union (A ∪ B)</h3>
+        <p>{Array.from(union).join(', ')}</p>
+      </div>
+      
+      <div>
+        <h3>Intersection (A ∩ B)</h3>
+        <p>{Array.from(intersection).join(', ')}</p>
+      </div>
+      
+      <div>
+        <h3>Difference (A \ B)</h3>
+        <p>{Array.from(difference).join(', ')}</p>
+      </div>
+      
+      <div>
+        <h3>Symmetric Difference (A Δ B)</h3>
+        <p>{Array.from(symmetricDiff).join(', ')}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+### Unique Values Filter
+
+```tsx
+import { useSet } from '@kuzenbo/hooks';
+
+function UniqueValueTracker() {
+  const [input, setInput] = React.useState('');
+  const uniqueValues = useSet<string>();
+
+  const addValue = () => {
+    if (input.trim()) {
+      uniqueValues.add(input.trim());
+      setInput('');
+    }
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyPress={(e) => e.key === 'Enter' && addValue()}
+        placeholder="Enter a value"
+      />
+      <button onClick={addValue}>Add</button>
+      
+      <h3>Unique Values ({uniqueValues.size})</h3>
+      <ul>
+        {Array.from(uniqueValues).map((value) => (
+          <li key={value}>
+            {value}
+            <button onClick={() => uniqueValues.delete(value)}>Remove</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+type SetLike<T> = Iterable<T> | ReadonlySet<T> | Set<T>;
+
+export interface UseSetValue<T> extends Set<T> {
+  union<U>(other: SetLike<U>): Set<T | U>;
+  intersection<U>(other: SetLike<U>): Set<T & U>;
+  difference<U>(other: SetLike<U>): Set<T>;
+  symmetricDifference<U>(other: SetLike<U>): Set<T | U>;
+}
+```
+
+## Notes
+
+- The Set instance is stable across renders
+- Mutating methods (`add`, `delete`, `clear`) trigger re-renders
+- Set operation methods (`union`, `intersection`, etc.) return new Sets without mutating the original
+- All standard Set methods are available

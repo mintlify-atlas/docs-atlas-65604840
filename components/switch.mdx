@@ -1,0 +1,223 @@
+---
+title: Switch
+description: A toggle switch component for boolean on/off states with smooth animations.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+## Usage
+
+```tsx
+import { Switch } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function App() {
+  return (
+    <Label className="flex items-center gap-2">
+      <Switch aria-label="Toggle feature" />
+      Enable feature
+    </Label>
+  );
+}
+```
+
+## Examples
+
+### Controlled Switch
+
+Manage switch state with React.
+
+```tsx
+import { Switch } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+import { useState } from "react";
+
+function ControlledExample() {
+  const [enforceSso, setEnforceSso] = useState(false);
+
+  return (
+    <div className="grid gap-2">
+      <Label className="flex items-center gap-2" htmlFor="enforce-sso">
+        <Switch
+          checked={enforceSso}
+          id="enforce-sso"
+          onCheckedChange={setEnforceSso}
+        />
+        Enforce SSO for all collaborators
+      </Label>
+      <p className="text-muted-foreground text-sm">
+        {enforceSso
+          ? "Password login is disabled for this workspace."
+          : "Members can still sign in with local credentials."}
+      </p>
+    </div>
+  );
+}
+```
+
+### Default Checked
+
+Set initial state using `defaultChecked`.
+
+```tsx
+import { Switch } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function DefaultCheckedExample() {
+  return (
+    <Label className="flex items-center gap-2">
+      <Switch defaultChecked aria-label="Alert routing" />
+      Route high-priority alerts to on-call channel
+    </Label>
+  );
+}
+```
+
+### Sizes
+
+Switches are available in five size variants.
+
+```tsx
+import { Switch } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function SizesExample() {
+  return (
+    <div className="grid gap-2">
+      <div className="flex items-center gap-2">
+        <Switch size="xs" defaultChecked />
+        <Label>XS density</Label>
+      </div>
+      <div className="flex items-center gap-2">
+        <Switch size="sm" defaultChecked />
+        <Label>SM density</Label>
+      </div>
+      <div className="flex items-center gap-2">
+        <Switch size="md" defaultChecked />
+        <Label>MD density</Label>
+      </div>
+      <div className="flex items-center gap-2">
+        <Switch size="lg" defaultChecked />
+        <Label>LG density</Label>
+      </div>
+      <div className="flex items-center gap-2">
+        <Switch size="xl" defaultChecked />
+        <Label>XL density</Label>
+      </div>
+    </div>
+  );
+}
+```
+
+### Disabled
+
+Disabled switches are non-interactive and visually muted.
+
+```tsx
+import { Switch } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function DisabledExample() {
+  return (
+    <Label className="flex items-center gap-2">
+      <Switch disabled aria-label="Locked setting" />
+      Allow external API tokens
+    </Label>
+  );
+}
+```
+
+### Custom Thumb
+
+Customize the switch thumb appearance.
+
+```tsx
+import { Switch } from "@kuzenbo/core";
+import { Label } from "@kuzenbo/core";
+
+function CustomThumbExample() {
+  return (
+    <Label className="flex items-center gap-2">
+      <Switch defaultChecked>
+        <Switch.Thumb>
+          <span className="sr-only">Custom thumb</span>
+        </Switch.Thumb>
+      </Switch>
+      Gradual feature rollout
+    </Label>
+  );
+}
+```
+
+## Props
+
+Switch extends Base UI Switch.Root props.
+
+<ParamField path="size" type="string" default="md">
+  Size variant of the switch.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="checked" type="boolean">
+  Controlled checked state of the switch.
+</ParamField>
+
+<ParamField path="defaultChecked" type="boolean" default="false">
+  Default checked state for uncontrolled usage.
+</ParamField>
+
+<ParamField path="onCheckedChange" type="(checked: boolean) => void">
+  Callback fired when the checked state changes.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the switch and makes it non-interactive.
+</ParamField>
+
+<ParamField path="aria-label" type="string">
+  Accessible label for the switch. Required when not using a visible label.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the switch.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Custom thumb content. Defaults to the standard thumb.
+</ParamField>
+
+## Subcomponents
+
+### Switch.Thumb
+
+The movable thumb element that slides when the switch is toggled.
+
+```tsx
+<Switch>
+  <Switch.Thumb />
+</Switch>
+```
+
+## TypeScript
+
+```tsx
+import type { SwitchProps, SwitchThumbProps } from "@kuzenbo/core";
+
+const CustomSwitch = (props: SwitchProps) => {
+  return <Switch {...props} />;
+};
+```
+
+## Accessibility
+
+- Switch uses semantic ARIA switch role
+- Supports keyboard navigation with Space and Enter to toggle
+- Properly announces on/off state to screen readers
+- Visual focus indicators for keyboard navigation
+- Disabled state prevents all interactions
+- Always provide an accessible label via `aria-label` or associated Label component

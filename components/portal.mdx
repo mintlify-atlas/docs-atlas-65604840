@@ -1,0 +1,171 @@
+---
+title: Portal
+description: Render children into a DOM node outside of the parent component hierarchy.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Portal } from "@kuzenbo/core";
+
+function Example() {
+  return (
+    <Portal>
+      <div className="fixed top-4 right-4 bg-background border rounded-lg p-4 shadow-lg">
+        This is rendered in a portal
+      </div>
+    </Portal>
+  );
+}
+```
+
+## Props
+
+<ParamField path="children" type="ReactNode" required>
+  The content to render in the portal.
+</ParamField>
+
+<ParamField path="target" type="HTMLElement | string | RefObject<HTMLElement>">
+  The target container. Can be:
+  - An HTMLElement
+  - A CSS selector string
+  - A React ref
+  If not provided, creates a new div appended to document.body.
+</ParamField>
+
+<ParamField path="reuseTargetNode" type="boolean" default="true">
+  If true, all portals share the same DOM node.
+</ParamField>
+
+<ParamField path="className" type="string">
+  CSS classes to apply to the portal container.
+</ParamField>
+
+<ParamField path="style" type="CSSProperties">
+  Inline styles to apply to the portal container.
+</ParamField>
+
+<ParamField path="id" type="string">
+  ID attribute for the portal container.
+</ParamField>
+
+## Examples
+
+### Basic Portal
+
+```tsx
+<Portal>
+  <div>Rendered at document.body</div>
+</Portal>
+```
+
+### Specific Target Element
+
+```tsx
+const targetRef = useRef<HTMLDivElement>(null);
+
+<>
+  <div ref={targetRef} id="portal-target" />
+  <Portal target={targetRef}>
+    <div>Rendered in the target element</div>
+  </Portal>
+</>
+```
+
+### Target by CSS Selector
+
+```tsx
+<Portal target="#modal-root">
+  <div>Rendered in #modal-root</div>
+</Portal>
+```
+
+### Separate Portal Nodes
+
+```tsx
+<Portal reuseTargetNode={false}>
+  <div>This gets its own portal container</div>
+</Portal>
+```
+
+### Styled Portal Container
+
+```tsx
+<Portal
+  className="portal-container"
+  style={{ zIndex: 9999 }}
+>
+  <div>Content with styled container</div>
+</Portal>
+```
+
+### Modal Dialog
+
+```tsx
+function Modal({ open, children }: { open: boolean; children: ReactNode }) {
+  if (!open) return null;
+
+  return (
+    <Portal>
+      <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
+        <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="bg-background border rounded-lg shadow-lg p-6">
+            {children}
+          </div>
+        </div>
+      </div>
+    </Portal>
+  );
+}
+```
+
+### Toast Notifications
+
+```tsx
+function ToastContainer() {
+  return (
+    <Portal>
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+        {toasts.map((toast) => (
+          <div key={toast.id} className="bg-background border rounded-lg p-4 shadow-lg">
+            {toast.message}
+          </div>
+        ))}
+      </div>
+    </Portal>
+  );
+}
+```
+
+### Floating UI Elements
+
+```tsx
+<Portal>
+  <div
+    className="fixed bg-popover border rounded-md shadow-md"
+    style={{
+      top: position.y,
+      left: position.x,
+    }}
+  >
+    Floating content
+  </div>
+</Portal>
+```
+
+### Conditional Portal
+
+```tsx
+function ConditionalPortal({ usePortal, children }: { usePortal: boolean; children: ReactNode }) {
+  if (usePortal) {
+    return <Portal>{children}</Portal>;
+  }
+  return <>{children}</>;
+}
+```

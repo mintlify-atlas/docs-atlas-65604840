@@ -1,0 +1,298 @@
+---
+title: "useScrollSpy"
+description: "Build heading metadata from the DOM and track which section is active for table-of-contents navigation."
+---
+
+## Overview
+
+`useScrollSpy` builds heading metadata from the DOM and tracks which heading is closest to a viewport offset. Useful for table-of-contents UIs that need an active section indicator while scrolling.
+
+## Installation
+
+```npm
+npm i @kuzenbo/hooks
+```
+
+## Import
+
+```tsx
+import { useScrollSpy } from "@kuzenbo/hooks";
+```
+
+## Usage
+
+### Basic Table of Contents
+
+```tsx
+import { useScrollSpy } from "@kuzenbo/hooks";
+
+export function TableOfContents() {
+  const { data, active } = useScrollSpy();
+
+  return (
+    <nav className="sticky top-4 p-4 border rounded-lg">
+      <h3 className="font-semibold mb-2">Table of Contents</h3>
+      <ul className="space-y-1">
+        {data.map((heading, index) => (
+          <li key={heading.id}>
+            <a
+              href={`#${heading.id}`}
+              className={`block py-1 text-sm ${
+                active === index
+                  ? "text-primary font-medium"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              style={{ paddingLeft: `${(heading.depth - 1) * 0.75}rem` }}
+            >
+              {heading.value}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+```
+
+### Custom Selector
+
+```tsx
+import { useScrollSpy } from "@kuzenbo/hooks";
+
+export function CustomSelectorScrollSpy() {
+  const { data, active, initialized } = useScrollSpy({
+    selector: "h2, h3",
+    offset: 100,
+  });
+
+  if (!initialized) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <aside className="w-64">
+      <ul className="space-y-2">
+        {data.map((heading, index) => (
+          <li key={heading.id}>
+            <a
+              href={`#${heading.id}`}
+              className={`block ${
+                active === index ? "text-primary" : "text-foreground"
+              }`}
+            >
+              {heading.value}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
+}
+```
+
+### With Custom Scroll Container
+
+```tsx
+import { useScrollSpy } from "@kuzenbo/hooks";
+import { useRef } from "react";
+
+export function ScrollContainerSpy() {
+  const scrollHostRef = useRef<HTMLDivElement>(null);
+  const { data, active } = useScrollSpy({
+    scrollHost: scrollHostRef.current,
+    offset: 50,
+  });
+
+  return (
+    <div className="flex gap-4">
+      <nav className="w-48">
+        <ul className="space-y-1">
+          {data.map((heading, index) => (
+            <li key={heading.id}>
+              <a
+                href={`#${heading.id}`}
+                className={active === index ? "text-primary font-medium" : "text-muted-foreground"}
+              >
+                {heading.value}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div
+        ref={scrollHostRef}
+        className="flex-1 h-96 overflow-auto border rounded-lg p-4"
+      >
+        {/* Your content with h1-h6 elements */}
+      </div>
+    </div>
+  );
+}
+```
+
+### Custom Depth and Value Extraction
+
+```tsx
+import { useScrollSpy } from "@kuzenbo/hooks";
+
+export function CustomExtractionScrollSpy() {
+  const { data, active } = useScrollSpy({
+    selector: "[data-heading]",
+    getDepth: (element) => Number(element.getAttribute("data-level") || 1),
+    getValue: (element) => element.getAttribute("data-label") || element.textContent || "",
+  });
+
+  return (
+    <nav>
+      <ul>
+        {data.map((heading, index) => (
+          <li
+            key={heading.id}
+            className={active === index ? "font-bold" : ""}
+          >
+            <a href={`#${heading.id}`}>{heading.value}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+```
+
+### Reinitialize on Content Change
+
+```tsx
+import { useScrollSpy } from "@kuzenbo/hooks";
+import { useEffect } from "react";
+
+export function DynamicContentScrollSpy({ content }: { content: string }) {
+  const { data, active, reinitialize } = useScrollSpy();
+
+  useEffect(() => {
+    // Reinitialize when content changes
+    reinitialize();
+  }, [content, reinitialize]);
+
+  return (
+    <nav>
+      <ul>
+        {data.map((heading, index) => (
+          <li key={heading.id}>
+            <a
+              href={`#${heading.id}`}
+              className={active === index ? "text-primary" : "text-foreground"}
+            >
+              {heading.value}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+```
+
+## API Reference
+
+```tsx
+function useScrollSpy(
+  options?: UseScrollSpyOptions
+): UseScrollSpyReturnValue
+```
+
+<ParamField path="options" type="UseScrollSpyOptions">
+  Scroll spy configuration
+
+  <ParamField path="options.selector" type="string" default="h1, h2, h3, h4, h5, h6">
+    CSS selector used to find heading elements
+  </ParamField>
+
+  <ParamField path="options.getDepth" type="(element: HTMLElement) => number">
+    Function that maps each heading element to its depth level. Defaults to reading tag name (h1=1, h2=2, etc.)
+  </ParamField>
+
+  <ParamField path="options.getValue" type="(element: HTMLElement) => string">
+    Function that maps each heading element to the displayed label. Defaults to `textContent`
+  </ParamField>
+
+  <ParamField path="options.offset" type="number" default={0}>
+    Vertical offset used when calculating the active heading
+  </ParamField>
+
+  <ParamField path="options.scrollHost" type="HTMLElement">
+    Scroll container to listen on; defaults to `window`
+  </ParamField>
+</ParamField>
+
+<ResponseField name="active" type="number">
+  Index of the active heading in the `data` array (-1 if none)
+</ResponseField>
+
+<ResponseField name="data" type="UseScrollSpyHeadingData[]">
+  Array of heading metadata objects
+
+  <ResponseField name="depth" type="number">
+    Heading depth (1-6)
+  </ResponseField>
+
+  <ResponseField name="value" type="string">
+    Heading text content
+  </ResponseField>
+
+  <ResponseField name="id" type="string">
+    Heading ID (auto-generated if missing)
+  </ResponseField>
+
+  <ResponseField name="getNode" type="() => HTMLElement">
+    Function to get the heading DOM node
+  </ResponseField>
+</ResponseField>
+
+<ResponseField name="initialized" type="boolean">
+  `true` if headings have been retrieved from the DOM
+</ResponseField>
+
+<ResponseField name="reinitialize" type="() => void">
+  Function to update headings after DOM changes
+</ResponseField>
+
+## Type Definitions
+
+```tsx
+interface UseScrollSpyHeadingData {
+  depth: number;
+  value: string;
+  id: string;
+  getNode: () => HTMLElement;
+}
+
+interface UseScrollSpyOptions {
+  selector?: string;
+  getDepth?: (element: HTMLElement) => number;
+  getValue?: (element: HTMLElement) => string;
+  scrollHost?: HTMLElement;
+  offset?: number;
+}
+
+interface UseScrollSpyReturnValue {
+  active: number;
+  data: UseScrollSpyHeadingData[];
+  initialized: boolean;
+  reinitialize: () => void;
+}
+```
+
+## Caveats
+
+- Automatically generates IDs for headings that don't have one
+- Uses `CSS.escape` for safe ID querying when available
+- Active heading is determined by closest distance to offset
+- Initializes on mount and listens to scroll events
+- Call `reinitialize()` if DOM structure changes after mount
+
+## SSR and RSC Notes
+
+- Use this hook in Client Components only
+- Do not call it from React Server Components
+- Requires DOM access to query headings

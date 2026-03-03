@@ -1,0 +1,212 @@
+---
+title: Announcement
+description: Highlight product updates, new features, and important announcements with a compact badge-style component.
+---
+
+<ComponentPreview name="announcement-default" />
+
+## Installation
+
+<Tabs>
+  <Tab title="CLI">
+    ```bash
+    npx @kuzenbo/cli add announcement
+    ```
+  </Tab>
+  <Tab title="Manual">
+    Install the required dependencies:
+
+    ```bash
+    npm install @kuzenbo/core
+    ```
+
+    Copy the component source:
+
+    <Accordion title="announcement.tsx">
+      ```tsx
+      // See source at packages/core/src/ui/announcement/
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Announcement } from "@kuzenbo/core";
+
+export default function Example() {
+  return (
+    <Announcement>
+      <Announcement.Tag>New</Announcement.Tag>
+      <Announcement.Title>Introducing dark mode</Announcement.Title>
+    </Announcement>
+  );
+}
+```
+
+## Examples
+
+### With Tag
+
+Add a tag to categorize the announcement.
+
+```tsx
+<Announcement>
+  <Announcement.Tag>v2.0</Announcement.Tag>
+  <Announcement.Title>Major update available</Announcement.Title>
+</Announcement>
+```
+
+### As Link
+
+Make the entire announcement clickable.
+
+```tsx
+<Announcement asChild>
+  <a href="/changelog">
+    <Announcement.Tag>Release</Announcement.Tag>
+    <Announcement.Title>See what's new in v3.0</Announcement.Title>
+  </a>
+</Announcement>
+```
+
+### Themed Variant
+
+Use the themed prop for a distinct visual style.
+
+```tsx
+<Announcement themed>
+  <Announcement.Tag>Beta</Announcement.Tag>
+  <Announcement.Title>Try our new AI features</Announcement.Title>
+</Announcement>
+```
+
+### Badge Variants
+
+Since Announcement extends Badge, it supports all badge variants.
+
+```tsx
+<Announcement variant="default">
+  <Announcement.Tag>Update</Announcement.Tag>
+  <Announcement.Title>Security patch released</Announcement.Title>
+</Announcement>
+
+<Announcement variant="secondary">
+  <Announcement.Tag>Info</Announcement.Tag>
+  <Announcement.Title>Scheduled maintenance tonight</Announcement.Title>
+</Announcement>
+
+<Announcement variant="outline">
+  <Announcement.Tag>New</Announcement.Tag>
+  <Announcement.Title>Dark mode is now available</Announcement.Title>
+</Announcement>
+```
+
+### With Icon
+
+Include an icon for visual emphasis.
+
+```tsx
+<Announcement>
+  <Announcement.Tag>🎉 Launch</Announcement.Tag>
+  <Announcement.Title>We just shipped v2.0</Announcement.Title>
+</Announcement>
+```
+
+### Multiple Announcements
+
+Stack multiple announcements.
+
+```tsx
+<div className="flex flex-col gap-2">
+  <Announcement>
+    <Announcement.Tag>New</Announcement.Tag>
+    <Announcement.Title>Dashboard redesign</Announcement.Title>
+  </Announcement>
+  
+  <Announcement>
+    <Announcement.Tag>Update</Announcement.Tag>
+    <Announcement.Title>Performance improvements</Announcement.Title>
+  </Announcement>
+  
+  <Announcement>
+    <Announcement.Tag>Fix</Announcement.Tag>
+    <Announcement.Title>Bug fixes and stability</Announcement.Title>
+  </Announcement>
+</div>
+```
+
+### Hero Banner
+
+Use in hero sections or page headers.
+
+```tsx
+<div className="text-center space-y-4">
+  <Announcement className="inline-flex">
+    <Announcement.Tag>Announcing</Announcement.Tag>
+    <Announcement.Title>Next.js 15 support →</Announcement.Title>
+  </Announcement>
+  
+  <h1 className="text-4xl font-bold">Build faster with Kuzenbo</h1>
+</div>
+```
+
+## API Reference
+
+### Announcement
+
+Extends Badge component with announcement-specific styling.
+
+<ParamField path="variant" type="string" default="outline">
+  Badge variant.
+  
+  Options: `"default"` | `"secondary"` | `"outline"` | `"ghost"`
+</ParamField>
+
+<ParamField path="themed" type="boolean" default="false">
+  Apply themed styling with gradient background.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+<ParamField path="asChild" type="boolean" default="false">
+  Render as a child element (useful for links).
+</ParamField>
+
+### Announcement.Tag
+
+Highlighted tag/label portion of the announcement.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Announcement.Title
+
+Main title/content of the announcement.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Accessibility
+
+- When used as a link, ensure the entire announcement is keyboard accessible
+- Use semantic HTML (`<a>` for links, `<button>` for actions)
+- Provide clear, concise announcement text
+- Ensure sufficient color contrast
+- Consider `aria-label` if the announcement needs additional context
+
+## Best Practices
+
+- Keep announcement text short and scannable
+- Use tags to categorize or label the type of announcement
+- Place prominently but don't obstruct critical content
+- Link to detailed changelog or documentation
+- Update or remove announcements when no longer relevant
+- Use themed variant sparingly for maximum impact
+- Consider dismissible announcements for non-critical updates
+- Group related announcements together

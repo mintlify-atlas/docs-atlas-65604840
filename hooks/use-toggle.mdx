@@ -1,0 +1,125 @@
+---
+title: useToggle
+description: Cycles through an ordered list of values with a function to move to the next value
+---
+
+## Overview
+
+Cycles through an ordered list of values and exposes the current value with a function to move to the next value or to a specific target value. When `options` is not provided, it behaves like a boolean toggle between `false` and `true`.
+
+## Import
+
+```tsx
+import { useToggle } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useToggle<T = boolean>(
+  options?: readonly T[]
+): UseToggleReturnValue<T>;
+```
+
+## Parameters
+
+<ParamField path="options" type="readonly T[]">
+  Ordered values to cycle through. When not provided, defaults to `[false, true]`
+</ParamField>
+
+## Return Value
+
+<ResponseField name="[value, toggle]" type="UseToggleReturnValue<T>">
+  A tuple containing the current value and toggle function
+  
+  <ResponseField name="value" type="T">
+    Current value from the options list
+  </ResponseField>
+  
+  <ResponseField name="toggle" type="(value?: SetStateAction<T>) => void">
+    Function to cycle to the next value or set a specific value
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Boolean Toggle
+
+```tsx
+import { useToggle } from '@kuzenbo/hooks';
+
+function ThemeToggle() {
+  const [isDark, toggle] = useToggle();
+
+  return (
+    <button onClick={() => toggle()}>
+      Current theme: {isDark ? 'Dark' : 'Light'}
+    </button>
+  );
+}
+```
+
+### Cycling Through Multiple Values
+
+```tsx
+import { useToggle } from '@kuzenbo/hooks';
+
+function ColorSelector() {
+  const [color, toggleColor] = useToggle(['red', 'green', 'blue'] as const);
+
+  return (
+    <div>
+      <div style={{ backgroundColor: color, width: 100, height: 100 }} />
+      <button onClick={() => toggleColor()}>Next Color</button>
+    </div>
+  );
+}
+```
+
+### Set Specific Value
+
+```tsx
+import { useToggle } from '@kuzenbo/hooks';
+
+function ViewModeSelector() {
+  const [view, setView] = useToggle(['grid', 'list', 'table'] as const);
+
+  return (
+    <div>
+      <p>Current view: {view}</p>
+      <button onClick={() => setView('grid')}>Grid</button>
+      <button onClick={() => setView('list')}>List</button>
+      <button onClick={() => setView('table')}>Table</button>
+    </div>
+  );
+}
+```
+
+### With Updater Function
+
+```tsx
+import { useToggle } from '@kuzenbo/hooks';
+
+function StatusToggle() {
+  const [status, toggleStatus] = useToggle(['idle', 'loading', 'success', 'error'] as const);
+
+  return (
+    <div>
+      <p>Status: {status}</p>
+      <button onClick={() => toggleStatus((current) => 
+        current === 'error' ? 'idle' : 'loading'
+      )}>
+        Update Status
+      </button>
+    </div>
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+type ToggleState<T> = [T, ...T[]];
+type UseToggleAction<T> = (value?: SetStateAction<T>) => void;
+export type UseToggleReturnValue<T> = [T, UseToggleAction<T>];
+```

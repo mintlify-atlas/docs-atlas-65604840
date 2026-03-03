@@ -1,0 +1,176 @@
+---
+title: Progress
+description: Display progress for determinate tasks with customizable indicators and labels.
+---
+
+<ComponentPreview name="progress-default" />
+
+## Installation
+
+<Tabs>
+  <Tab title="CLI">
+    ```bash
+    npx @kuzenbo/cli add progress
+    ```
+  </Tab>
+  <Tab title="Manual">
+    Install the required dependencies:
+
+    ```bash
+    npm install @kuzenbo/core @base-ui/react
+    ```
+
+    Copy the component source:
+
+    <Accordion title="progress.tsx">
+      ```tsx
+      // See source at packages/core/src/ui/progress/
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Progress } from "@kuzenbo/core";
+
+export default function Example() {
+  return <Progress value={60} />;
+}
+```
+
+## Examples
+
+### With Label
+
+Add a descriptive label to the progress bar.
+
+```tsx
+<Progress value={45}>
+  <Progress.Label>Uploading files...</Progress.Label>
+</Progress>
+```
+
+### With Value Display
+
+Show the current progress value.
+
+```tsx
+<Progress value={75}>
+  <Progress.Label>Download progress</Progress.Label>
+  <Progress.Value />
+</Progress>
+```
+
+### Custom Composition
+
+Build custom progress layouts using sub-components.
+
+```tsx
+<Progress value={60}>
+  <div className="flex items-center justify-between">
+    <Progress.Label>Processing</Progress.Label>
+    <Progress.Value />
+  </div>
+  <Progress.Track>
+    <Progress.Indicator />
+  </Progress.Track>
+</Progress>
+```
+
+### Indeterminate State
+
+Omit the `value` prop for indeterminate progress.
+
+```tsx
+<Progress>
+  <Progress.Label>Loading...</Progress.Label>
+</Progress>
+```
+
+### Min and Max Values
+
+Define custom value ranges.
+
+```tsx
+<Progress value={250} min={0} max={500}>
+  <Progress.Label>Custom range (0-500)</Progress.Label>
+  <Progress.Value />
+</Progress>
+```
+
+## API Reference
+
+### Progress
+
+Based on Base UI Progress component.
+
+<ParamField path="value" type="number">
+  Current progress value. Omit for indeterminate state.
+</ParamField>
+
+<ParamField path="min" type="number" default="0">
+  Minimum value.
+</ParamField>
+
+<ParamField path="max" type="number" default="100">
+  Maximum value.
+</ParamField>
+
+<ParamField path="getValueLabel" type="(value: number, max: number) => string">
+  Function to format the value label.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Progress.Track
+
+The track container for the progress indicator.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Progress.Indicator
+
+The visual indicator showing progress.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Progress.Label
+
+Descriptive label for the progress bar.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Progress.Value
+
+Displays the current progress value.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Accessibility
+
+- Uses `role="progressbar"` for proper semantics
+- Announces current value to screen readers
+- `aria-valuemin`, `aria-valuemax`, and `aria-valuenow` are set automatically
+- `aria-valuetext` can be customized with `getValueLabel`
+- Indeterminate state is properly announced
+
+## Best Practices
+
+- Use determinate progress when you know the total
+- Use indeterminate progress for unknown durations
+- Always provide a descriptive label
+- Show percentage for user-uploaded content
+- Update progress smoothly to avoid jarring jumps
+- Consider showing estimated time remaining for long operations

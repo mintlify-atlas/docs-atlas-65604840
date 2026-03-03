@@ -1,0 +1,220 @@
+---
+title: usePagination
+description: Builds pagination state and helpers for controlled or uncontrolled page navigation
+---
+
+## Usage
+
+Builds pagination state and helpers for controlled or uncontrolled page navigation. Generates a range array with page numbers and ellipsis dots, and provides navigation functions.
+
+```tsx
+import { usePagination } from '@kuzenbo/hooks';
+
+function Demo() {
+  const pagination = usePagination({ total: 10 });
+
+  return (
+    <div>
+      <div>
+        {pagination.range.map((page, index) => (
+          <button
+            key={index}
+            onClick={() => typeof page === 'number' && pagination.setPage(page)}
+            disabled={page === 'dots' || page === pagination.active}
+          >
+            {page === 'dots' ? '...' : page}
+          </button>
+        ))}
+      </div>
+      <p>Active page: {pagination.active}</p>
+    </div>
+  );
+}
+```
+
+## With navigation controls
+
+Use the provided navigation helpers:
+
+```tsx
+import { usePagination } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { range, active, setPage, next, previous, first, last } = usePagination({
+    total: 20,
+    siblings: 1,
+    boundaries: 1,
+  });
+
+  return (
+    <div>
+      <button onClick={first}>First</button>
+      <button onClick={previous}>Previous</button>
+      
+      {range.map((page, index) => (
+        <button
+          key={index}
+          onClick={() => typeof page === 'number' && setPage(page)}
+          disabled={page === 'dots' || page === active}
+        >
+          {page === 'dots' ? '...' : page}
+        </button>
+      ))}
+      
+      <button onClick={next}>Next</button>
+      <button onClick={last}>Last</button>
+    </div>
+  );
+}
+```
+
+## Controlled pagination
+
+Control the active page externally:
+
+```tsx
+import { usePagination } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [page, setPage] = useState(1);
+  const pagination = usePagination({
+    total: 15,
+    page,
+    onChange: setPage,
+  });
+
+  return (
+    <div>
+      <p>Current page: {page}</p>
+      {pagination.range.map((item, index) => (
+        <button
+          key={index}
+          onClick={() => typeof item === 'number' && setPage(item)}
+          disabled={item === 'dots' || item === page}
+        >
+          {item === 'dots' ? '...' : item}
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+## Custom start value
+
+Start pagination from a custom number:
+
+```tsx
+import { usePagination } from '@kuzenbo/hooks';
+
+function Demo() {
+  const pagination = usePagination({
+    total: 10,
+    startValue: 0, // Pages: 0, 1, 2, ..., 9
+  });
+
+  return (
+    <div>
+      {pagination.range.map((page, index) => (
+        <button
+          key={index}
+          onClick={() => typeof page === 'number' && pagination.setPage(page)}
+        >
+          {page === 'dots' ? '...' : page}
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+## Definition
+
+```tsx
+interface UsePaginationOptions {
+  initialPage?: number;
+  page?: number;
+  total: number;
+  siblings?: number;
+  boundaries?: number;
+  onChange?: (page: number) => void;
+  startValue?: number;
+}
+
+interface UsePaginationReturnValue {
+  range: (number | 'dots')[];
+  active: number;
+  setPage: (page: number) => void;
+  next: () => void;
+  previous: () => void;
+  first: () => void;
+  last: () => void;
+}
+
+function usePagination(
+  options: UsePaginationOptions
+): UsePaginationReturnValue
+```
+
+### Parameters
+
+<ParamField path="options" type="UsePaginationOptions">
+  <ParamField path="total" type="number" required>
+    Total number of pages
+  </ParamField>
+  
+  <ParamField path="page" type="number" optional>
+    Controlled active page
+  </ParamField>
+  
+  <ParamField path="initialPage" type="number" optional>
+    Initial active page for uncontrolled usage
+  </ParamField>
+  
+  <ParamField path="startValue" type="number" default={1}>
+    First page number, defaults to `1`
+  </ParamField>
+  
+  <ParamField path="siblings" type="number" default={1}>
+    Number of sibling pages shown around the active page
+  </ParamField>
+  
+  <ParamField path="boundaries" type="number" default={1}>
+    Number of page items always shown at each edge
+  </ParamField>
+  
+  <ParamField path="onChange" type="(page: number) => void" optional>
+    Called whenever the active page changes
+  </ParamField>
+</ParamField>
+
+### Returns
+
+<ResponseField name="range" type="(number | 'dots')[]">
+  Array of page numbers and dots for rendering pagination
+</ResponseField>
+
+<ResponseField name="active" type="number">
+  Current active page number
+</ResponseField>
+
+<ResponseField name="setPage" type="(page: number) => void">
+  Function to set active page
+</ResponseField>
+
+<ResponseField name="next" type="() => void">
+  Function to go to next page
+</ResponseField>
+
+<ResponseField name="previous" type="() => void">
+  Function to go to previous page
+</ResponseField>
+
+<ResponseField name="first" type="() => void">
+  Function to go to first page
+</ResponseField>
+
+<ResponseField name="last" type="() => void">
+  Function to go to last page
+</ResponseField>

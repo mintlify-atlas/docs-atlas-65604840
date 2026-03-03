@@ -1,0 +1,280 @@
+---
+title: useOrientation
+description: Track screen orientation angle and type
+---
+
+Returns screen orientation angle and type and keeps them in sync with orientation changes.
+
+## Usage
+
+```tsx
+import { useOrientation } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { angle, type } = useOrientation();
+
+  return (
+    <div>
+      <p>Angle: {angle}°</p>
+      <p>Type: {type}</p>
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useOrientation(
+  options?: UseOrientationOptions
+): UseOrientationReturnType
+
+interface UseOrientationReturnType {
+  angle: number;
+  type: OrientationType;
+}
+
+type OrientationType =
+  | 'portrait-primary'
+  | 'portrait-secondary'
+  | 'landscape-primary'
+  | 'landscape-secondary'
+```
+
+## Parameters
+
+<ParamField path="options" type="UseOrientationOptions" optional>
+  Configuration for initial fallback values and SSR-safe initialization behavior.
+
+  <ParamField path="options.defaultAngle" type="number" optional>
+    Angle used before browser orientation data is available. Defaults to `0`.
+  </ParamField>
+
+  <ParamField path="options.defaultType" type="OrientationType" optional>
+    Orientation type used before browser orientation data is available. Defaults to `'landscape-primary'`.
+  </ParamField>
+
+  <ParamField path="options.getInitialValueInEffect" type="boolean" optional>
+    If `true`, resolve the initial value in an effect for SSR safety. Defaults to `true`.
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+<ResponseField name="angle" type="number">
+  Current screen orientation angle in degrees. Values: `0`, `90`, `180`, or `270`.
+</ResponseField>
+
+<ResponseField name="type" type="OrientationType">
+  Current screen orientation type. Possible values:
+  - `'portrait-primary'` - Normal portrait mode
+  - `'portrait-secondary'` - Upside-down portrait mode
+  - `'landscape-primary'` - Normal landscape mode
+  - `'landscape-secondary'` - Upside-down landscape mode
+</ResponseField>
+
+## Examples
+
+### Basic Orientation Display
+
+```tsx
+import { useOrientation } from '@kuzenbo/hooks';
+
+function OrientationInfo() {
+  const { angle, type } = useOrientation();
+
+  return (
+    <div>
+      <h2>Device Orientation</h2>
+      <p>Angle: {angle}°</p>
+      <p>Type: {type}</p>
+      <p>Mode: {type.includes('portrait') ? 'Portrait' : 'Landscape'}</p>
+    </div>
+  );
+}
+```
+
+### Rotation Warning
+
+```tsx
+import { useOrientation } from '@kuzenbo/hooks';
+
+function RotateDeviceWarning({ children }) {
+  const { type } = useOrientation();
+
+  if (type.includes('portrait')) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <p>📱 Please rotate your device to landscape mode for the best experience.</p>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+```
+
+### Adaptive Layout
+
+```tsx
+import { useOrientation } from '@kuzenbo/hooks';
+
+function AdaptiveGame() {
+  const { type } = useOrientation();
+
+  const isPortrait = type.includes('portrait');
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: isPortrait ? 'column' : 'row',
+      }}
+    >
+      <div style={{ flex: 1 }}>Game Canvas</div>
+      <div style={{ flex: isPortrait ? 0 : 1 }}>Controls</div>
+    </div>
+  );
+}
+```
+
+### Orientation Lock Prompt
+
+```tsx
+import { useOrientation } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function VideoPlayer() {
+  const { type } = useOrientation();
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const lockOrientation = async () => {
+    try {
+      await screen.orientation.lock('landscape-primary');
+      setIsFullscreen(true);
+    } catch (error) {
+      console.error('Orientation lock failed:', error);
+    }
+  };
+
+  return (
+    <div>
+      <video controls />
+      {!isFullscreen && type.includes('portrait') && (
+        <button onClick={lockOrientation}>
+          Enter Fullscreen (Landscape)
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+### Orientation-Based Styling
+
+```tsx
+import { useOrientation } from '@kuzenbo/hooks';
+
+function OrientationCard() {
+  const { angle } = useOrientation();
+
+  return (
+    <div
+      style={{
+        transform: `rotate(${-angle}deg)`,
+        transition: 'transform 0.3s ease',
+      }}
+    >
+      This content always stays upright
+    </div>
+  );
+}
+```
+
+### Orientation Event Logger
+
+```tsx
+import { useOrientation } from '@kuzenbo/hooks';
+import { useEffect, useState } from 'react';
+
+function OrientationLogger() {
+  const orientation = useOrientation();
+  const [log, setLog] = useState<string[]>([]);
+
+  useEffect(() => {
+    setLog((prev) => [
+      `${new Date().toLocaleTimeString()}: ${orientation.type} (${orientation.angle}°)`,
+      ...prev.slice(0, 9),
+    ]);
+  }, [orientation.type, orientation.angle]);
+
+  return (
+    <div>
+      <h3>Orientation Changes</h3>
+      <ul>
+        {log.map((entry, i) => (
+          <li key={i}>{entry}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### Conditional Camera Mode
+
+```tsx
+import { useOrientation } from '@kuzenbo/hooks';
+
+function CameraApp() {
+  const { type } = useOrientation();
+
+  const cameraMode = type.includes('portrait') ? 'photo' : 'panorama';
+
+  return (
+    <div>
+      <h2>Camera Mode: {cameraMode}</h2>
+      {cameraMode === 'photo' ? (
+        <PhotoCamera />
+      ) : (
+        <PanoramaCamera />
+      )}
+    </div>
+  );
+}
+```
+
+### Reading Experience Optimizer
+
+```tsx
+import { useOrientation } from '@kuzenbo/hooks';
+
+function ReadingApp() {
+  const { type } = useOrientation();
+
+  const isPortrait = type.includes('portrait');
+
+  return (
+    <article
+      style={{
+        maxWidth: isPortrait ? '100%' : '800px',
+        fontSize: isPortrait ? '16px' : '18px',
+        lineHeight: isPortrait ? 1.5 : 1.7,
+        padding: isPortrait ? '16px' : '32px',
+      }}
+    >
+      <h1>Article Title</h1>
+      <p>Article content...</p>
+    </article>
+  );
+}
+```
+
+## Notes
+
+- Requires browser support for Screen Orientation API
+- Supported in most modern browsers on mobile devices
+- May not work in desktop browsers where orientation doesn't change
+- The hook listens to the `change` event on `screen.orientation`
+- Default values are used until the real orientation is retrieved
+- Useful for responsive designs and device-specific features

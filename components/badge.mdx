@@ -1,0 +1,151 @@
+---
+title: Badge
+description: Display status indicators, labels, and metadata with semantic color variants
+---
+
+The Badge component displays compact status information, labels, or metadata. It supports multiple semantic variants and sizes, with Base UI render prop composition.
+
+## Import
+
+```tsx
+import { Badge } from "@kuzenbo/core";
+```
+
+## Usage
+
+```tsx
+<Badge>Active contract</Badge>
+<Badge variant="success">Invoice paid</Badge>
+<Badge variant="warning">Renewal in 14 days</Badge>
+<Badge variant="danger">Payment failed</Badge>
+```
+
+## Props
+
+<ParamField path="variant" type="'default' | 'secondary' | 'outline' | 'ghost' | 'link' | 'success' | 'warning' | 'info' | 'danger'" default="default">
+  The semantic variant that determines the badge's color scheme.
+  
+  - `default` - Primary brand color
+  - `secondary` - Secondary brand color
+  - `outline` - Outlined with border
+  - `ghost` - Subtle background on hover
+  - `link` - Text with underline on hover
+  - `success` - Green for positive states
+  - `warning` - Yellow/orange for cautionary states
+  - `info` - Blue for informational states
+  - `danger` - Red for error or critical states
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="md">
+  Controls the badge size, affecting height, padding, and text size.
+  
+  - `xs` - Height 4 (16px), text 0.65rem
+  - `sm` - Height 5 (20px), text xs
+  - `md` - Height 6 (24px), text xs
+  - `lg` - Height 7 (28px), text sm
+  - `xl` - Height 8 (32px), text base
+</ParamField>
+
+<ParamField path="render" type="function">
+  Base UI render prop for custom element composition. Receives props and state.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the badge.
+</ParamField>
+
+## Examples
+
+### Variants
+
+All available badge variants:
+
+```tsx
+<div className="flex flex-wrap gap-2">
+  <Badge>Enterprise account</Badge>
+  <Badge variant="secondary">Pilot workspace</Badge>
+  <Badge variant="outline">Contract pending</Badge>
+  <Badge variant="success">SLA healthy</Badge>
+  <Badge variant="warning">Usage at 90%</Badge>
+  <Badge variant="info">Sync in progress</Badge>
+  <Badge variant="danger">Action required</Badge>
+  <Badge variant="ghost">Draft</Badge>
+  <Badge variant="link">View details</Badge>
+</div>
+```
+
+### Sizes
+
+Badges in all available sizes:
+
+```tsx
+<div className="flex items-center gap-2">
+  <Badge size="xs">XS</Badge>
+  <Badge size="sm">SM</Badge>
+  <Badge size="md">MD</Badge>
+  <Badge size="lg">LG</Badge>
+  <Badge size="xl">XL</Badge>
+</div>
+```
+
+### With icons
+
+Badges can contain icons using data attributes for positioning:
+
+```tsx
+import { CheckCircleIcon } from "@hugeicons/react";
+
+<Badge variant="success">
+  <CheckCircleIcon data-icon="inline-start" className="size-3" />
+  Verified
+</Badge>
+```
+
+### As link
+
+Use the render prop to create interactive badges:
+
+```tsx
+<Badge
+  variant="link"
+  render={(props) => <a href="/profile" {...props} />}
+>
+  View profile
+</Badge>
+```
+
+### Custom styling
+
+Override default styles with className:
+
+```tsx
+<Badge className="font-mono uppercase tracking-wider">
+  API-KEY
+</Badge>
+```
+
+## Data Attributes
+
+- `[data-size]` - Reflects the current size (xs, sm, md, lg, xl)
+- `[data-slot]` - Always "badge"
+- `[data-variant]` - Reflects the current variant
+- `[data-icon="inline-start"]` - Applied to leading icons for spacing
+- `[data-icon="inline-end"]` - Applied to trailing icons for spacing
+
+## Accessibility
+
+- Uses semantic `<span>` element by default
+- Can be customized to any element via render prop
+- Supports `aria-invalid` for error states
+- Focus visible states with ring for interactive badges
+- Sufficient color contrast for all variants
+
+## Composition
+
+The Badge uses Base UI's `useRender` hook for flexible composition. You can render it as any element:
+
+```tsx
+<Badge render={(props) => <button type="button" {...props} />}>
+  Clickable badge
+</Badge>
+```

@@ -1,0 +1,305 @@
+---
+title: useQueue
+description: Manages a fixed-size active list with overflow queue
+---
+
+## Overview
+
+Keeps a fixed-size active list and stores overflow items in a secondary queue. Added values are appended in order, then split into `state` (up to `limit`) and `queue` (the rest).
+
+## Import
+
+```tsx
+import { useQueue } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useQueue<T>(
+  options: UseQueueOptions<T>
+): UseQueueReturnValue<T>;
+```
+
+## Parameters
+
+<ParamField path="options" type="UseQueueOptions<T>" required>
+  Queue configuration
+  
+  <ParamField path="options.initialValues" type="T[]">
+    Initial values to seed the active `state` and overflow `queue`
+  </ParamField>
+  
+  <ParamField path="options.limit" type="number" required>
+    Maximum number of items kept in `state`
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+<ResponseField name="queueManager" type="UseQueueReturnValue<T>">
+  Object containing queue state and manipulation functions
+  
+  <ResponseField name="state" type="T[]">
+    Active items (up to limit)
+  </ResponseField>
+  
+  <ResponseField name="queue" type="T[]">
+    Overflow items waiting to enter state
+  </ResponseField>
+  
+  <ResponseField name="add" type="(...items: T[]) => void">
+    Adds items to state or queue based on limit
+  </ResponseField>
+  
+  <ResponseField name="update" type="(fn: (state: T[]) => T[]) => void">
+    Applies an updater function to all items (state + queue)
+  </ResponseField>
+  
+  <ResponseField name="cleanQueue" type="() => void">
+    Clears the overflow queue
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Notification Queue
+
+```tsx
+import { useQueue } from '@kuzenbo/hooks';
+
+interface Notification {
+  id: string;
+  message: string;
+  type: 'info' | 'success' | 'error';
+}
+
+function NotificationManager() {
+  const { state, queue, add, update } = useQueue<Notification>({
+    initialValues: [],
+    limit: 3,
+  });
+
+  const addNotification = (message: string, type: Notification['type']) => {
+    add({
+      id: Date.now().toString(),
+      message,
+      type,
+    });
+  };
+
+  const removeNotification = (id: string) => {
+    update((items) => items.filter((item) => item.id !== id));
+  };
+
+  return (
+    <div>
+      <div className="notifications">
+        {state.map((notification) => (
+          <div key={notification.id} className={`notification-${notification.type}`}>
+            {notification.message}
+            <button onClick={() => removeNotification(notification.id)}>×</button>
+          </div>
+        ))}
+      </div>
+      
+      {queue.length > 0 && (
+        <p className="queue-info">
+          {queue.length} more notification{queue.length > 1 ? 's' : ''} waiting
+        </p>
+      )}
+      
+      <div>
+        <button onClick={() => addNotification('Info message', 'info')}>
+          Add Info
+        </button>
+        <button onClick={() => addNotification('Success!', 'success')}>
+          Add Success
+        </button>
+        <button onClick={() => addNotification('Error occurred', 'error')}>
+          Add Error
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+### Task Queue
+
+```tsx
+import { useQueue } from '@kuzenbo/hooks';
+
+interface Task {
+  id: string;
+  name: string;
+  status: 'pending' | 'running' | 'completed';
+}
+
+function TaskQueue() {
+  const { state, queue, add, update, cleanQueue } = useQueue<Task>({
+    initialValues: [
+      { id: '1', name: 'Task 1', status: 'pending' },
+      { id: '2', name: 'Task 2', status: 'pending' },
+    ],
+    limit: 5,
+  });
+
+  const addTask = (name: string) => {
+    add({
+      id: Date.now().toString(),
+      name,
+      status: 'pending',
+    });
+  };
+
+  const updateTaskStatus = (id: string, status: Task['status']) => {
+    update((tasks) =>
+      tasks.map((task) => (task.id === id ? { ...task, status } : task))
+    );
+  };
+
+  return (
+    <div>
+      <h3>Active Tasks ({state.length}/{state.length + queue.length})</h3>
+      {state.map((task) => (
+        <div key={task.id}>
+          {task.name} - {task.status}
+          <button onClick={() => updateTaskStatus(task.id, 'running')}>
+            Start
+          </button>
+          <button onClick={() => updateTaskStatus(task.id, 'completed')}>
+            Complete
+          </button>
+        </div>
+      ))}
+      
+      {queue.length > 0 && (
+        <div>
+          <h4>Queued Tasks ({queue.length})</h4>
+          {queue.map((task) => (
+            <div key={task.id}>{task.name}</div>
+          ))}
+          <button onClick={cleanQueue}>Clear Queue</button>
+        </div>
+      )}
+      
+      <button onClick={() => addTask(`Task ${state.length + queue.length + 1}`)}>
+        Add Task
+      </button>
+    </div>
+  );
+}
+```
+
+### Recent Items List
+
+```tsx
+import { useQueue } from '@kuzenbo/hooks';
+
+interface RecentItem {
+  id: string;
+  title: string;
+  timestamp: number;
+}
+
+function RecentItemsList() {
+  const { state, add, update } = useQueue<RecentItem>({
+    initialValues: [],
+    limit: 10,
+  });
+
+  const addRecentItem = (title: string) => {
+    add({
+      id: Date.now().toString(),
+      title,
+      timestamp: Date.now(),
+    });
+  };
+
+  const clearOldItems = () => {
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    update((items) => items.filter((item) => item.timestamp > oneDayAgo));
+  };
+
+  return (
+    <div>
+      <h3>Recent Items (Last 10)</h3>
+      <ul>
+        {state.map((item) => (
+          <li key={item.id}>
+            {item.title}
+            <small>{new Date(item.timestamp).toLocaleString()}</small>
+          </li>
+        ))}
+      </ul>
+      <button onClick={() => addRecentItem('New Item')}>Add Item</button>
+      <button onClick={clearOldItems}>Clear Old Items</button>
+    </div>
+  );
+}
+```
+
+### Message Buffer
+
+```tsx
+import { useQueue } from '@kuzenbo/hooks';
+
+function MessageBuffer() {
+  const { state, queue, add } = useQueue<string>({
+    initialValues: [],
+    limit: 100,
+  });
+
+  const sendMessage = (message: string) => {
+    add(message);
+  };
+
+  return (
+    <div>
+      <h3>Message Buffer</h3>
+      <p>Active: {state.length} messages</p>
+      <p>Buffered: {queue.length} messages</p>
+      
+      <div className="messages">
+        {state.slice(-10).map((msg, i) => (
+          <div key={i}>{msg}</div>
+        ))}
+      </div>
+      
+      <button onClick={() => sendMessage(`Message ${state.length + queue.length + 1}`)}>
+        Send Message
+      </button>
+    </div>
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+export interface UseQueueOptions<T> {
+  /** Initial values to be added to the queue */
+  initialValues?: T[];
+
+  /** Maximum number of items in the state */
+  limit: number;
+}
+
+export interface UseQueueReturnValue<T> {
+  /** Array of items in the queue */
+  queue: T[];
+
+  /** Array of items in the state */
+  state: T[];
+
+  /** Function to add items to state or queue */
+  add: (...items: T[]) => void;
+
+  /** Function to apply updates to current items */
+  update: (fn: (state: T[]) => T[]) => void;
+
+  /** Function to clear the queue */
+  cleanQueue: () => void;
+}
+```

@@ -1,0 +1,152 @@
+---
+title: 'useThrottledValue'
+description: 'Returns a throttled mirror of an input value with rate-limited updates'
+icon: 'gauge-high'
+---
+
+Returns a throttled mirror of an input value. When the source value changes quickly, updates to the returned value are rate-limited.
+
+## Signature
+
+```typescript
+function useThrottledValue<T>(
+  value: T,
+  wait: number
+): T
+```
+
+## Parameters
+
+<ParamField path="value" type="T" required>
+  Source value to mirror.
+</ParamField>
+
+<ParamField path="wait" type="number" required>
+  Throttle window in milliseconds.
+</ParamField>
+
+## Returns
+
+<ResponseField name="throttledValue" type="T">
+  The throttled value that updates at most once per wait period.
+</ResponseField>
+
+## Usage
+
+### Throttled search results
+
+```tsx
+import { useThrottledValue } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function SearchResults() {
+  const [query, setQuery] = useState('');
+  const throttledQuery = useThrottledValue(query, 500);
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    if (throttledQuery) {
+      fetch(`/api/search?q=${throttledQuery}`)
+        .then(r => r.json())
+        .then(setResults);
+    }
+  }, [throttledQuery]);
+
+  return (
+    <div>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search..."
+      />
+      <ul>
+        {results.map((r, i) => <li key={i}>{r}</li>)}
+      </ul>
+    </div>
+  );
+}
+```
+
+### Throttled window dimensions
+
+```tsx
+import { useThrottledValue } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return width;
+}
+
+function ResponsiveComponent() {
+  const width = useWindowWidth();
+  const throttledWidth = useThrottledValue(width, 200);
+
+  return (
+    <div>
+      <p>Current width: {width}px</p>
+      <p>Throttled width: {throttledWidth}px</p>
+    </div>
+  );
+}
+```
+
+### Throttled scroll position
+
+```tsx
+import { useThrottledValue } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function ScrollIndicator() {
+  const [scrollY, setScrollY] = useState(0);
+  const throttledScrollY = useThrottledValue(scrollY, 100);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollPercentage = Math.min(
+    100,
+    (throttledScrollY / (document.body.scrollHeight - window.innerHeight)) * 100
+  );
+
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0 }}>
+      <div
+        style={{
+          height: '4px',
+          background: 'blue',
+          width: `${scrollPercentage}%`
+        }}
+      />
+    </div>
+  );
+}
+```
+
+### Throttled prop updates
+
+```tsx
+import { useThrottledValue } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+function ExpensiveChart({ data }: { data: number[] }) {
+  const throttledData = useThrottledValue(data, 1000);
+
+  useEffect(() => {
+    console.log('Re-rendering chart with:', throttledData);
+    // Expensive chart rendering logic here
+  }, [throttledData]);
+
+  return <div>Chart rendering...</div>;
+}
+```

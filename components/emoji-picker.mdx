@@ -1,0 +1,156 @@
+---
+title: Emoji Picker
+description: A searchable emoji picker component with skin tone support.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { EmojiPicker } from "@kuzenbo/core";
+
+function Example() {
+  const handleEmojiSelect = (emoji: string) => {
+    console.log("Selected emoji:", emoji);
+  };
+
+  return (
+    <EmojiPicker onEmojiSelect={handleEmojiSelect}>
+      <EmojiPicker.Search />
+      <EmojiPicker.Content>
+        <EmojiPicker.List />
+        <EmojiPicker.Loading>Loading emojis...</EmojiPicker.Loading>
+        <EmojiPicker.Empty>No emojis found</EmojiPicker.Empty>
+      </EmojiPicker.Content>
+      <EmojiPicker.ActiveEmojiPreview>
+        <EmojiPicker.ActiveEmoji />
+        <EmojiPicker.SkinToneSelector>
+          <EmojiPicker.SkinTone value="light" />
+          <EmojiPicker.SkinTone value="mediumLight" />
+          <EmojiPicker.SkinTone value="medium" />
+          <EmojiPicker.SkinTone value="mediumDark" />
+          <EmojiPicker.SkinTone value="dark" />
+        </EmojiPicker.SkinToneSelector>
+      </EmojiPicker.ActiveEmojiPreview>
+    </EmojiPicker>
+  );
+}
+```
+
+## Props
+
+### EmojiPicker
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the emoji picker.
+</ParamField>
+
+<ParamField path="onEmojiSelect" type="(emoji: string) => void">
+  Callback when an emoji is selected.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### EmojiPicker.Search
+
+<ParamField path="placeholder" type="string" default="'Search emojis...'">
+  Placeholder text for the search input.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### EmojiPicker.List
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### EmojiPicker.SkinTone
+
+<ParamField path="value" type="'light' | 'mediumLight' | 'medium' | 'mediumDark' | 'dark'" required>
+  The skin tone variant.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Examples
+
+### Basic Emoji Picker
+
+```tsx
+<EmojiPicker onEmojiSelect={(emoji) => console.log(emoji)}>
+  <EmojiPicker.Search />
+  <EmojiPicker.Content>
+    <EmojiPicker.List />
+  </EmojiPicker.Content>
+</EmojiPicker>
+```
+
+### With Popover
+
+```tsx
+import { Popover, Button } from "@kuzenbo/core";
+
+function EmojiPickerPopover() {
+  const [emoji, setEmoji] = useState("😀");
+
+  return (
+    <Popover>
+      <Popover.Trigger asChild>
+        <Button variant="outline" size="lg">
+          {emoji}
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content className="w-auto p-0">
+        <EmojiPicker onEmojiSelect={(e) => setEmoji(e)}>
+          <EmojiPicker.Search />
+          <EmojiPicker.Content>
+            <EmojiPicker.List />
+          </EmojiPicker.Content>
+        </EmojiPicker>
+      </Popover.Content>
+    </Popover>
+  );
+}
+```
+
+### Different Sizes
+
+```tsx
+{/* Small */}
+<EmojiPicker size="sm" onEmojiSelect={handleSelect}>
+  {/* ... */}
+</EmojiPicker>
+
+{/* Large */}
+<EmojiPicker size="lg" onEmojiSelect={handleSelect}>
+  {/* ... */}
+</EmojiPicker>
+```
+
+### Custom Empty State
+
+```tsx
+<EmojiPicker onEmojiSelect={handleSelect}>
+  <EmojiPicker.Search />
+  <EmojiPicker.Content>
+    <EmojiPicker.List />
+    <EmojiPicker.Empty>
+      <div className="text-center p-4">
+        <p className="text-muted-foreground">No matching emojis</p>
+      </div>
+    </EmojiPicker.Empty>
+  </EmojiPicker.Content>
+</EmojiPicker>
+```

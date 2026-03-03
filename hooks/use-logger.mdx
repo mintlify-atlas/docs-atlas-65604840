@@ -1,0 +1,71 @@
+---
+title: useLogger
+description: Logs component lifecycle events to the console for debugging
+---
+
+## Usage
+
+Logs component lifecycle events to the console for debugging. It logs `mounted` once, `updated` whenever watched props change, and `unmounted` on cleanup.
+
+```tsx
+import { useLogger } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState('Demo');
+  
+  useLogger('Demo', [count, name]);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <p>Name: {name}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setName('Updated')}>Update Name</button>
+    </div>
+  );
+}
+```
+
+## Track specific props
+
+Log updates for specific values:
+
+```tsx
+import { useLogger } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function UserProfile({ userId }: { userId: string }) {
+  const [data, setData] = useState(null);
+  
+  useLogger('UserProfile', [userId, data]);
+
+  return <div>User: {userId}</div>;
+}
+```
+
+## Definition
+
+```tsx
+function useLogger(
+  componentName: string,
+  props: unknown[]
+): null
+```
+
+### Parameters
+
+<ParamField path="componentName" type="string">
+  Component label used in log messages
+</ParamField>
+
+<ParamField path="props" type="unknown[]">
+  Dependency values to watch for updates; values are included in each log call
+</ParamField>
+
+## Logged Events
+
+- **Mount**: `{componentName} mounted` with initial prop values
+- **Update**: `{componentName} updated` with current prop values (logged on each change)
+- **Unmount**: `{componentName} unmounted`

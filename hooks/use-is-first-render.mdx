@@ -1,0 +1,60 @@
+---
+title: useIsFirstRender
+description: Indicates whether the current render is the component's first render
+---
+
+## Usage
+
+Indicates whether the current render is the component's first render. Returns `true` only during the first render, and `false` for all subsequent renders.
+
+```tsx
+import { useIsFirstRender } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const isFirstRender = useIsFirstRender();
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Is first render: {isFirstRender ? 'Yes' : 'No'}</p>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+```
+
+## Conditional logic on first render
+
+Execute different logic on the first render:
+
+```tsx
+import { useIsFirstRender } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const isFirstRender = useIsFirstRender();
+  const [value, setValue] = useState('');
+
+  if (isFirstRender) {
+    console.log('Component mounted');
+  } else {
+    console.log('Component re-rendered');
+  }
+
+  return <input value={value} onChange={(e) => setValue(e.target.value)} />;
+}
+```
+
+## Definition
+
+```tsx
+function useIsFirstRender(): boolean
+```
+
+### Returns
+
+<ResponseField name="isFirstRender" type="boolean">
+  `true` during the first render, `false` for all subsequent renders
+</ResponseField>

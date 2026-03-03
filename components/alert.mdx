@@ -1,0 +1,232 @@
+---
+title: Alert
+description: Display important messages and notifications with customizable variants and appearances.
+---
+
+<ComponentPreview name="alert-default" />
+
+## Installation
+
+<Tabs>
+  <Tab title="CLI">
+    ```bash
+    npx @kuzenbo/cli add alert
+    ```
+  </Tab>
+  <Tab title="Manual">
+    Install the required dependencies:
+
+    ```bash
+    npm install @kuzenbo/core
+    ```
+
+    Copy the component source:
+
+    <Accordion title="alert.tsx">
+      ```tsx
+      // See source at packages/core/src/ui/alert/
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Alert } from "@kuzenbo/core";
+
+export default function Example() {
+  return (
+    <Alert variant="default">
+      <AlertIcon />
+      <Alert.Title>Heads up!</Alert.Title>
+      <Alert.Description>
+        You can add components to your app using the CLI.
+      </Alert.Description>
+    </Alert>
+  );
+}
+```
+
+## Examples
+
+### Variants
+
+Alerts support semantic variants for different message types.
+
+<ComponentPreview name="alert-variants" />
+
+```tsx
+<Alert variant="danger">
+  <AlertIcon />
+  <Alert.Title>Error</Alert.Title>
+  <Alert.Description>
+    Your session has expired. Please log in again.
+  </Alert.Description>
+</Alert>
+
+<Alert variant="warning">
+  <AlertIcon />
+  <Alert.Title>Warning</Alert.Title>
+  <Alert.Description>
+    Your trial is expiring soon. Upgrade to continue.
+  </Alert.Description>
+</Alert>
+
+<Alert variant="success">
+  <AlertIcon />
+  <Alert.Title>Success</Alert.Title>
+  <Alert.Description>
+    Your changes have been saved successfully.
+  </Alert.Description>
+</Alert>
+
+<Alert variant="info">
+  <AlertIcon />
+  <Alert.Title>Note</Alert.Title>
+  <Alert.Description>
+    This feature is currently in beta.
+  </Alert.Description>
+</Alert>
+```
+
+### Appearances
+
+Control the visual style with the `appearance` prop.
+
+<ComponentPreview name="alert-appearances" />
+
+```tsx
+<Alert appearance="default" variant="primary">
+  <Alert.Title>Default appearance</Alert.Title>
+  <Alert.Description>Standard background and border.</Alert.Description>
+</Alert>
+
+<Alert appearance="subtle" variant="primary">
+  <Alert.Title>Subtle appearance</Alert.Title>
+  <Alert.Description>Lighter background with reduced contrast.</Alert.Description>
+</Alert>
+
+<Alert appearance="outline" variant="primary">
+  <Alert.Title>Outline appearance</Alert.Title>
+  <Alert.Description>Background color with border emphasis.</Alert.Description>
+</Alert>
+
+<Alert appearance="inverted" variant="primary">
+  <Alert.Title>Inverted appearance</Alert.Title>
+  <Alert.Description>Dark surface with semantic accents.</Alert.Description>
+</Alert>
+```
+
+### With Action
+
+Add interactive actions to alerts.
+
+<ComponentPreview name="alert-with-action" />
+
+```tsx
+<Alert variant="default">
+  <AlertIcon />
+  <Alert.Title>Update available</Alert.Title>
+  <Alert.Description>
+    A new version is available. Update now to get the latest features.
+  </Alert.Description>
+  <Alert.Action>
+    <Button size="xs" variant="outline">Update</Button>
+  </Alert.Action>
+</Alert>
+```
+
+### Sizes
+
+Alerts support five size variants.
+
+<ComponentPreview name="alert-sizes" />
+
+```tsx
+<Alert size="xs" variant="default">
+  <Alert.Title>Extra small</Alert.Title>
+  <Alert.Description>Compact alert for dense layouts.</Alert.Description>
+</Alert>
+
+<Alert size="sm" variant="default">
+  <Alert.Title>Small</Alert.Title>
+  <Alert.Description>Smaller alert size.</Alert.Description>
+</Alert>
+
+<Alert size="md" variant="default">
+  <Alert.Title>Medium (default)</Alert.Title>
+  <Alert.Description>Standard alert size.</Alert.Description>
+</Alert>
+
+<Alert size="lg" variant="default">
+  <Alert.Title>Large</Alert.Title>
+  <Alert.Description>Larger alert size.</Alert.Description>
+</Alert>
+
+<Alert size="xl" variant="default">
+  <Alert.Title>Extra large</Alert.Title>
+  <Alert.Description>Maximum alert size.</Alert.Description>
+</Alert>
+```
+
+## API Reference
+
+### Alert
+
+<ParamField path="variant" type="string" default="default">
+  Semantic variant for the alert.
+  
+  Options: `"default"` | `"primary"` | `"secondary"` | `"warning"` | `"danger"` | `"info"` | `"success"`
+</ParamField>
+
+<ParamField path="appearance" type="string" default="default">
+  Visual style of the alert.
+  
+  Options: `"default"` | `"subtle"` | `"outline"` | `"inverted"`
+</ParamField>
+
+<ParamField path="size" type="UISize" default="md">
+  Size of the alert.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Alert.Title
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Alert.Description
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Alert.Action
+
+Container for action elements positioned absolutely in the alert.
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Accessibility
+
+- Alert has `role="alert"` for screen reader announcements
+- Icons are decorative and marked with `aria-hidden="true"`
+- Use clear, concise alert titles and descriptions
+- Ensure sufficient color contrast for all variants
+
+## Best Practices
+
+- Use appropriate variants for message severity
+- Keep alert content concise and actionable
+- Place alerts near the relevant context
+- Don't stack too many alerts simultaneously
+- Use icons consistently across alert types

@@ -1,0 +1,394 @@
+---
+title: '@kuzenbo/tiptap'
+description: 'Composable Tiptap editor primitives for Kuzenbo'
+icon: 'pen-to-square'
+---
+
+## Overview
+
+The `@kuzenbo/tiptap` package provides a fully-featured rich text editor built on Tiptap. Includes toolbar controls, bubble menus, slash commands, mentions, and extensive customization options.
+
+<Note status="warning">
+This package is currently in preview and not yet published to npm. The API may change before the stable release.
+</Note>
+
+## Installation
+
+Once published, install with:
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/tiptap @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash yarn
+yarn add @kuzenbo/tiptap @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash pnpm
+pnpm add @kuzenbo/tiptap @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash bun
+bun add @kuzenbo/tiptap @kuzenbo/core @kuzenbo/theme react react-dom
+```
+</CodeGroup>
+
+## Components
+
+<CardGroup cols={2}>
+  <Card title="TiptapEditor" icon="pen-to-square">
+    Main editor component with full functionality
+  </Card>
+  <Card title="TiptapEditor.Toolbar" icon="bars">
+    Customizable formatting toolbar
+  </Card>
+  <Card title="TiptapEditor.BubbleMenu" icon="message">
+    Context menu for selected text
+  </Card>
+  <Card title="TiptapEditor.FloatingMenu" icon="plus">
+    Floating menu for empty lines
+  </Card>
+  <Card title="SlashMenu" icon="slash">
+    Command palette with /commands
+  </Card>
+  <Card title="MentionMenu" icon="at">
+    @mention autocomplete
+  </Card>
+</CardGroup>
+
+## Basic Usage
+
+### Simple Editor
+
+```tsx
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+import { useState } from 'react';
+
+export function BasicEditor() {
+  const [content, setContent] = useState('<p>Start typing...</p>');
+
+  return (
+    <TiptapEditor
+      content={content}
+      onUpdate={({ editor }) => setContent(editor.getHTML())}
+    />
+  );
+}
+```
+
+### Editor with Toolbar
+
+```tsx
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+import '@kuzenbo/tiptap/styles.css';
+
+export function EditorWithToolbar() {
+  return (
+    <TiptapEditor defaultContent="<p>Hello world</p>">
+      <TiptapEditor.Toolbar>
+        <TiptapEditor.BoldControl />
+        <TiptapEditor.ItalicControl />
+        <TiptapEditor.UnderlineControl />
+        <TiptapEditor.StrikethroughControl />
+        <TiptapEditor.Separator />
+        <TiptapEditor.H1Control />
+        <TiptapEditor.H2Control />
+        <TiptapEditor.H3Control />
+        <TiptapEditor.Separator />
+        <TiptapEditor.BulletListControl />
+        <TiptapEditor.OrderedListControl />
+        <TiptapEditor.CodeBlockControl />
+      </TiptapEditor.Toolbar>
+      <TiptapEditor.Content />
+    </TiptapEditor>
+  );
+}
+```
+
+### Full-Featured Editor
+
+```tsx
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+import { SlashMenu } from '@kuzenbo/tiptap/ui/menus/slash-menu';
+import { MentionMenu } from '@kuzenbo/tiptap/ui/menus/mention-menu';
+
+export function FullEditor() {
+  return (
+    <TiptapEditor
+      variant="outlined"
+      placeholder="Type / for commands..."
+    >
+      <TiptapEditor.Toolbar>
+        <TiptapEditor.BoldControl />
+        <TiptapEditor.ItalicControl />
+        <TiptapEditor.UnderlineControl />
+        <TiptapEditor.CodeControl />
+        <TiptapEditor.Separator />
+        <TiptapEditor.LinkControl />
+        <TiptapEditor.ColorControl />
+        <TiptapEditor.HighlightControl />
+        <TiptapEditor.Separator />
+        <TiptapEditor.AlignLeftControl />
+        <TiptapEditor.AlignCenterControl />
+        <TiptapEditor.AlignRightControl />
+        <TiptapEditor.AlignJustifyControl />
+        <TiptapEditor.Separator />
+        <TiptapEditor.InsertTableControl />
+        <TiptapEditor.UndoControl />
+        <TiptapEditor.RedoControl />
+      </TiptapEditor.Toolbar>
+      
+      <TiptapEditor.BubbleMenu>
+        <TiptapEditor.BoldControl />
+        <TiptapEditor.ItalicControl />
+        <TiptapEditor.LinkControl />
+      </TiptapEditor.BubbleMenu>
+      
+      <TiptapEditor.Content />
+      
+      <SlashMenu />
+      <MentionMenu />
+    </TiptapEditor>
+  );
+}
+```
+
+## Editor Hook
+
+### useKuzenboEditor
+
+```tsx
+import { useKuzenboEditor } from '@kuzenbo/tiptap/editor/use-kuzenbo-editor';
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+
+export function CustomEditor() {
+  const editor = useKuzenboEditor({
+    content: '<p>Initial content</p>',
+    editable: true,
+    onUpdate: ({ editor }) => {
+      console.log('Content changed:', editor.getHTML());
+    },
+    extensions: [
+      // Add custom extensions
+    ],
+  });
+
+  if (!editor) return null;
+
+  return <TiptapEditor.Content editor={editor} />;
+}
+```
+
+## Markdown Support
+
+```tsx
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+import { markdownAdapter } from '@kuzenbo/tiptap/editor/markdown-adapter';
+
+export function MarkdownEditor() {
+  const editor = useKuzenboEditor({
+    content: '# Hello\n\nThis is **markdown**',
+    extensions: [markdownAdapter],
+  });
+
+  const getMarkdown = () => {
+    return editor?.storage.markdown.getMarkdown();
+  };
+
+  return <TiptapEditor.Content editor={editor} />;
+}
+```
+
+## Slash Commands
+
+```tsx
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+import { SlashMenu } from '@kuzenbo/tiptap/ui/menus/slash-menu';
+
+const slashCommands = [
+  {
+    title: 'Heading 1',
+    description: 'Large section heading',
+    command: ({ editor }) => editor.chain().focus().setHeading({ level: 1 }).run(),
+  },
+  {
+    title: 'Table',
+    description: 'Insert a table',
+    command: ({ editor }) => editor.chain().focus().insertTable().run(),
+  },
+];
+
+export function EditorWithCommands() {
+  return (
+    <TiptapEditor>
+      <TiptapEditor.Content />
+      <SlashMenu commands={slashCommands} />
+    </TiptapEditor>
+  );
+}
+```
+
+## Mentions
+
+```tsx
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+import { MentionMenu } from '@kuzenbo/tiptap/ui/menus/mention-menu';
+
+const users = [
+  { id: '1', name: 'John Doe', avatar: '/john.jpg' },
+  { id: '2', name: 'Jane Smith', avatar: '/jane.jpg' },
+];
+
+export function EditorWithMentions() {
+  return (
+    <TiptapEditor>
+      <TiptapEditor.Content />
+      <MentionMenu
+        items={users}
+        onSelect={(user) => console.log('Mentioned:', user)}
+      />
+    </TiptapEditor>
+  );
+}
+```
+
+## Custom Extensions
+
+```tsx
+import { createTiptapExtensionsPreset } from '@kuzenbo/tiptap/editor/create-tiptap-extensions-preset';
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+import CustomExtension from './CustomExtension';
+
+const extensions = createTiptapExtensionsPreset({
+  capabilities: {
+    heading: true,
+    bold: true,
+    italic: true,
+    link: true,
+    codeBlock: true,
+    table: true,
+  },
+  additionalExtensions: [CustomExtension],
+});
+
+export function EditorWithCustomExtensions() {
+  return <TiptapEditor extensions={extensions} />;
+}
+```
+
+## Editor Variants
+
+```tsx
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+
+// Outlined variant
+<TiptapEditor variant="outlined" />
+
+// Filled variant
+<TiptapEditor variant="filled" />
+
+// Ghost variant (no border)
+<TiptapEditor variant="ghost" />
+```
+
+## Controlled Editor
+
+```tsx
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+import { useState } from 'react';
+
+export function ControlledEditor() {
+  const [content, setContent] = useState('<p>Initial</p>');
+
+  return (
+    <>
+      <TiptapEditor
+        content={content}
+        onUpdate={({ editor }) => setContent(editor.getHTML())}
+      />
+      <button onClick={() => setContent('<p>Reset</p>')}>Reset</button>
+    </>
+  );
+}
+```
+
+## Read-only Mode
+
+```tsx
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+
+export function ReadOnlyEditor() {
+  return (
+    <TiptapEditor
+      content="<p>Read-only content</p>"
+      editable={false}
+    />
+  );
+}
+```
+
+## Custom Styling
+
+Import the base styles and customize:
+
+```tsx
+import '@kuzenbo/tiptap/styles.css';
+
+<TiptapEditor
+  classNames={{
+    root: 'custom-editor',
+    content: 'custom-content',
+    toolbar: 'custom-toolbar',
+  }}
+/>
+```
+
+## Dependencies
+
+- `@tiptap/core` - Core Tiptap functionality
+- `@tiptap/react` - React integration
+- `@tiptap/starter-kit` - Essential extensions
+- `@tiptap/extension-*` - Additional extensions
+- `@tiptap/markdown` - Markdown support
+- `@kuzenbo/core` - Core components
+- `tailwind-variants` - Styling
+
+## Peer Dependencies
+
+```json
+{
+  "@kuzenbo/core": "^0.0.7",
+  "@kuzenbo/theme": "^0.0.7",
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0"
+}
+```
+
+## TypeScript
+
+Fully typed editor components:
+
+```tsx
+import { TiptapEditor } from '@kuzenbo/tiptap/ui/tiptap-editor';
+import type { TiptapEditorProps } from '@kuzenbo/tiptap/ui/tiptap-editor';
+import type { Editor } from '@tiptap/core';
+
+const MyEditor: React.FC<{
+  onSave: (html: string) => void;
+}> = ({ onSave }) => {
+  const handleUpdate = ({ editor }: { editor: Editor }) => {
+    onSave(editor.getHTML());
+  };
+
+  return <TiptapEditor onUpdate={handleUpdate} />;
+};
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Core Components" icon="box" href="/packages/core">
+    Explore other UI components
+  </Card>
+</CardGroup>

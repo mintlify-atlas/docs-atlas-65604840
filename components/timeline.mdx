@@ -1,0 +1,345 @@
+---
+title: Timeline
+description: Display chronological events with dots, connectors, and content in vertical or horizontal layouts
+---
+
+The Timeline component displays a sequence of events with connecting lines, status dots, and rich content. Supports vertical and horizontal orientations, alternate layouts, and active state tracking.
+
+## Import
+
+```tsx
+import { Timeline } from "@kuzenbo/core";
+```
+
+## Usage
+
+```tsx
+<Timeline orientation="vertical" variant="default">
+  <Timeline.Item index={0}>
+    <Timeline.Dot />
+    <Timeline.Connector />
+    <Timeline.Content>
+      <Timeline.Header>
+        <Timeline.Title>Order placed</Timeline.Title>
+        <Timeline.Time>2 hours ago</Timeline.Time>
+      </Timeline.Header>
+      <Timeline.Description>
+        Your order has been confirmed and is being prepared.
+      </Timeline.Description>
+    </Timeline.Content>
+  </Timeline.Item>
+  <Timeline.Item index={1}>
+    <Timeline.Dot />
+    <Timeline.Connector />
+    <Timeline.Content>
+      <Timeline.Header>
+        <Timeline.Title>Processing</Timeline.Title>
+        <Timeline.Time>1 hour ago</Timeline.Time>
+      </Timeline.Header>
+      <Timeline.Description>
+        Order is being processed at our fulfillment center.
+      </Timeline.Description>
+    </Timeline.Content>
+  </Timeline.Item>
+</Timeline>
+```
+
+## Anatomy
+
+- `Timeline` - Root container with orientation and variant
+- `Timeline.Item` - Individual timeline entry with index
+- `Timeline.Dot` - Status indicator dot
+- `Timeline.Connector` - Line connecting timeline items
+- `Timeline.Content` - Content area for each item
+- `Timeline.Header` - Header section with title and time
+- `Timeline.Title` - Event title
+- `Timeline.Time` - Timestamp or time indicator
+- `Timeline.Description` - Event description
+
+## Props
+
+### Timeline
+
+<ParamField path="orientation" type="'vertical' | 'horizontal'" default="vertical">
+  Layout direction of the timeline.
+</ParamField>
+
+<ParamField path="variant" type="'default' | 'alternate'" default="default">
+  Visual variant:
+  
+  - `default` - All items aligned to one side
+  - `alternate` - Items alternate between left and right sides (vertical) or top and bottom (horizontal)
+</ParamField>
+
+<ParamField path="dir" type="'ltr' | 'rtl'" default="ltr">
+  Text direction for the timeline.
+</ParamField>
+
+<ParamField path="activeIndex" type="number">
+  Index of the currently active item. Items before this are marked as completed, the item at this index is active, and items after are pending.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Timeline.Item
+
+<ParamField path="index" type="number" required>
+  Zero-based index of this item in the timeline. Used to determine status when activeIndex is set.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Timeline.Dot
+
+<ParamField path="render" type="function">
+  Base UI render prop for custom element composition.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Timeline.Connector
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Timeline.Content
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Timeline.Header
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Timeline.Title
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Timeline.Time
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Timeline.Description
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Examples
+
+### Vertical timeline
+
+```tsx
+<Timeline orientation="vertical">
+  <Timeline.Item index={0}>
+    <Timeline.Dot />
+    <Timeline.Connector />
+    <Timeline.Content>
+      <Timeline.Header>
+        <Timeline.Title>Project kickoff</Timeline.Title>
+        <Timeline.Time>Jan 15, 2024</Timeline.Time>
+      </Timeline.Header>
+      <Timeline.Description>
+        Initial project planning and team assembly.
+      </Timeline.Description>
+    </Timeline.Content>
+  </Timeline.Item>
+  <Timeline.Item index={1}>
+    <Timeline.Dot />
+    <Timeline.Connector />
+    <Timeline.Content>
+      <Timeline.Header>
+        <Timeline.Title>Design phase</Timeline.Title>
+        <Timeline.Time>Feb 1, 2024</Timeline.Time>
+      </Timeline.Header>
+      <Timeline.Description>
+        Wireframes and mockups created.
+      </Timeline.Description>
+    </Timeline.Content>
+  </Timeline.Item>
+</Timeline>
+```
+
+### Horizontal timeline
+
+```tsx
+<Timeline orientation="horizontal">
+  <Timeline.Item index={0}>
+    <Timeline.Dot />
+    <Timeline.Connector />
+    <Timeline.Content>
+      <Timeline.Title>Q1</Timeline.Title>
+      <Timeline.Description>Planning</Timeline.Description>
+    </Timeline.Content>
+  </Timeline.Item>
+  <Timeline.Item index={1}>
+    <Timeline.Dot />
+    <Timeline.Connector />
+    <Timeline.Content>
+      <Timeline.Title>Q2</Timeline.Title>
+      <Timeline.Description>Development</Timeline.Description>
+    </Timeline.Content>
+  </Timeline.Item>
+</Timeline>
+```
+
+### Alternate layout
+
+```tsx
+<Timeline orientation="vertical" variant="alternate">
+  <Timeline.Item index={0}>
+    <Timeline.Dot />
+    <Timeline.Connector />
+    <Timeline.Content>
+      <Timeline.Header>
+        <Timeline.Title>First milestone</Timeline.Title>
+        <Timeline.Time>Week 1</Timeline.Time>
+      </Timeline.Header>
+    </Timeline.Content>
+  </Timeline.Item>
+  <Timeline.Item index={1}>
+    <Timeline.Dot />
+    <Timeline.Connector />
+    <Timeline.Content>
+      <Timeline.Header>
+        <Timeline.Title>Second milestone</Timeline.Title>
+        <Timeline.Time>Week 2</Timeline.Time>
+      </Timeline.Header>
+    </Timeline.Content>
+  </Timeline.Item>
+</Timeline>
+```
+
+### With active tracking
+
+```tsx
+<Timeline activeIndex={1}>
+  <Timeline.Item index={0}>
+    {/* Status: completed (green dot, filled) */}
+    <Timeline.Dot />
+    <Timeline.Connector />
+    <Timeline.Content>
+      <Timeline.Title>Completed step</Timeline.Title>
+    </Timeline.Content>
+  </Timeline.Item>
+  <Timeline.Item index={1}>
+    {/* Status: active (green border, hollow) */}
+    <Timeline.Dot />
+    <Timeline.Connector />
+    <Timeline.Content>
+      <Timeline.Title>Current step</Timeline.Title>
+    </Timeline.Content>
+  </Timeline.Item>
+  <Timeline.Item index={2}>
+    {/* Status: pending (gray border) */}
+    <Timeline.Dot />
+    <Timeline.Content>
+      <Timeline.Title>Pending step</Timeline.Title>
+    </Timeline.Content>
+  </Timeline.Item>
+</Timeline>
+```
+
+### Custom dot content
+
+Use the render prop to customize dot appearance:
+
+```tsx
+import { CheckCircleIcon } from "@hugeicons/react";
+
+<Timeline.Item index={0}>
+  <Timeline.Dot render={(props) => (
+    <div {...props}>
+      <CheckCircleIcon className="size-3 text-success" />
+    </div>
+  )} />
+  <Timeline.Connector />
+  <Timeline.Content>
+    <Timeline.Title>Completed</Timeline.Title>
+  </Timeline.Content>
+</Timeline.Item>
+```
+
+### Rich content
+
+```tsx
+<Timeline.Item index={0}>
+  <Timeline.Dot />
+  <Timeline.Connector />
+  <Timeline.Content>
+    <Timeline.Header>
+      <Timeline.Title>Code review completed</Timeline.Title>
+      <Timeline.Time>2 hours ago</Timeline.Time>
+    </Timeline.Header>
+    <Timeline.Description>
+      All reviewers have approved the changes.
+    </Timeline.Description>
+    <div className="mt-2 flex gap-2">
+      <Badge variant="success">Approved</Badge>
+      <Badge variant="outline">3 reviewers</Badge>
+    </div>
+  </Timeline.Content>
+</Timeline.Item>
+```
+
+### Without connectors
+
+Omit the Connector component for disconnected items:
+
+```tsx
+<Timeline>
+  <Timeline.Item index={0}>
+    <Timeline.Dot />
+    <Timeline.Content>
+      <Timeline.Title>Standalone event</Timeline.Title>
+    </Timeline.Content>
+  </Timeline.Item>
+  <Timeline.Item index={1}>
+    <Timeline.Dot />
+    <Timeline.Content>
+      <Timeline.Title>Another standalone event</Timeline.Title>
+    </Timeline.Content>
+  </Timeline.Item>
+</Timeline>
+```
+
+## Data Attributes
+
+- `[data-orientation]` - Current orientation (vertical, horizontal)
+- `[data-variant]` - Current variant (default, alternate)
+- `[data-status]` - Item status (pending, active, completed)
+- `[data-alternate-right]` - Present on right-side alternate items
+- `[data-slot]` - Component identifier
+- `[aria-current="step"]` - Applied to active timeline items
+
+## Accessibility
+
+- Uses semantic `<ol>` and `<li>` elements
+- Active items marked with `aria-current="step"`
+- Status conveyed through both color and state attributes
+- Keyboard navigable when interactive
+- Proper text hierarchy with title and description
+
+## Status System
+
+When `activeIndex` is set, items automatically receive status:
+
+- **Completed** (`index < activeIndex`): Primary border with filled background
+- **Active** (`index === activeIndex`): Primary border with background, `aria-current="step"`
+- **Pending** (`index > activeIndex`): Neutral border
+
+Status affects both visual styling and semantic attributes for accessibility.

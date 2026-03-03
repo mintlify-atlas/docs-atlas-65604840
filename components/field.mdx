@@ -1,0 +1,184 @@
+---
+title: Field
+description: A complete form field with label, input, validation, and error messaging.
+---
+
+## Import
+
+```tsx
+import { Field } from "@kuzenbo/core";
+```
+
+## Usage
+
+The `Field` component wraps a form input with label, description, error messaging, and validation state. It's built on Base UI's Field primitive and integrates with the `Form` component.
+
+```tsx
+import { Field } from "@kuzenbo/core";
+
+const validBillingEmail = (value: unknown) => {
+  if (typeof value !== "string" || !value.includes("@")) {
+    return "Enter a valid billing email";
+  }
+  return null;
+};
+
+export default function BillingForm() {
+  return (
+    <Field name="billingEmail" validate={validBillingEmail}>
+      <Field.Label htmlFor="billing-email">Billing contact email</Field.Label>
+      <Field.Control
+        id="billing-email"
+        placeholder="billing@acme.io"
+        type="email"
+      />
+      <Field.Description>
+        Invoices and delinquency notices are sent to this inbox.
+      </Field.Description>
+      <Field.Error />
+      <Field.Validity>
+        {(state) =>
+          state.validity.valid ? (
+            <span className="text-success-foreground text-sm">
+              Ready for invoice routing.
+            </span>
+          ) : null
+        }
+      </Field.Validity>
+    </Field>
+  );
+}
+```
+
+## Sizes
+
+Field controls support five size variants: `xs`, `sm`, `md`, `lg`, and `xl`.
+
+```tsx
+import { Field, Input } from "@kuzenbo/core";
+
+export default function FieldSizes() {
+  return (
+    <div className="grid gap-4">
+      <Field name="approvalCodeXs">
+        <Field.Label htmlFor="approval-code-xs">XS approval code</Field.Label>
+        <Field.Control
+          render={<Input id="approval-code-xs" size="xs" />}
+        />
+      </Field>
+      <Field name="approvalCodeSm">
+        <Field.Label htmlFor="approval-code-sm">SM approval code</Field.Label>
+        <Field.Control
+          render={<Input id="approval-code-sm" size="sm" />}
+        />
+      </Field>
+      <Field name="approvalCodeMd">
+        <Field.Label htmlFor="approval-code-md">MD approval code</Field.Label>
+        <Field.Control
+          render={<Input id="approval-code-md" size="md" />}
+        />
+      </Field>
+    </div>
+  );
+}
+```
+
+## Props
+
+### Field
+
+<ParamField path="name" type="string" required>
+  The name of the field. Used for form data and validation.
+</ParamField>
+
+<ParamField path="validate" type="(value: unknown) => string | null">
+  Validation function. Return an error message string or `null` if valid.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables the entire field and all its controls.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes for the field container.
+</ParamField>
+
+### Field.Label
+
+<ParamField path="htmlFor" type="string">
+  Associates the label with a control element by ID.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Label text content.
+</ParamField>
+
+### Field.Control
+
+<ParamField path="id" type="string">
+  ID for the input element, should match the label's `htmlFor`.
+</ParamField>
+
+<ParamField path="placeholder" type="string">
+  Placeholder text for the input.
+</ParamField>
+
+<ParamField path="type" type="string" default="text">
+  HTML input type (text, email, password, number, etc.).
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="md">
+  Visual size of the control.
+</ParamField>
+
+<ParamField path="render" type="ReactElement">
+  Custom control element to render instead of the default input.
+</ParamField>
+
+### Field.Description
+
+<ParamField path="children" type="ReactNode">
+  Helper text displayed below the control.
+</ParamField>
+
+### Field.Error
+
+Automatically displays validation error messages. No props required.
+
+### Field.Validity
+
+<ParamField path="children" type="(state: FieldState) => ReactNode">
+  Render function that receives the field's validation state.
+</ParamField>
+
+## Composition
+
+```tsx
+import { Field } from "@kuzenbo/core";
+
+<Field.Root name="apiKey">
+  <Field.Label>API Key</Field.Label>
+  <Field.Control type="password" />
+  <Field.Description>Your production API key</Field.Description>
+  <Field.Error />
+</Field.Root>
+```
+
+## Types
+
+```tsx
+export type FieldProps = FieldRootProps;
+export type FieldControlProps = ComponentProps<typeof BaseField.Control>;
+export type FieldDescriptionProps = ComponentProps<typeof BaseField.Description>;
+export type FieldErrorProps = ComponentProps<typeof BaseField.Error>;
+export type FieldLabelProps = ComponentProps<typeof BaseField.Label>;
+export type FieldValidityProps = ComponentProps<typeof BaseField.Validity>;
+```
+
+## Accessibility
+
+- Label is properly associated with the control via `htmlFor`/`id`
+- Error messages are announced to screen readers via `aria-describedby`
+- Invalid state is communicated via `aria-invalid`
+- Disabled state prevents interaction and is announced
+- Description text is linked to the control for context

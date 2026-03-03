@@ -1,0 +1,334 @@
+---
+title: '@kuzenbo/date'
+description: 'Date primitives for Kuzenbo'
+icon: 'calendar'
+---
+
+## Overview
+
+The `@kuzenbo/date` package provides comprehensive date and time components powered by date-fns. Build calendars, date pickers, time pickers, and more with full timezone support and internationalization.
+
+<Note status="warning">
+This package is currently in preview and not yet published to npm. The API may change before the stable release.
+</Note>
+
+## Installation
+
+Once published, install with:
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/date @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash yarn
+yarn add @kuzenbo/date @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash pnpm
+pnpm add @kuzenbo/date @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash bun
+bun add @kuzenbo/date @kuzenbo/core @kuzenbo/theme react react-dom
+```
+</CodeGroup>
+
+## Components
+
+<CardGroup cols={2}>
+  <Card title="Calendar" icon="calendar">
+    Full-featured calendar with month/year navigation
+  </Card>
+  <Card title="DatePicker" icon="calendar-day">
+    Date selection with dropdown calendar
+  </Card>
+  <Card title="DatePickerInput" icon="input-text">
+    Text input with date picker overlay
+  </Card>
+  <Card title="DateTimePicker" icon="clock">
+    Combined date and time selection
+  </Card>
+  <Card title="DateInput" icon="keyboard">
+    Controlled date text input
+  </Card>
+  <Card title="TimePicker" icon="clock">
+    Time selection component
+  </Card>
+  <Card title="TimeInput" icon="input-numeric">
+    Text input for time values
+  </Card>
+  <Card title="MonthPicker" icon="calendar-days">
+    Month selection component
+  </Card>
+  <Card title="YearPicker" icon="calendar-range">
+    Year selection component
+  </Card>
+  <Card title="MiniCalendar" icon="calendar-lines">
+    Compact calendar display
+  </Card>
+</CardGroup>
+
+## Hooks
+
+<CardGroup cols={2}>
+  <Card title="useDatesState" icon="code">
+    Manage date selection state
+  </Card>
+  <Card title="useDatesInput" icon="keyboard">
+    Handle date input interactions
+  </Card>
+  <Card title="useUncontrolledDates" icon="toggle-off">
+    Uncontrolled date state management
+  </Card>
+  <Card title="useDatesContext" icon="share-nodes">
+    Access date provider context
+  </Card>
+</CardGroup>
+
+## Basic Usage
+
+### Date Picker
+
+```tsx
+import { DatePicker } from '@kuzenbo/date';
+import { useState } from 'react';
+
+export function DatePickerDemo() {
+  const [date, setDate] = useState<Date | null>(null);
+
+  return (
+    <DatePicker
+      value={date}
+      onChange={setDate}
+      placeholder="Select a date"
+    />
+  );
+}
+```
+
+### Date Range Picker
+
+```tsx
+import { DatePickerInput } from '@kuzenbo/date';
+import { useState } from 'react';
+
+export function DateRangePicker() {
+  const [range, setRange] = useState<[Date | null, Date | null]>([null, null]);
+
+  return (
+    <DatePickerInput
+      selectionMode="range"
+      value={range}
+      onChange={setRange}
+      placeholder="Select date range"
+    />
+  );
+}
+```
+
+### Calendar
+
+```tsx
+import { Calendar } from '@kuzenbo/date';
+import { useState } from 'react';
+
+export function CalendarDemo() {
+  const [selected, setSelected] = useState<Date>(new Date());
+
+  return (
+    <Calendar
+      value={selected}
+      onChange={setSelected}
+      firstDayOfWeek={1} // Monday
+    />
+  );
+}
+```
+
+### Date Time Picker
+
+```tsx
+import { DateTimePicker } from '@kuzenbo/date';
+import { useState } from 'react';
+
+export function DateTimeDemo() {
+  const [dateTime, setDateTime] = useState<Date>(new Date());
+
+  return (
+    <DateTimePicker
+      value={dateTime}
+      onChange={setDateTime}
+      withTime
+    />
+  );
+}
+```
+
+### Time Picker
+
+```tsx
+import { TimePicker } from '@kuzenbo/date';
+import { useState } from 'react';
+
+export function TimePickerDemo() {
+  const [time, setTime] = useState<string>('12:00');
+
+  return (
+    <TimePicker
+      value={time}
+      onChange={setTime}
+      format="24h"
+    />
+  );
+}
+```
+
+## Selection Modes
+
+Support for different date selection patterns:
+
+```tsx
+import { DatePicker } from '@kuzenbo/date';
+
+// Single date
+<DatePicker selectionMode="single" />
+
+// Multiple dates
+<DatePicker selectionMode="multiple" />
+
+// Date range
+<DatePicker selectionMode="range" />
+```
+
+## Date Formatting
+
+Custom date display formats:
+
+```tsx
+import { DatePickerInput } from '@kuzenbo/date';
+
+<DatePickerInput
+  value={date}
+  onChange={setDate}
+  format="MM/dd/yyyy"
+  valueFormatter={(date) => format(date, 'PPP')}
+/>
+```
+
+## Locale Support
+
+Internationalization with date-fns locales:
+
+```tsx
+import { DatesProvider } from '@kuzenbo/date';
+import { es } from 'date-fns/locale';
+
+export function App({ children }) {
+  return (
+    <DatesProvider locale={es}>
+      {children}
+    </DatesProvider>
+  );
+}
+```
+
+## Timezone Support
+
+Handle timezones with date-fns-tz:
+
+```tsx
+import { DateTimePicker } from '@kuzenbo/date';
+import { formatInTimeZone } from '@date-fns/tz';
+
+export function TimezonePicker() {
+  return (
+    <DateTimePicker
+      withTime
+      timezone="America/New_York"
+      valueFormatter={(date) =>
+        formatInTimeZone(date, 'America/New_York', 'PPpp zzz')
+      }
+    />
+  );
+}
+```
+
+## Date Constraints
+
+Restrict selectable dates:
+
+```tsx
+import { DatePicker } from '@kuzenbo/date';
+import { addDays, subDays } from 'date-fns';
+
+const today = new Date();
+
+<DatePicker
+  minDate={subDays(today, 30)}
+  maxDate={addDays(today, 30)}
+  excludeDate={(date) => date.getDay() === 0 || date.getDay() === 6}
+/>
+```
+
+## Custom Date Adapter
+
+Use a custom date library:
+
+```tsx
+import { createDateAdapter } from '@kuzenbo/date';
+import { format, parse } from 'date-fns';
+
+const customAdapter = createDateAdapter({
+  parse: (value, formatStr) => parse(value, formatStr, new Date()),
+  format: (date, formatStr) => format(date, formatStr),
+  // ... other adapter methods
+});
+
+<DatesProvider adapter={customAdapter}>
+  {children}
+</DatesProvider>
+```
+
+## Dependencies
+
+- `date-fns` - Date manipulation library
+- `@date-fns/tz` - Timezone support
+- `@date-fns/utc` - UTC utilities
+- `@kuzenbo/core` - Core components
+- `@hugeicons/react` - Icons
+- `tailwind-variants` - Styling
+
+## Peer Dependencies
+
+```json
+{
+  "@kuzenbo/core": "^0.0.7",
+  "@kuzenbo/theme": "^0.0.7",
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0"
+}
+```
+
+## TypeScript
+
+Fully typed date components:
+
+```tsx
+import { DatePicker } from '@kuzenbo/date';
+import type { DatePickerProps, DateValue } from '@kuzenbo/date';
+
+const MyDatePicker: React.FC<{ onChange: (date: DateValue) => void }> = ({
+  onChange,
+}) => {
+  return <DatePicker onChange={onChange} />;
+};
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Core Components" icon="box" href="/packages/core">
+    Explore other UI components
+  </Card>
+</CardGroup>

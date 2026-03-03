@@ -1,0 +1,149 @@
+---
+title: Toggle
+description: A two-state button that can be either on or off.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Toggle } from "@kuzenbo/core";
+import { BoldIcon } from "lucide-react";
+
+function Example() {
+  return (
+    <Toggle aria-label="Toggle bold">
+      <BoldIcon />
+    </Toggle>
+  );
+}
+```
+
+## Props
+
+<ParamField path="pressed" type="boolean">
+  The controlled pressed state.
+</ParamField>
+
+<ParamField path="defaultPressed" type="boolean">
+  The default pressed state (uncontrolled mode).
+</ParamField>
+
+<ParamField path="onPressedChange" type="(pressed: boolean) => void">
+  Callback when the pressed state changes.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the toggle is disabled.
+</ParamField>
+
+<ParamField path="variant" type="'default' | 'outline'" default="'default'">
+  The visual style variant.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the toggle.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Examples
+
+### Basic Toggle
+
+```tsx
+<Toggle aria-label="Toggle italic">
+  <ItalicIcon />
+</Toggle>
+```
+
+### With Text
+
+```tsx
+<Toggle aria-label="Toggle bold">
+  <BoldIcon />
+  Bold
+</Toggle>
+```
+
+### Outline Variant
+
+```tsx
+<Toggle variant="outline" aria-label="Toggle underline">
+  <UnderlineIcon />
+</Toggle>
+```
+
+### Different Sizes
+
+```tsx
+<div className="flex items-center gap-2">
+  <Toggle size="xs" aria-label="Extra small">
+    <BoldIcon />
+  </Toggle>
+  <Toggle size="sm" aria-label="Small">
+    <BoldIcon />
+  </Toggle>
+  <Toggle size="md" aria-label="Medium">
+    <BoldIcon />
+  </Toggle>
+  <Toggle size="lg" aria-label="Large">
+    <BoldIcon />
+  </Toggle>
+  <Toggle size="xl" aria-label="Extra large">
+    <BoldIcon />
+  </Toggle>
+</div>
+```
+
+### Controlled State
+
+```tsx
+const [pressed, setPressed] = useState(false);
+
+<Toggle
+  pressed={pressed}
+  onPressedChange={setPressed}
+  aria-label="Toggle bold"
+>
+  <BoldIcon />
+</Toggle>
+```
+
+### Disabled State
+
+```tsx
+<Toggle disabled aria-label="Toggle bold">
+  <BoldIcon />
+</Toggle>
+```
+
+### Text Formatting Toolbar
+
+```tsx
+function TextFormatting() {
+  return (
+    <div className="flex gap-1">
+      <Toggle aria-label="Toggle bold">
+        <BoldIcon />
+      </Toggle>
+      <Toggle aria-label="Toggle italic">
+        <ItalicIcon />
+      </Toggle>
+      <Toggle aria-label="Toggle underline">
+        <UnderlineIcon />
+      </Toggle>
+      <Toggle aria-label="Toggle strikethrough">
+        <StrikethroughIcon />
+      </Toggle>
+    </div>
+  );
+}
+```

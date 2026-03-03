@@ -1,0 +1,163 @@
+---
+title: 'useDebouncedCallback'
+description: 'Creates a debounced version of a callback with optional leading behavior and imperative controls'
+icon: 'clock'
+---
+
+Creates a debounced version of a callback with optional leading behavior, plus imperative `flush` and `cancel` controls.
+
+## Signature
+
+```typescript
+function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
+  callback: T,
+  options: number | UseDebouncedCallbackOptions
+): UseDebouncedCallbackReturnValue<T>
+```
+
+## Parameters
+
+<ParamField path="callback" type="T extends (...args: unknown[]) => unknown" required>
+  Function to debounce.
+</ParamField>
+
+<ParamField path="options" type="number | UseDebouncedCallbackOptions" required>
+  Debounce delay in milliseconds, or an options object with `delay`, `leading`, and `flushOnUnmount`.
+  
+  <Expandable title="UseDebouncedCallbackOptions">
+    <ResponseField name="delay" type="number" required>
+      Debounce delay in milliseconds.
+    </ResponseField>
+    <ResponseField name="leading" type="boolean">
+      When `true`, executes the callback immediately on the first call, then debounces subsequent calls.
+    </ResponseField>
+    <ResponseField name="flushOnUnmount" type="boolean">
+      When `true`, flushes the pending callback on unmount. Otherwise, cancels it.
+    </ResponseField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+<ResponseField name="debouncedCallback" type="UseDebouncedCallbackReturnValue<T>">
+  A debounced version of the callback with additional methods.
+  
+  <Expandable title="Properties">
+    <ResponseField name="(...args: Parameters<T>)" type="() => void">
+      The debounced callback function.
+    </ResponseField>
+    <ResponseField name="flush" type="() => void">
+      Immediately executes the pending callback if one is scheduled.
+    </ResponseField>
+    <ResponseField name="cancel" type="() => void">
+      Cancels the pending callback and resets the debounce state.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Usage
+
+### Basic debouncing
+
+```tsx
+import { useDebouncedCallback } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function SearchInput() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+
+  const search = useDebouncedCallback(
+    async (value: string) => {
+      const data = await fetch(`/api/search?q=${value}`).then(r => r.json());
+      setResults(data);
+    },
+    500
+  );
+
+  return (
+    <input
+      value={query}
+      onChange={(e) => {
+        setQuery(e.target.value);
+        search(e.target.value);
+      }}
+      placeholder="Search..."
+    />
+  );
+}
+```
+
+### Leading edge execution
+
+```tsx
+import { useDebouncedCallback } from '@kuzenbo/hooks';
+
+function RateLimitedButton() {
+  const handleClick = useDebouncedCallback(
+    () => {
+      console.log('Button clicked');
+    },
+    { delay: 1000, leading: true }
+  );
+
+  return <button onClick={handleClick}>Click me</button>;
+}
+```
+
+### Manual flush and cancel
+
+```tsx
+import { useDebouncedCallback } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Form() {
+  const [value, setValue] = useState('');
+
+  const save = useDebouncedCallback(
+    (data: string) => {
+      console.log('Saving:', data);
+    },
+    2000
+  );
+
+  return (
+    <div>
+      <input
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          save(e.target.value);
+        }}
+      />
+      <button onClick={() => save.flush()}>Save now</button>
+      <button onClick={() => save.cancel()}>Cancel</button>
+    </div>
+  );
+}
+```
+
+### Flush on unmount
+
+```tsx
+import { useDebouncedCallback } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+function Analytics() {
+  const trackEvent = useDebouncedCallback(
+    (event: string) => {
+      fetch('/api/analytics', {
+        method: 'POST',
+        body: JSON.stringify({ event })
+      });
+    },
+    { delay: 1000, flushOnUnmount: true }
+  );
+
+  useEffect(() => {
+    trackEvent('page_view');
+  }, []);
+
+  return <div>Content</div>;
+}
+```

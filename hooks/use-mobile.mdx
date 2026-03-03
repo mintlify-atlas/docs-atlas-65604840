@@ -1,0 +1,302 @@
+---
+title: useIsMobile
+description: Detect if viewport is below mobile breakpoint
+---
+
+Tracks whether the viewport is below the mobile breakpoint (`768px`) and updates when the media query changes.
+
+## Usage
+
+```tsx
+import { useIsMobile } from '@kuzenbo/hooks';
+
+function Demo() {
+  const isMobile = useIsMobile();
+
+  return (
+    <div>
+      {isMobile ? 'Mobile View' : 'Desktop View'}
+    </div>
+  );
+}
+```
+
+## Function Signature
+
+```tsx
+function useIsMobile(): boolean
+```
+
+## Parameters
+
+This hook takes no parameters.
+
+## Return Value
+
+<ResponseField name="isMobile" type="boolean">
+  `true` if the viewport width is less than `768px`, otherwise `false`. Initially `false` until mounted.
+</ResponseField>
+
+## Examples
+
+### Conditional Navigation
+
+```tsx
+import { useIsMobile } from '@kuzenbo/hooks';
+
+function Navigation() {
+  const isMobile = useIsMobile();
+
+  return (
+    <nav>
+      {isMobile ? <MobileMenu /> : <DesktopMenu />}
+    </nav>
+  );
+}
+```
+
+### Responsive Table
+
+```tsx
+import { useIsMobile } from '@kuzenbo/hooks';
+
+function DataTable({ data }) {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <div>
+        {data.map((item) => (
+          <div key={item.id} style={{ marginBottom: '16px' }}>
+            <div><strong>Name:</strong> {item.name}</div>
+            <div><strong>Email:</strong> {item.email}</div>
+            <div><strong>Role:</strong> {item.role}</div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((item) => (
+          <tr key={item.id}>
+            <td>{item.name}</td>
+            <td>{item.email}</td>
+            <td>{item.role}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+### Mobile-Specific Features
+
+```tsx
+import { useIsMobile } from '@kuzenbo/hooks';
+
+function ContactForm() {
+  const isMobile = useIsMobile();
+
+  return (
+    <form>
+      <input
+        type="tel"
+        placeholder="Phone"
+        // Auto-focus on desktop only
+        autoFocus={!isMobile}
+      />
+      {isMobile && (
+        <button type="button">
+          📞 Call Us
+        </button>
+      )}
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+### Adaptive Grid Layout
+
+```tsx
+import { useIsMobile } from '@kuzenbo/hooks';
+
+function ProductGrid({ products }) {
+  const isMobile = useIsMobile();
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+        gap: isMobile ? '12px' : '24px',
+      }}
+    >
+      {products.map((product) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+}
+```
+
+### Conditional Modal Behavior
+
+```tsx
+import { useIsMobile } from '@kuzenbo/hooks';
+
+function Modal({ isOpen, onClose, children }) {
+  const isMobile = useIsMobile();
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        display: 'flex',
+        alignItems: isMobile ? 'flex-end' : 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <div
+        style={{
+          background: 'white',
+          borderRadius: isMobile ? '16px 16px 0 0' : '8px',
+          width: isMobile ? '100%' : 'auto',
+          maxWidth: isMobile ? '100%' : '600px',
+          padding: isMobile ? '16px' : '24px',
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+```
+
+### Touch-Optimized Buttons
+
+```tsx
+import { useIsMobile } from '@kuzenbo/hooks';
+
+function ActionButton({ children, onClick }) {
+  const isMobile = useIsMobile();
+
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: isMobile ? '12px 24px' : '8px 16px',
+        fontSize: isMobile ? '16px' : '14px',
+        minHeight: isMobile ? '44px' : 'auto', // Touch target size
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+### Responsive Image Gallery
+
+```tsx
+import { useIsMobile } from '@kuzenbo/hooks';
+
+function ImageGallery({ images }) {
+  const isMobile = useIsMobile();
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
+        gap: '16px',
+      }}
+    >
+      {images.map((image) => (
+        <img
+          key={image.id}
+          src={isMobile ? image.thumbnail : image.full}
+          alt={image.alt}
+          style={{
+            width: isMobile ? '100%' : '200px',
+            height: 'auto',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+### Adaptive Sidebar
+
+```tsx
+import { useIsMobile } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Layout({ children }) {
+  const isMobile = useIsMobile();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  return (
+    <div style={{ display: 'flex' }}>
+      {isMobile ? (
+        // Mobile: Overlay sidebar
+        <>
+          <button onClick={() => setIsSidebarOpen(true)}>☰ Menu</button>
+          {isSidebarOpen && (
+            <div
+              style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'white',
+                zIndex: 1000,
+              }}
+            >
+              <button onClick={() => setIsSidebarOpen(false)}>✕ Close</button>
+              <Sidebar />
+            </div>
+          )}
+        </>
+      ) : (
+        // Desktop: Always visible sidebar
+        <aside style={{ width: '250px' }}>
+          <Sidebar />
+        </aside>
+      )}
+      <main style={{ flex: 1 }}>{children}</main>
+    </div>
+  );
+}
+```
+
+## Mobile Breakpoint
+
+The hook uses a fixed breakpoint of **768px**:
+- Viewport width < 768px → `isMobile = true`
+- Viewport width ≥ 768px → `isMobile = false`
+
+This matches common CSS frameworks like Tailwind (`md:` breakpoint).
+
+## Notes
+
+- The hook uses `window.matchMedia` with `max-width: 767px` query
+- Initial value is `undefined` until mounted, then becomes `boolean`
+- Updates automatically when viewport is resized
+- SSR-safe: value is determined after mount
+- The breakpoint is fixed at 768px and cannot be customized
+- For custom breakpoints, use `useMediaQuery` instead

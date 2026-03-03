@@ -1,0 +1,260 @@
+---
+title: "usePageLeave"
+description: "Run a callback when the mouse pointer leaves the page viewport for exit intent tracking."
+---
+
+## Overview
+
+`usePageLeave` runs a callback when the pointer leaves the page viewport. Useful for exit-intent modals, saving state, or tracking user behavior.
+
+## Installation
+
+```npm
+npm i @kuzenbo/hooks
+```
+
+## Import
+
+```tsx
+import { usePageLeave } from "@kuzenbo/hooks";
+```
+
+## Usage
+
+### Exit Intent Modal
+
+```tsx
+import { usePageLeave } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function ExitIntentModal() {
+  const [showModal, setShowModal] = useState(false);
+
+  usePageLeave(() => {
+    if (!showModal) {
+      setShowModal(true);
+    }
+  });
+
+  if (!showModal) {
+    return null;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-background p-8 rounded-lg shadow-xl max-w-md">
+        <h2 className="text-2xl font-bold mb-4">Wait! Don't leave yet</h2>
+        <p className="text-muted-foreground mb-6">
+          Get 20% off your first purchase with code WELCOME20
+        </p>
+        <div className="flex gap-4">
+          <button
+            onClick={() => setShowModal(false)}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded"
+          >
+            Claim Discount
+          </button>
+          <button
+            onClick={() => setShowModal(false)}
+            className="px-4 py-2 bg-muted rounded"
+          >
+            No thanks
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### Save Draft on Exit
+
+```tsx
+import { usePageLeave } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function DraftEditor() {
+  const [content, setContent] = useState("");
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+  usePageLeave(() => {
+    if (content) {
+      localStorage.setItem("draft", content);
+      setLastSaved(new Date());
+      console.log("Draft saved on page leave");
+    }
+  });
+
+  return (
+    <div className="max-w-2xl mx-auto p-4">
+      <div className="mb-2 flex justify-between items-center">
+        <h2 className="font-semibold">Draft Editor</h2>
+        {lastSaved && (
+          <span className="text-xs text-muted-foreground">
+            Saved: {lastSaved.toLocaleTimeString()}
+          </span>
+        )}
+      </div>
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        className="w-full h-64 p-4 border rounded-lg"
+        placeholder="Start typing..."
+      />
+      <p className="mt-2 text-xs text-muted-foreground">
+        Your draft will be saved automatically when you leave the page
+      </p>
+    </div>
+  );
+}
+```
+
+### Track Exit Behavior
+
+```tsx
+import { usePageLeave } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function ExitTracker() {
+  const [exitCount, setExitCount] = useState(0);
+
+  usePageLeave(() => {
+    setExitCount((prev) => prev + 1);
+    // Send analytics event
+    console.log("User attempted to leave the page");
+  });
+
+  return (
+    <div className="fixed bottom-4 left-4 p-4 bg-background border rounded-lg shadow">
+      <p className="text-sm">Exit attempts: {exitCount}</p>
+      <p className="text-xs text-muted-foreground">
+        Move your mouse out of the viewport
+      </p>
+    </div>
+  );
+}
+```
+
+### Conditional Exit Intent
+
+```tsx
+import { usePageLeave } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function ConditionalExitIntent() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+
+  usePageLeave(() => {
+    if (hasUnsavedChanges) {
+      setShowWarning(true);
+    }
+  });
+
+  return (
+    <div className="max-w-md mx-auto p-4">
+      <h2 className="text-xl font-bold mb-4">Form</h2>
+      
+      <input
+        type="text"
+        onChange={(e) => setHasUnsavedChanges(e.target.value.length > 0)}
+        className="w-full p-2 border rounded mb-4"
+        placeholder="Type something..."
+      />
+
+      {showWarning && (
+        <div className="p-4 bg-yellow-500/10 border border-yellow-500 rounded-lg">
+          <p className="text-sm font-medium">Unsaved changes detected!</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Don't forget to save your work
+          </p>
+          <button
+            onClick={() => {
+              setHasUnsavedChanges(false);
+              setShowWarning(false);
+            }}
+            className="mt-2 px-3 py-1 bg-primary text-primary-foreground rounded text-sm"
+          >
+            Save Now
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### One-time Exit Intent
+
+```tsx
+import { usePageLeave } from "@kuzenbo/hooks";
+import { useState, useCallback, useRef } from "react";
+
+export function OneTimeExitIntent() {
+  const [showOffer, setShowOffer] = useState(false);
+  const hasShownRef = useRef(false);
+
+  const handlePageLeave = useCallback(() => {
+    if (!hasShownRef.current) {
+      setShowOffer(true);
+      hasShownRef.current = true;
+    }
+  }, []);
+
+  usePageLeave(handlePageLeave);
+
+  return (
+    <div>
+      {showOffer && (
+        <div className="fixed top-4 right-4 p-6 bg-background border rounded-lg shadow-xl max-w-sm">
+          <h3 className="font-bold mb-2">Special Offer!</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            This offer only appears once
+          </p>
+          <button
+            onClick={() => setShowOffer(false)}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded w-full"
+          >
+            Close
+          </button>
+        </div>
+      )}
+      <div className="container mx-auto p-4">
+        <p>Move your mouse out of the viewport to trigger the exit intent</p>
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+```tsx
+function usePageLeave(
+  onPageLeave: () => void
+): void
+```
+
+<ParamField path="onPageLeave" type="() => void" required>
+  Callback invoked when `mouseleave` fires on the document element
+</ParamField>
+
+## Type Definitions
+
+```tsx
+type UsePageLeave = (onPageLeave: () => void) => void;
+```
+
+## Caveats
+
+- Only fires when the mouse physically leaves the viewport boundary
+- Does not fire on browser tab switches or window focus changes
+- Listens to `mouseleave` event on `document.documentElement`
+- Callback dependency changes are automatically handled
+- Does not prevent the user from leaving the page
+
+## SSR and RSC Notes
+
+- Use this hook in Client Components only
+- Do not call it from React Server Components
+- Safe to use in SSR contexts (no-op until hydration)

@@ -1,0 +1,214 @@
+---
+title: Card
+description: A flexible container for grouping related content with support for headers, footers, and size variants.
+---
+
+## Overview
+
+The Card component provides a bordered, elevated container for grouping content. It includes composable subcomponents for headers, titles, descriptions, content, footers, and actions. Cards support size variants that control spacing and typography scaling.
+
+## Usage
+
+```tsx
+import { Card } from "@kuzenbo/core";
+
+export default function Example() {
+  return (
+    <Card className="w-[360px]">
+      <Card.Header>
+        <Card.Title>Quarterly renewal pipeline</Card.Title>
+        <Card.Description>
+          7 enterprise contracts require finance sign-off this week.
+        </Card.Description>
+      </Card.Header>
+      <Card.Content>
+        <div className="grid gap-2 text-sm">
+          <div className="flex items-center justify-between">
+            <span>ARR at risk</span>
+            <span className="font-medium">$286K</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span>Pending approvals</span>
+            <span className="font-medium">4</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span>Owner</span>
+            <span className="font-medium">Finance Ops</span>
+          </div>
+        </div>
+      </Card.Content>
+      <Card.Footer>
+        <Button variant="outline">Export snapshot</Button>
+        <Button className="ml-auto">Review blockers</Button>
+      </Card.Footer>
+    </Card>
+  );
+}
+```
+
+## Size Variants
+
+Cards support five size variants: `xs`, `sm`, `md` (default), `lg`, and `xl`:
+
+```tsx
+import { Card } from "@kuzenbo/core";
+
+export default function Sizes() {
+  return (
+    <div className="grid gap-4">
+      <Card size="xs" className="w-[340px]">
+        <Card.Header>
+          <Card.Title>XS planning card</Card.Title>
+          <Card.Description>
+            Shared spacing and typography scaling by size.
+          </Card.Description>
+        </Card.Header>
+      </Card>
+      
+      <Card size="sm" className="w-[340px]">
+        <Card.Header>
+          <Card.Title>SM planning card</Card.Title>
+        </Card.Header>
+      </Card>
+      
+      <Card size="md" className="w-[340px]">
+        <Card.Header>
+          <Card.Title>MD planning card</Card.Title>
+        </Card.Header>
+      </Card>
+    </div>
+  );
+}
+```
+
+## With Form
+
+```tsx
+import { Card, Button, Input, Label } from "@kuzenbo/core";
+
+export default function FormCard() {
+  return (
+    <Card className="w-[360px]">
+      <Card.Header>
+        <Card.Title>Vendor onboarding request</Card.Title>
+        <Card.Description>
+          Submit a supplier profile for legal and finance review.
+        </Card.Description>
+      </Card.Header>
+      <Card.Content>
+        <div className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="card-company">Company legal name</Label>
+            <Input id="card-company" defaultValue="Northwind Logistics LLC" />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="card-contact">Primary finance contact</Label>
+            <Input
+              id="card-contact"
+              defaultValue="billing@northwind.example"
+              type="email"
+            />
+          </div>
+        </div>
+      </Card.Content>
+      <Card.Footer>
+        <Button className="w-full">Submit onboarding packet</Button>
+      </Card.Footer>
+    </Card>
+  );
+}
+```
+
+## Content Only
+
+Cards can contain only content without headers or footers:
+
+```tsx
+import { Card } from "@kuzenbo/core";
+
+export default function ContentOnly() {
+  return (
+    <Card className="w-[360px]">
+      <Card.Content>
+        <div className="text-sm">
+          Service-level alert: API ingest lag exceeded 90 seconds for two
+          regions.
+        </div>
+      </Card.Content>
+    </Card>
+  );
+}
+```
+
+## Props
+
+### Card
+
+<ParamField path="size" type="UISize" default="md">
+  Controls the spacing and typography scale of the card. Options: `xs`, `sm`, `md`, `lg`, `xl`.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the card.
+</ParamField>
+
+The Card component extends all standard HTML `div` element props (`ComponentProps<"div">`).
+
+### Card.Header
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the card header.
+</ParamField>
+
+Extends all standard HTML `div` element props.
+
+### Card.Title
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the card title.
+</ParamField>
+
+Extends all standard HTML heading element props.
+
+### Card.Description
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the card description.
+</ParamField>
+
+Extends all standard HTML paragraph element props.
+
+### Card.Content
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the card content.
+</ParamField>
+
+Extends all standard HTML `div` element props.
+
+### Card.Footer
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the card footer.
+</ParamField>
+
+Extends all standard HTML `div` element props.
+
+### Card.Action
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the card action.
+</ParamField>
+
+Extends all standard HTML element props.
+
+## Accessibility
+
+Each card subcomponent includes a `data-slot` attribute for styling and testing purposes:
+- `data-slot="card"`
+- `data-slot="card-header"`
+- `data-slot="card-title"`
+- `data-slot="card-description"`
+- `data-slot="card-content"`
+- `data-slot="card-footer"`
+- `data-slot="card-action"`

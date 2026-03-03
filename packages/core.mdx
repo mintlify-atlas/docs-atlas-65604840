@@ -1,0 +1,214 @@
+---
+title: '@kuzenbo/core'
+description: 'Composable React UI primitives for Kuzenbo'
+icon: 'box'
+---
+
+## Overview
+
+The `@kuzenbo/core` package is the foundation of Kuzenbo, providing 70+ composable React UI primitives built with Base UI and styled with Tailwind CSS. All components are fully typed, accessible, and follow modern React patterns.
+
+<Note>
+Version 0.0.7 is currently published on npm. This package is production-ready and actively maintained.
+</Note>
+
+## Installation
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash yarn
+yarn add @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash pnpm
+pnpm add @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash bun
+bun add @kuzenbo/core @kuzenbo/theme react react-dom
+```
+</CodeGroup>
+
+<Note>
+`@kuzenbo/core` and `@kuzenbo/theme` are typically installed together as they work hand-in-hand to provide styled components with theming support.
+</Note>
+
+## Components
+
+The core package exports components via subpath imports for optimal tree-shaking:
+
+<CardGroup cols={2}>
+  <Card title="Form Controls" icon="sliders">
+    Button, Input, Checkbox, Radio Group, Select, Switch, Textarea, Slider, Range Slider, Number Field, Input OTP
+  </Card>
+  <Card title="Layout" icon="layout">
+    Container, Card, Accordion, Tabs, Collapsible, Resizable, Separator, Spacer, Affix
+  </Card>
+  <Card title="Overlays" icon="layer-group">
+    Dialog, Drawer, Popover, Tooltip, Sheet, Alert Dialog, Context Menu, Dropdown Menu
+  </Card>
+  <Card title="Navigation" icon="compass">
+    Breadcrumb, Navigation Menu, Navigation List, Menubar, Pagination, Sidebar, Command
+  </Card>
+  <Card title="Data Display" icon="table">
+    Table, Avatar, Badge, Pill, Code, Kbd, Timeline, Empty, Preview Card, QR Code
+  </Card>
+  <Card title="Feedback" icon="bell">
+    Alert, Progress, Meter, Spinner, Skeleton, Rating, Announcement
+  </Card>
+  <Card title="Media" icon="image">
+    Aspect Ratio, Carousel, Marquee
+  </Card>
+  <Card title="Utilities" icon="wrench">
+    Portal, Scroll Area, Dropzone, Emoji Picker, Copy Button, Theme Icon, Fieldset, Form, Field, Label
+  </Card>
+</CardGroup>
+
+## Usage
+
+Components are imported via subpaths for optimal bundle size:
+
+```tsx
+import { Button } from '@kuzenbo/core/ui/button';
+import { Input } from '@kuzenbo/core/ui/input';
+import { Card } from '@kuzenbo/core/ui/card';
+
+export function MyForm() {
+  return (
+    <Card>
+      <Card.Header>
+        <Card.Title>Sign In</Card.Title>
+      </Card.Header>
+      <Card.Content>
+        <Input placeholder="Email" type="email" />
+        <Input placeholder="Password" type="password" />
+      </Card.Content>
+      <Card.Footer>
+        <Button>Submit</Button>
+      </Card.Footer>
+    </Card>
+  );
+}
+```
+
+## Provider Setup
+
+Wrap your app with the Kuzenbo provider for global configuration:
+
+```tsx
+import { KuzenboProvider } from '@kuzenbo/core/provider';
+import { ThemeProvider } from '@kuzenbo/theme/theme-provider';
+
+export function App({ children }) {
+  return (
+    <ThemeProvider>
+      <KuzenboProvider>
+        {children}
+      </KuzenboProvider>
+    </ThemeProvider>
+  );
+}
+```
+
+## Size System
+
+Most components support a unified size system:
+
+```tsx
+import { Button } from '@kuzenbo/core/ui/button';
+
+// Available sizes: xs, sm, md (default), lg, xl
+<Button size="xs">Extra Small</Button>
+<Button size="sm">Small</Button>
+<Button size="md">Medium (default)</Button>
+<Button size="lg">Large</Button>
+<Button size="xl">Extra Large</Button>
+```
+
+## Variant System
+
+Components use `tailwind-variants` for type-safe variant composition:
+
+```tsx
+import { Button } from '@kuzenbo/core/ui/button';
+
+// Variants: solid (default), outline, ghost, link
+<Button variant="solid">Solid</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>
+
+// Severity colors: danger, success, info, warning
+<Button severity="danger">Delete</Button>
+```
+
+## Composition Patterns
+
+Kuzenbo components use Base UI's `render` prop for flexible composition:
+
+```tsx
+import { Button } from '@kuzenbo/core/ui/button';
+import Link from 'next/link';
+
+// Render as a different element
+<Button render={<Link href="/settings" />}>
+  Go to Settings
+</Button>
+
+// Render with custom component
+<Button render={(props) => <MyCustomButton {...props} />}>
+  Custom
+</Button>
+```
+
+## Dependencies
+
+Core dependencies:
+- `@base-ui/react` - Accessible UI primitives
+- `@kuzenbo/hooks` - Reusable React hooks
+- `tailwind-variants` - Type-safe variant system
+- `tailwind-merge` - Class name merging
+- `cmdk` - Command palette
+- `embla-carousel-react` - Carousel functionality
+- `react-dropzone` - File upload
+- `qrcode` - QR code generation
+
+## Peer Dependencies
+
+```json
+{
+  "@kuzenbo/theme": "^0.0.7",
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0"
+}
+```
+
+## TypeScript
+
+All components are fully typed with TypeScript. Import types alongside components:
+
+```tsx
+import { Button } from '@kuzenbo/core/ui/button';
+import type { ButtonProps } from '@kuzenbo/core/ui/button';
+
+const MyButton: React.FC<ButtonProps> = (props) => {
+  return <Button {...props} />;
+};
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Components" icon="puzzle-piece" href="/components/button">
+    Explore all available components
+  </Card>
+  <Card title="Theme" icon="palette" href="/packages/theme">
+    Learn about theming and customization
+  </Card>
+  <Card title="Hooks" icon="link" href="/packages/hooks">
+    Discover reusable React hooks
+  </Card>
+</CardGroup>

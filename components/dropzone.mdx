@@ -1,0 +1,180 @@
+---
+title: Dropzone
+description: Capture files from user with drag and drop or file picker.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Dropzone } from "@kuzenbo/core";
+
+function Example() {
+  const handleDrop = (files: File[]) => {
+    console.log("Accepted files:", files);
+  };
+
+  return (
+    <Dropzone onDrop={handleDrop}>
+      <div className="flex flex-col items-center justify-center gap-2 p-8">
+        <Dropzone.Idle>
+          <p className="text-sm text-muted-foreground">
+            Drag files here or click to select
+          </p>
+        </Dropzone.Idle>
+        <Dropzone.Accept>
+          <p className="text-sm text-primary">Drop files here</p>
+        </Dropzone.Accept>
+        <Dropzone.Reject>
+          <p className="text-sm text-danger">Invalid file type</p>
+        </Dropzone.Reject>
+      </div>
+    </Dropzone>
+  );
+}
+```
+
+## Props
+
+<ParamField path="onDrop" type="(files: FileWithPath[]) => void" required>
+  Callback when valid files are dropped.
+</ParamField>
+
+<ParamField path="onReject" type="(fileRejections: FileRejection[]) => void">
+  Callback when dropped files are rejected.
+</ParamField>
+
+<ParamField path="onDropAny" type="(files: FileWithPath[], rejections: FileRejection[]) => void">
+  Callback when any files are dropped (both accepted and rejected).
+</ParamField>
+
+<ParamField path="accept" type="Accept | string[]">
+  MIME types to accept. Can be object or array of MIME types.
+</ParamField>
+
+<ParamField path="multiple" type="boolean" default="true">
+  Whether to allow multiple files.
+</ParamField>
+
+<ParamField path="maxSize" type="number" default="Infinity">
+  Maximum file size in bytes.
+</ParamField>
+
+<ParamField path="maxFiles" type="number">
+  Maximum number of files.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the dropzone is disabled.
+</ParamField>
+
+<ParamField path="loading" type="boolean">
+  Whether to display a loading overlay.
+</ParamField>
+
+<ParamField path="variant" type="'default' | 'filled' | 'light'" default="'light'">
+  The visual style variant.
+</ParamField>
+
+<ParamField path="activateOnClick" type="boolean" default="true">
+  Whether clicking opens the file picker.
+</ParamField>
+
+<ParamField path="activateOnDrag" type="boolean" default="true">
+  Whether drag and drop is enabled.
+</ParamField>
+
+<ParamField path="activateOnKeyboard" type="boolean" default="true">
+  Whether Space/Enter opens the file picker.
+</ParamField>
+
+<ParamField path="validator" type="(file: File) => FileError | FileError[] | null">
+  Custom validation function.
+</ParamField>
+
+<ParamField path="enablePointerEvents" type="boolean">
+  Whether to enable pointer events on inner content.
+</ParamField>
+
+## Advanced Patterns
+
+### Accept Specific Files
+
+```tsx
+<Dropzone
+  accept={["image/png", "image/jpeg", "image/gif"]}
+  onDrop={handleDrop}
+>
+  {/* ... */}
+</Dropzone>
+```
+
+### File Size Limit
+
+```tsx
+<Dropzone
+  maxSize={5 * 1024 * 1024} // 5MB
+  onDrop={handleDrop}
+  onReject={(rejections) => {
+    rejections.forEach((rejection) => {
+      console.error(rejection.errors);
+    });
+  }}
+>
+  {/* ... */}
+</Dropzone>
+```
+
+### Loading State
+
+```tsx
+const [loading, setLoading] = useState(false);
+
+const handleDrop = async (files: File[]) => {
+  setLoading(true);
+  await uploadFiles(files);
+  setLoading(false);
+};
+
+<Dropzone loading={loading} onDrop={handleDrop}>
+  {/* ... */}
+</Dropzone>
+```
+
+### Custom Validation
+
+```tsx
+<Dropzone
+  validator={(file) => {
+    if (file.name.includes("invalid")) {
+      return {
+        code: "invalid-name",
+        message: "File name cannot contain 'invalid'"
+      };
+    }
+    return null;
+  }}
+  onDrop={handleDrop}
+>
+  {/* ... */}
+</Dropzone>
+```
+
+### Variants
+
+```tsx
+{/* Filled variant */}
+<Dropzone variant="filled" onDrop={handleDrop}>
+  {/* ... */}
+</Dropzone>
+
+{/* Light variant (default) */}
+<Dropzone variant="light" onDrop={handleDrop}>
+  {/* ... */}
+</Dropzone>
+```

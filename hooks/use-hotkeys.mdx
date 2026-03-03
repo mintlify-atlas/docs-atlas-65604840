@@ -1,0 +1,163 @@
+---
+title: 'useHotkeys'
+description: 'Register global keyboard shortcuts'
+---
+
+`useHotkeys` registers global `keydown` listeners for a list of hotkey tuples and runs matching handlers. Handlers can be filtered by element tag name and contentEditable behavior.
+
+## Usage
+
+```tsx
+import { useHotkeys } from '@kuzenbo/hooks';
+
+function Demo() {
+  useHotkeys([
+    ['mod+S', () => console.log('Save')],
+    ['ctrl+K', () => console.log('Search')],
+    ['shift+J', () => console.log('Toggle sidebar')],
+  ]);
+
+  return <div>Press mod+S, ctrl+K, or shift+J</div>;
+}
+```
+
+## API Reference
+
+### Parameters
+
+<ParamField path="hotkeys" type="HotkeyItem[]" required>
+  Array of hotkey definitions. Each item is a tuple of `[hotkey, handler, options]`.
+</ParamField>
+
+<ParamField path="tagsToIgnore" type="string[]" default="['INPUT', 'TEXTAREA', 'SELECT']">
+  Tag names where hotkeys should not fire.
+</ParamField>
+
+<ParamField path="triggerOnContentEditable" type="boolean" default="false">
+  If `true`, allows firing in contentEditable elements unless ignored by tag.
+</ParamField>
+
+### HotkeyItem
+
+Each hotkey is defined as a tuple:
+
+```tsx
+type HotkeyItem = [
+  string,                    // Hotkey combination (e.g., 'mod+S')
+  (event: KeyboardEvent) => void,  // Handler function
+  HotkeyItemOptions?        // Optional configuration
+];
+```
+
+### HotkeyItemOptions
+
+<ParamField path="preventDefault" type="boolean" default="true">
+  Whether to call `event.preventDefault()` when the hotkey is triggered.
+</ParamField>
+
+<ParamField path="usePhysicalKeys" type="boolean" default="false">
+  Whether to use physical key codes instead of character keys.
+</ParamField>
+
+## Hotkey Format
+
+Hotkeys support the following modifiers:
+
+- `mod` - `Cmd` on macOS, `Ctrl` on Windows/Linux
+- `ctrl` - `Ctrl` key
+- `shift` - `Shift` key
+- `alt` - `Alt` key (`Option` on macOS)
+- `meta` - `Cmd` on macOS, `Windows` key on Windows
+
+Combine modifiers with `+`:
+
+```tsx
+useHotkeys([
+  ['mod+shift+K', () => console.log('Command palette')],
+  ['alt+/', () => console.log('Show help')],
+]);
+```
+
+## Prevent Default Behavior
+
+```tsx
+import { useHotkeys } from '@kuzenbo/hooks';
+
+function Editor() {
+  useHotkeys([
+    [
+      'mod+S',
+      (event) => {
+        console.log('Saved!');
+        // preventDefault is true by default
+      },
+    ],
+    [
+      'ctrl+P',
+      (event) => {
+        console.log('Print');
+      },
+      { preventDefault: false }, // Allow default print dialog
+    ],
+  ]);
+
+  return <textarea />;
+}
+```
+
+## Allow in Input Fields
+
+```tsx
+import { useHotkeys } from '@kuzenbo/hooks';
+
+function Search() {
+  useHotkeys(
+    [
+      ['mod+K', () => console.log('Open search')],
+    ],
+    [] // Empty array = don't ignore any tags
+  );
+
+  return <input placeholder="Search..." />;
+}
+```
+
+## With ContentEditable
+
+```tsx
+import { useHotkeys } from '@kuzenbo/hooks';
+
+function RichTextEditor() {
+  useHotkeys(
+    [
+      ['mod+B', () => console.log('Bold')],
+      ['mod+I', () => console.log('Italic')],
+    ],
+    ['INPUT', 'TEXTAREA'],
+    true // Allow in contentEditable
+  );
+
+  return <div contentEditable>Edit me</div>;
+}
+```
+
+## Multiple Hotkeys
+
+```tsx
+import { useHotkeys } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  useHotkeys([
+    ['ArrowUp', () => setCount((c) => c + 1)],
+    ['ArrowDown', () => setCount((c) => c - 1)],
+    ['r', () => setCount(0)],
+    ['mod+K', () => console.log('Search')],
+    ['?', () => console.log('Help')],
+  ]);
+
+  return <div>Count: {count}</div>;
+}
+```

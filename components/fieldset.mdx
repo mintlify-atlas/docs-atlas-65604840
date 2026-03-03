@@ -1,0 +1,137 @@
+---
+title: Fieldset
+description: Groups related form fields together with a semantic legend.
+---
+
+## Import
+
+```tsx
+import { Fieldset } from "@kuzenbo/core";
+```
+
+## Usage
+
+The `Fieldset` component groups related form fields together semantically. It's particularly useful for organizing complex forms with multiple sections.
+
+```tsx
+import { Field, Fieldset } from "@kuzenbo/core";
+
+export default function NotificationSettings() {
+  return (
+    <Fieldset>
+      <Fieldset.Legend>Incident notification routing</Fieldset.Legend>
+      <Field name="primaryOnCallEmail">
+        <Field.Label htmlFor="primary-on-call-email">
+          Primary on-call email
+        </Field.Label>
+        <Field.Control
+          id="primary-on-call-email"
+          placeholder="oncall@acme.io"
+          type="email"
+        />
+        <Field.Description>Receives Sev-1 and Sev-2 alerts.</Field.Description>
+      </Field>
+      <Field name="secondaryOnCallEmail">
+        <Field.Label htmlFor="secondary-on-call-email">
+          Secondary on-call email
+        </Field.Label>
+        <Field.Control
+          id="secondary-on-call-email"
+          placeholder="backup-oncall@acme.io"
+          type="email"
+        />
+      </Field>
+    </Fieldset>
+  );
+}
+```
+
+## Multiple Sections
+
+Use multiple `Fieldset` components to organize a form into logical sections:
+
+```tsx
+import { Field, Fieldset, Form } from "@kuzenbo/core";
+
+export default function SecuritySettings() {
+  return (
+    <Form>
+      <Fieldset>
+        <Fieldset.Legend>Authentication</Fieldset.Legend>
+        <Field name="samlProvider">
+          <Field.Label>SAML Provider</Field.Label>
+          <Field.Control placeholder="Okta" />
+        </Field>
+        <Field name="ssoEndpoint">
+          <Field.Label>SSO Endpoint URL</Field.Label>
+          <Field.Control type="url" />
+        </Field>
+      </Fieldset>
+
+      <Fieldset>
+        <Fieldset.Legend>Access Control</Fieldset.Legend>
+        <Field name="allowedDomains">
+          <Field.Label>Allowed email domains</Field.Label>
+          <Field.Control placeholder="acme.io, acme.com" />
+        </Field>
+        <Field name="sessionTimeout">
+          <Field.Label>Session timeout (minutes)</Field.Label>
+          <Field.Control type="number" />
+        </Field>
+      </Fieldset>
+    </Form>
+  );
+}
+```
+
+## Props
+
+### Fieldset
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables all form controls within the fieldset.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes for the fieldset container.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Content of the fieldset, typically a `Fieldset.Legend` and `Field` components.
+</ParamField>
+
+### Fieldset.Legend
+
+<ParamField path="children" type="ReactNode">
+  The heading text for the fieldset group.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes for the legend element.
+</ParamField>
+
+## Composition
+
+```tsx
+import { Fieldset } from "@kuzenbo/core";
+
+<Fieldset.Root>
+  <Fieldset.Legend>Billing Information</Fieldset.Legend>
+  {/* Fields go here */}
+</Fieldset.Root>
+```
+
+## Types
+
+```tsx
+export type FieldsetProps = FieldsetRootProps;
+export type FieldsetLegendProps = ComponentProps<typeof BaseFieldset.Legend>;
+export type FieldsetRootProps = ComponentProps<typeof BaseFieldset.Root>;
+```
+
+## Accessibility
+
+- Uses semantic `<fieldset>` and `<legend>` elements
+- Screen readers announce the legend when entering the fieldset
+- Disabled state propagates to all child controls
+- Provides proper grouping context for related form fields

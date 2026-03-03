@@ -1,0 +1,156 @@
+---
+title: useDisclosure
+description: Manages boolean open/closed state with stable helper handlers
+---
+
+## Overview
+
+Manages boolean open/closed state with stable helper handlers. The `open` and `close` handlers are idempotent and invoke `onOpen` or `onClose` only when the state actually changes.
+
+## Import
+
+```tsx
+import { useDisclosure } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useDisclosure(
+  initialState?: boolean,
+  options?: UseDisclosureOptions
+): UseDisclosureReturnValue;
+```
+
+## Parameters
+
+<ParamField path="initialState" type="boolean" default="false">
+  Initial disclosure state
+</ParamField>
+
+<ParamField path="options" type="UseDisclosureOptions">
+  Optional lifecycle callbacks fired on state transitions
+  
+  <ParamField path="options.onOpen" type="() => void">
+    Callback fired when the disclosure opens
+  </ParamField>
+  
+  <ParamField path="options.onClose" type="() => void">
+    Callback fired when the disclosure closes
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+<ResponseField name="[opened, handlers]" type="UseDisclosureReturnValue">
+  A tuple containing the current state and handler functions
+  
+  <ResponseField name="opened" type="boolean">
+    Current disclosure state
+  </ResponseField>
+  
+  <ResponseField name="handlers" type="UseDisclosureHandlers">
+    Object containing handler functions
+    
+    <ResponseField name="handlers.open" type="() => void">
+      Opens the disclosure (idempotent)
+    </ResponseField>
+    
+    <ResponseField name="handlers.close" type="() => void">
+      Closes the disclosure (idempotent)
+    </ResponseField>
+    
+    <ResponseField name="handlers.toggle" type="() => void">
+      Toggles the disclosure state
+    </ResponseField>
+    
+    <ResponseField name="handlers.set" type="(value: boolean) => void">
+      Sets the disclosure to a specific state
+    </ResponseField>
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Basic Usage
+
+```tsx
+import { useDisclosure } from '@kuzenbo/hooks';
+
+function Modal() {
+  const [opened, { open, close, toggle }] = useDisclosure(false);
+
+  return (
+    <>
+      <button onClick={open}>Open Modal</button>
+      <button onClick={close}>Close Modal</button>
+      <button onClick={toggle}>Toggle Modal</button>
+      
+      {opened && (
+        <div className="modal">
+          <p>Modal content</p>
+          <button onClick={close}>Close</button>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+### With Lifecycle Callbacks
+
+```tsx
+import { useDisclosure } from '@kuzenbo/hooks';
+
+function Drawer() {
+  const [opened, { open, close }] = useDisclosure(false, {
+    onOpen: () => console.log('Drawer opened'),
+    onClose: () => console.log('Drawer closed'),
+  });
+
+  return (
+    <>
+      <button onClick={open}>Open Drawer</button>
+      <div className={opened ? 'drawer-open' : 'drawer-closed'}>
+        <button onClick={close}>Close</button>
+      </div>
+    </>
+  );
+}
+```
+
+### Direct State Control
+
+```tsx
+import { useDisclosure } from '@kuzenbo/hooks';
+
+function Alert() {
+  const [visible, { set }] = useDisclosure(true);
+
+  return (
+    <div>
+      {visible && <div className="alert">Important message</div>}
+      <button onClick={() => set(true)}>Show</button>
+      <button onClick={() => set(false)}>Hide</button>
+    </div>
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+export interface UseDisclosureOptions {
+  onOpen?: () => void;
+  onClose?: () => void;
+}
+
+export interface UseDisclosureHandlers {
+  set: (value: boolean) => void;
+  open: () => void;
+  close: () => void;
+  toggle: () => void;
+}
+
+export type UseDisclosureReturnValue = [boolean, UseDisclosureHandlers];
+```

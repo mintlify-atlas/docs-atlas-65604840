@@ -1,0 +1,142 @@
+---
+title: useIntersection
+description: Observe element intersection with the viewport or a container
+---
+
+## Overview
+
+Observes intersection changes for the attached element and stores the latest entry. Recreates the observer when options change and clears the entry when no element is attached.
+
+## Function Signature
+
+```typescript
+function useIntersection<T extends HTMLElement = HTMLElement>(
+  options?: IntersectionObserverInit
+): UseIntersectionReturnValue<T>
+```
+
+### Type Definitions
+
+```typescript
+interface UseIntersectionReturnValue<T> {
+  ref: RefCallback<T | null>;
+  entry: IntersectionObserverEntry | null;
+}
+```
+
+## Parameters
+
+<ParamField path="options" type="IntersectionObserverInit">
+  Optional `IntersectionObserver` configuration:
+  - `root`: Element used as viewport for checking visibility (defaults to browser viewport)
+  - `rootMargin`: Margin around the root (e.g., `"10px 20px 30px 40px"`)
+  - `threshold`: Number or array indicating at what percentage of visibility the callback should execute (e.g., `0.5` for 50%, or `[0, 0.25, 0.5, 0.75, 1]`)
+</ParamField>
+
+## Return Value
+
+<ResponseField name="ref" type="RefCallback<T | null>">
+  A ref callback to attach to the element you want to observe.
+</ResponseField>
+
+<ResponseField name="entry" type="IntersectionObserverEntry | null">
+  The latest intersection observer entry containing:
+  - `isIntersecting`: Boolean indicating if element is intersecting
+  - `intersectionRatio`: Ratio of element visibility (0 to 1)
+  - `boundingClientRect`: Element's bounding rectangle
+  - `intersectionRect`: Rectangle of the intersection
+  - `rootBounds`: Root element's bounding rectangle
+  - `target`: The observed element
+  - `time`: Timestamp when intersection occurred
+</ResponseField>
+
+## Usage Example
+
+```tsx
+import { useIntersection } from "@kuzenbo/hooks";
+
+function Example() {
+  const { ref, entry } = useIntersection({
+    threshold: 0.5,
+  });
+
+  return (
+    <div>
+      <div style={{ height: "100vh" }}>Scroll down...</div>
+      <div
+        ref={ref}
+        style={{
+          padding: "2rem",
+          background: entry?.isIntersecting ? "lightgreen" : "lightcoral",
+          transition: "background 0.3s",
+        }}
+      >
+        {entry?.isIntersecting ? "Visible!" : "Hidden"}
+        <p>Intersection ratio: {entry?.intersectionRatio.toFixed(2)}</p>
+      </div>
+      <div style={{ height: "100vh" }}>More content...</div>
+    </div>
+  );
+}
+```
+
+## Lazy Loading Example
+
+```tsx
+import { useEffect, useState } from "react";
+import { useIntersection } from "@kuzenbo/hooks";
+
+function LazyImage({ src, alt }: { src: string; alt: string }) {
+  const { ref, entry } = useIntersection({ threshold: 0.1 });
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (entry?.isIntersecting && !loaded) {
+      setLoaded(true);
+    }
+  }, [entry?.isIntersecting, loaded]);
+
+  return (
+    <div ref={ref} style={{ minHeight: "400px", background: "#f0f0f0" }}>
+      {loaded ? (
+        <img src={src} alt={alt} style={{ width: "100%" }} />
+      ) : (
+        <div>Loading...</div>
+      )}
+    </div>
+  );
+}
+```
+
+## Root Margin Example
+
+```tsx
+import { useIntersection } from "@kuzenbo/hooks";
+
+function Example() {
+  const { ref, entry } = useIntersection({
+    rootMargin: "100px", // Trigger 100px before entering viewport
+    threshold: 0,
+  });
+
+  return (
+    <div>
+      <div style={{ height: "150vh" }}>Scroll down...</div>
+      <div ref={ref}>
+        {entry?.isIntersecting
+          ? "Triggered 100px before viewport!"
+          : "Not yet visible"}
+      </div>
+    </div>
+  );
+}
+```
+
+## Features
+
+- Uses native `IntersectionObserver` API for efficient viewport detection
+- Automatic observer cleanup when element is removed
+- Recreates observer when options change
+- Provides full `IntersectionObserverEntry` with detailed intersection data
+- Supports custom root elements and margins
+- Configurable visibility thresholds

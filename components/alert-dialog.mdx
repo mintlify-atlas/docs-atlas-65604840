@@ -1,0 +1,315 @@
+---
+title: AlertDialog
+description: A modal dialog that interrupts the user with important content and expects a response.
+---
+
+An alert dialog is a modal that interrupts user workflow to communicate critical information and require an explicit response before proceeding.
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { AlertDialog, Button } from "@kuzenbo/core";
+
+export default function AlertDialogExample() {
+  return (
+    <AlertDialog>
+      <AlertDialog.Trigger render={<Button variant="outline" />}>
+        Remove teammate access
+      </AlertDialog.Trigger>
+      <AlertDialog.Content>
+        <AlertDialog.Header>
+          <AlertDialog.Title>
+            Remove access from this workspace?
+          </AlertDialog.Title>
+          <AlertDialog.Description>
+            Sofia will lose access to dashboards, deployments, and incident
+            timelines immediately.
+          </AlertDialog.Description>
+        </AlertDialog.Header>
+        <AlertDialog.Footer>
+          <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+          <AlertDialog.Action variant="danger">
+            Remove access
+          </AlertDialog.Action>
+        </AlertDialog.Footer>
+      </AlertDialog.Content>
+    </AlertDialog>
+  );
+}
+```
+
+### With Form Validation
+
+```tsx
+import { AlertDialog, Button, Input, Label } from "@kuzenbo/core";
+import { useState } from "react";
+
+export default function FormValidationExample() {
+  const workspaceSlug = "acme-enterprise";
+  const [typedSlug, setTypedSlug] = useState("");
+  const isConfirmed = typedSlug.trim() === workspaceSlug;
+
+  return (
+    <AlertDialog>
+      <AlertDialog.Trigger render={<Button variant="outline" />}>
+        Delete workspace
+      </AlertDialog.Trigger>
+      <AlertDialog.Content size="lg">
+        <AlertDialog.Header>
+          <AlertDialog.Title>Delete workspace permanently?</AlertDialog.Title>
+          <AlertDialog.Description>
+            This removes members, billing history, and automation rules. Type
+            the workspace slug to confirm.
+          </AlertDialog.Description>
+        </AlertDialog.Header>
+        <div className="grid gap-2">
+          <Label htmlFor="workspace-slug">
+            Type <code>{workspaceSlug}</code> to continue
+          </Label>
+          <Input
+            id="workspace-slug"
+            value={typedSlug}
+            onChange={(e) => setTypedSlug(e.target.value)}
+            placeholder={workspaceSlug}
+          />
+        </div>
+        <AlertDialog.Footer>
+          <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+          <AlertDialog.Action disabled={!isConfirmed} variant="danger">
+            Delete workspace
+          </AlertDialog.Action>
+        </AlertDialog.Footer>
+      </AlertDialog.Content>
+    </AlertDialog>
+  );
+}
+```
+
+### Async Confirmation
+
+```tsx
+import { AlertDialog, Button } from "@kuzenbo/core";
+import { useState, useCallback } from "react";
+
+export default function AsyncConfirmation() {
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleConfirm = useCallback(() => {
+    setIsLoading(true);
+    // Simulate async operation
+    setTimeout(() => {
+      setIsLoading(false);
+      setOpen(false);
+    }, 1000);
+  }, []);
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialog.Trigger render={<Button variant="outline" />}>
+        Revoke API key
+      </AlertDialog.Trigger>
+      <AlertDialog.Content>
+        <AlertDialog.Header>
+          <AlertDialog.Title>Revoke API key now?</AlertDialog.Title>
+          <AlertDialog.Description>
+            Connected integrations will stop sending events until a new key is
+            generated.
+          </AlertDialog.Description>
+        </AlertDialog.Header>
+        <AlertDialog.Footer>
+          <AlertDialog.Cancel disabled={isLoading}>
+            Cancel
+          </AlertDialog.Cancel>
+          <AlertDialog.Action
+            disabled={isLoading}
+            onClick={handleConfirm}
+            variant="danger"
+          >
+            {isLoading ? "Revoking..." : "Revoke key"}
+          </AlertDialog.Action>
+        </AlertDialog.Footer>
+      </AlertDialog.Content>
+    </AlertDialog>
+  );
+}
+```
+
+### Composed Anatomy
+
+```tsx
+import { AlertDialog, Button } from "@kuzenbo/core";
+
+export default function ComposedAlert() {
+  return (
+    <AlertDialog>
+      <AlertDialog.Trigger render={<Button variant="outline" />}>
+        Archive environment
+      </AlertDialog.Trigger>
+      <AlertDialog.Portal>
+        <AlertDialog.Backdrop />
+        <AlertDialog.Viewport>
+          <AlertDialog.Popup>
+            <AlertDialog.Header>
+              <AlertDialog.Title>
+                Archive staging environment?
+              </AlertDialog.Title>
+              <AlertDialog.Description>
+                Scheduled jobs stop immediately and environment variables become
+                read-only.
+              </AlertDialog.Description>
+            </AlertDialog.Header>
+            <AlertDialog.Footer>
+              <AlertDialog.Close render={<Button variant="outline" />}>
+                Cancel
+              </AlertDialog.Close>
+              <AlertDialog.Action variant="danger">
+                Archive now
+              </AlertDialog.Action>
+            </AlertDialog.Footer>
+          </AlertDialog.Popup>
+        </AlertDialog.Viewport>
+      </AlertDialog.Portal>
+    </AlertDialog>
+  );
+}
+```
+
+## API Reference
+
+### AlertDialog (Root)
+
+<ParamField path="defaultOpen" type="boolean">
+  The initial open state when uncontrolled.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  The controlled open state of the dialog.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback fired when the open state changes.
+</ParamField>
+
+### AlertDialog.Content
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size variant for the dialog.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the dialog popup.
+</ParamField>
+
+### AlertDialog.Popup
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size variant for the popup.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### AlertDialog.Trigger
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the trigger. Uses Base UI render composition.
+</ParamField>
+
+### AlertDialog.Title
+
+<ParamField path="children" type="ReactNode">
+  The title content for the dialog.
+</ParamField>
+
+### AlertDialog.Description
+
+<ParamField path="children" type="ReactNode">
+  The description content for the dialog.
+</ParamField>
+
+### AlertDialog.Header
+
+<ParamField path="children" type="ReactNode">
+  The header content, typically contains Title and Description.
+</ParamField>
+
+### AlertDialog.Footer
+
+<ParamField path="children" type="ReactNode">
+  The footer content, typically contains Cancel and Action buttons.
+</ParamField>
+
+### AlertDialog.Action
+
+<ParamField path="variant" type="'default' | 'danger'" default="'default'">
+  The visual variant of the action button.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the action button is disabled.
+</ParamField>
+
+<ParamField path="onClick" type="() => void">
+  Callback fired when the action is triggered.
+</ParamField>
+
+### AlertDialog.Cancel
+
+<ParamField path="disabled" type="boolean">
+  Whether the cancel button is disabled.
+</ParamField>
+
+### AlertDialog.Close
+
+<ParamField path="render" type="ReactElement">
+  The element to render as the close trigger.
+</ParamField>
+
+### AlertDialog.Media
+
+Optional media content (icon or image) to display in the dialog.
+
+<ParamField path="children" type="ReactNode">
+  The media content.
+</ParamField>
+
+## Component Parts
+
+The AlertDialog component is built from several composable parts:
+
+- `AlertDialog` - Root component that manages state
+- `AlertDialog.Trigger` - Opens the dialog
+- `AlertDialog.Portal` - Portals the dialog content to document.body
+- `AlertDialog.Backdrop` - The overlay backdrop
+- `AlertDialog.Viewport` - Centers the dialog popup
+- `AlertDialog.Popup` - The dialog container
+- `AlertDialog.Content` - Convenience wrapper that includes Portal, Backdrop, Viewport, and Popup
+- `AlertDialog.Header` - Styled header container
+- `AlertDialog.Title` - Accessible title
+- `AlertDialog.Description` - Accessible description
+- `AlertDialog.Footer` - Styled footer container
+- `AlertDialog.Action` - Primary action button
+- `AlertDialog.Cancel` - Cancel action button
+- `AlertDialog.Close` - Closes the dialog
+- `AlertDialog.Media` - Optional media content
+- `AlertDialog.Overlay` - Alternative backdrop component
+
+## Accessibility
+
+- AlertDialog implements the WAI-ARIA AlertDialog pattern
+- Focus is trapped within the dialog when open
+- Pressing Escape closes the dialog (unless overridden)
+- Focus moves to the first focusable element when opened
+- Focus returns to the trigger element when closed
+- Title and Description are automatically linked for screen readers
+- The dialog is modal and prevents interaction with content behind it

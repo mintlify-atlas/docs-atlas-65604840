@@ -1,0 +1,222 @@
+---
+title: 'useFileDialog'
+description: 'Open the native file picker programmatically'
+---
+
+`useFileDialog` provides an imperative API for opening the native file picker. The hook creates and manages a hidden `<input type="file">`, stores selected files in state, and exposes helpers to open or reset the current selection.
+
+## Usage
+
+```tsx
+import { useFileDialog } from '@kuzenbo/hooks';
+
+function Demo() {
+  const { open, files } = useFileDialog();
+
+  return (
+    <div>
+      <button onClick={open}>Select Files</button>
+      {files && (
+        <ul>
+          {Array.from(files).map((file, index) => (
+            <li key={index}>{file.name}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Parameters
+
+<ParamField path="options" type="UseFileDialogOptions">
+  Optional file dialog configuration.
+</ParamField>
+
+<ParamField path="options.multiple" type="boolean" default="true">
+  Determines whether multiple files are allowed.
+</ParamField>
+
+<ParamField path="options.accept" type="string" default="*">
+  `accept` attribute of the file input (e.g., `image/*`, `.pdf,.doc`).
+</ParamField>
+
+<ParamField path="options.capture" type="string">
+  `capture` attribute of the file input for mobile camera access.
+</ParamField>
+
+<ParamField path="options.directory" type="boolean" default="false">
+  Determines whether the user can pick a directory instead of files.
+</ParamField>
+
+<ParamField path="options.resetOnOpen" type="boolean" default="false">
+  Determines whether the file input state should be reset when the dialog is opened.
+</ParamField>
+
+<ParamField path="options.initialFiles" type="FileList | File[]">
+  Initial selected files.
+</ParamField>
+
+<ParamField path="options.onChange" type="(files: FileList | null) => void">
+  Called when files are selected.
+</ParamField>
+
+<ParamField path="options.onCancel" type="() => void">
+  Called when file dialog is canceled.
+</ParamField>
+
+### Returns
+
+<ResponseField name="files" type="FileList | null">
+  Currently selected files.
+</ResponseField>
+
+<ResponseField name="open" type="() => void">
+  Function to open the file picker dialog.
+</ResponseField>
+
+<ResponseField name="reset" type="() => void">
+  Function to reset the current file selection.
+</ResponseField>
+
+## Single File Selection
+
+```tsx
+import { useFileDialog } from '@kuzenbo/hooks';
+
+function Avatar() {
+  const { open, files, reset } = useFileDialog({
+    multiple: false,
+    accept: 'image/*',
+  });
+
+  return (
+    <div>
+      <button onClick={open}>Choose Avatar</button>
+      {files && files[0] && (
+        <div>
+          <p>{files[0].name}</p>
+          <button onClick={reset}>Clear</button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## With onChange Callback
+
+```tsx
+import { useFileDialog } from '@kuzenbo/hooks';
+import { useCallback } from 'react';
+
+function Upload() {
+  const handleChange = useCallback((selectedFiles: FileList | null) => {
+    if (selectedFiles) {
+      console.log('Selected files:', Array.from(selectedFiles));
+    }
+  }, []);
+
+  const { open } = useFileDialog({ onChange: handleChange });
+
+  return <button onClick={open}>Upload Files</button>;
+}
+```
+
+## File Type Restrictions
+
+```tsx
+import { useFileDialog } from '@kuzenbo/hooks';
+
+function DocumentPicker() {
+  const { open, files } = useFileDialog({
+    accept: '.pdf,.doc,.docx',
+    multiple: false,
+  });
+
+  return (
+    <div>
+      <button onClick={open}>Select Document</button>
+      {files?.[0] && <p>Selected: {files[0].name}</p>}
+    </div>
+  );
+}
+```
+
+## Directory Selection
+
+```tsx
+import { useFileDialog } from '@kuzenbo/hooks';
+
+function FolderPicker() {
+  const { open, files } = useFileDialog({
+    directory: true,
+  });
+
+  return (
+    <div>
+      <button onClick={open}>Select Folder</button>
+      {files && <p>{files.length} files in folder</p>}
+    </div>
+  );
+}
+```
+
+## Image Upload with Preview
+
+```tsx
+import { useFileDialog } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function ImageUpload() {
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const { open, files, reset } = useFileDialog({
+    accept: 'image/*',
+    multiple: false,
+    onChange: (selectedFiles) => {
+      if (selectedFiles?.[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => setPreview(e.target?.result as string);
+        reader.readAsDataURL(selectedFiles[0]);
+      }
+    },
+  });
+
+  const handleReset = () => {
+    reset();
+    setPreview(null);
+  };
+
+  return (
+    <div>
+      <button onClick={open}>Select Image</button>
+      {preview && (
+        <div>
+          <img src={preview} alt="Preview" style={{ maxWidth: 200 }} />
+          <button onClick={handleReset}>Remove</button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Mobile Camera Capture
+
+```tsx
+import { useFileDialog } from '@kuzenbo/hooks';
+
+function CameraCapture() {
+  const { open, files } = useFileDialog({
+    accept: 'image/*',
+    capture: 'environment', // Use rear camera
+    multiple: false,
+  });
+
+  return <button onClick={open}>Take Photo</button>;
+}
+```

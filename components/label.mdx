@@ -1,0 +1,120 @@
+---
+title: Label
+description: An accessible label component for form controls and interactive elements.
+---
+
+## Import
+
+```tsx
+import { Label } from "@kuzenbo/core";
+```
+
+## Usage
+
+The `Label` component provides an accessible label for form controls. While `Field.Label` is recommended for use within `Field` components, the standalone `Label` can be used with custom controls or checkbox groups.
+
+```tsx
+import { Checkbox, Label } from "@kuzenbo/core";
+
+export default function PermissionsForm() {
+  return (
+    <Label className="flex items-center gap-2">
+      <Checkbox value="admin" />
+      Grant admin privileges
+    </Label>
+  );
+}
+```
+
+## With Checkbox Group
+
+Use `Label` to wrap individual checkboxes within a `CheckboxGroup`:
+
+```tsx
+import { Checkbox, CheckboxGroup, Label } from "@kuzenbo/core";
+
+const permissions = [
+  { label: "View finance dashboard", value: "view-finance-dashboard" },
+  { label: "Approve reimbursements", value: "approve-reimbursements" },
+  { label: "Export vendor ledger", value: "export-vendor-ledger" },
+];
+
+export default function PermissionsChecklist() {
+  return (
+    <CheckboxGroup>
+      {permissions.map((permission) => (
+        <Label
+          className="flex items-center gap-2"
+          key={permission.value}
+        >
+          <Checkbox value={permission.value} />
+          {permission.label}
+        </Label>
+      ))}
+    </CheckboxGroup>
+  );
+}
+```
+
+## With Custom Controls
+
+```tsx
+import { Label } from "@kuzenbo/core";
+
+export default function CustomToggle() {
+  return (
+    <Label htmlFor="notifications" className="flex items-center gap-2">
+      Enable notifications
+      <input id="notifications" type="checkbox" />
+    </Label>
+  );
+}
+```
+
+## Props
+
+<ParamField path="htmlFor" type="string">
+  Associates the label with a form control by ID. When clicked, the associated control receives focus.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Label content, can include text, icons, or other elements.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes for styling.
+</ParamField>
+
+<ParamField path="data-slot" type="string">
+  Data attribute for component identification, typically set to `"label"`.
+</ParamField>
+
+## Styling
+
+The `Label` component accepts standard className for custom styling:
+
+```tsx
+<Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+  Email address
+</Label>
+```
+
+## When to Use Field.Label
+
+Prefer `Field.Label` when working within a `Field` component, as it automatically handles accessibility attributes and validation states:
+
+```tsx
+import { Field } from "@kuzenbo/core";
+
+<Field name="email">
+  <Field.Label htmlFor="email-input">Email</Field.Label>
+  <Field.Control id="email-input" type="email" />
+</Field>
+```
+
+## Accessibility
+
+- Clicking the label focuses the associated control
+- Properly associates text with form controls via `htmlFor`/`id`
+- Works with screen readers to announce the control's purpose
+- Supports disabled state styling via peer selectors

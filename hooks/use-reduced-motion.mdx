@@ -1,0 +1,113 @@
+---
+title: useReducedMotion
+description: Subscribes to the prefers-reduced-motion media query
+---
+
+## Usage
+
+Subscribes to the `prefers-reduced-motion` media query. Returns `true` when the user has requested reduced motion in their system preferences.
+
+```tsx
+import { useReducedMotion } from '@kuzenbo/hooks';
+
+function Demo() {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <div
+      style={{
+        transition: reducedMotion ? 'none' : 'all 0.3s ease',
+      }}
+    >
+      <p>Reduced motion: {reducedMotion ? 'Yes' : 'No'}</p>
+    </div>
+  );
+}
+```
+
+## Conditional animations
+
+Disable animations when reduced motion is preferred:
+
+```tsx
+import { useReducedMotion } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Demo() {
+  const reducedMotion = useReducedMotion();
+  const [isVisible, setIsVisible] = useState(false);
+
+  return (
+    <div>
+      <button onClick={() => setIsVisible(!isVisible)}>Toggle</button>
+      
+      <div
+        style={{
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? 'translateY(0)' : 'translateY(-20px)',
+          transition: reducedMotion 
+            ? 'none' 
+            : 'opacity 0.3s ease, transform 0.3s ease',
+        }}
+      >
+        Animated content
+      </div>
+    </div>
+  );
+}
+```
+
+## With initial value
+
+Provide a fallback value for SSR:
+
+```tsx
+import { useReducedMotion } from '@kuzenbo/hooks';
+
+function Demo() {
+  // Assume no reduced motion preference during SSR
+  const reducedMotion = useReducedMotion(false);
+
+  return (
+    <div
+      className={reducedMotion ? 'no-animation' : 'with-animation'}
+    >
+      Content
+    </div>
+  );
+}
+```
+
+## Definition
+
+```tsx
+function useReducedMotion(
+  initialValue?: boolean,
+  options?: UseMediaQueryOptions
+): boolean
+```
+
+### Parameters
+
+<ParamField path="initialValue" type="boolean" optional>
+  Fallback value used before the query can be evaluated (useful for SSR)
+</ParamField>
+
+<ParamField path="options" type="UseMediaQueryOptions" optional>
+  Additional options passed through to `useMediaQuery`
+</ParamField>
+
+### Returns
+
+<ResponseField name="reducedMotion" type="boolean">
+  `true` when the user prefers reduced motion, `false` otherwise
+</ResponseField>
+
+## Accessibility
+
+Respecting the `prefers-reduced-motion` setting is important for accessibility:
+
+- Users with vestibular disorders may experience discomfort from motion
+- Some users find animations distracting or disorienting
+- Reduced motion doesn't mean no motion - subtle transitions are often fine
+- Consider fading instead of sliding, or reducing animation duration

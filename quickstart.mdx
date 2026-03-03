@@ -1,80 +1,220 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quick start
+description: Build your first Kuzenbo app in 60 seconds with this quick start guide.
 ---
 
-## Get started in three steps
+# Quick start
 
-Get your documentation site running locally and make your first customization.
+Get up and running with Kuzenbo in 60 seconds. This guide walks you through creating a simple dashboard with theming support.
 
-### Step 1: Set up your local environment
+## Installation
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+First, install the core runtime packages:
 
-### Step 2: Deploy your changes
+<CodeGroup>
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+```bash bun
+bun add @kuzenbo/core @kuzenbo/theme @kuzenbo/styles
+```
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+```bash npm
+npm install @kuzenbo/core @kuzenbo/theme @kuzenbo/styles
+```
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+```bash pnpm
+pnpm add @kuzenbo/core @kuzenbo/theme @kuzenbo/styles
+```
 
-### Step 3: Go live
+```bash yarn
+yarn add @kuzenbo/core @kuzenbo/theme @kuzenbo/styles
+```
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+</CodeGroup>
+
+## Basic setup
+
+<Steps>
+
+<Step title="Import theme and styles">
+
+Import the prebuilt Kuzenbo theme and recommended baseline styles at the top of your app:
+
+```tsx app.tsx
+import "@kuzenbo/theme/prebuilt/kuzenbo.css";
+import "@kuzenbo/styles/recommended.css";
+```
+
+The theme CSS provides semantic color tokens, and the styles CSS provides sensible global defaults for scrollbars, focus rings, and accessibility.
+
+</Step>
+
+<Step title="Import components">
+
+Import the components you need from `@kuzenbo/core` and the theme utilities from `@kuzenbo/theme`:
+
+```tsx app.tsx
+import {
+  Announcement,
+  AnnouncementTag,
+  AnnouncementTitle,
+} from "@kuzenbo/core/ui/announcement";
+import { Button } from "@kuzenbo/core/ui/button";
+import { Card } from "@kuzenbo/core/ui/card";
+import { ThemeBootstrapScript, ThemeProvider } from "@kuzenbo/theme";
+```
+
+<Note>
+Kuzenbo uses granular imports to enable tree-shaking and keep bundle sizes small.
+</Note>
+
+</Step>
+
+<Step title="Add theme bootstrap and provider">
+
+Wrap your app with `ThemeProvider` and add `ThemeBootstrapScript` to prevent theme flashing:
+
+```tsx app.tsx
+export default function App() {
+  return (
+    <>
+      <ThemeBootstrapScript />
+      <ThemeProvider>
+        {/* Your app content */}
+      </ThemeProvider>
+    </>
+  );
+}
+```
+
+The `ThemeBootstrapScript` runs before React hydrates to apply the correct theme immediately, preventing a flash of unstyled content.
+
+</Step>
+
+<Step title="Build your UI">
+
+Use semantic color tokens and composable primitives to build your interface:
+
+```tsx app.tsx
+<main className="bg-background text-foreground min-h-screen p-6">
+  <div className="mx-auto grid max-w-3xl gap-4">
+    <Announcement themed>
+      <AnnouncementTag>Release</AnnouncementTag>
+      <AnnouncementTitle>Kuzenbo is ready to ship.</AnnouncementTitle>
+    </Announcement>
+
+    <Card className="p-6">
+      <h1 className="text-xl font-semibold">Dashboard</h1>
+      <p className="text-muted-foreground mt-2">
+        Build with semantic tokens and composable primitives.
+      </p>
+      <div className="mt-4 flex gap-2">
+        <Button>Create Report</Button>
+        <Button variant="outline">View Logs</Button>
+      </div>
+    </Card>
+  </div>
+</main>
+```
+
+</Step>
+
+</Steps>
+
+## Complete example
+
+Here's the full working example:
+
+```tsx app.tsx
+import "@kuzenbo/theme/prebuilt/kuzenbo.css";
+import "@kuzenbo/styles/recommended.css";
+
+import {
+  Announcement,
+  AnnouncementTag,
+  AnnouncementTitle,
+} from "@kuzenbo/core/ui/announcement";
+import { Button } from "@kuzenbo/core/ui/button";
+import { Card } from "@kuzenbo/core/ui/card";
+import { ThemeBootstrapScript, ThemeProvider } from "@kuzenbo/theme";
+
+export default function App() {
+  return (
+    <>
+      <ThemeBootstrapScript />
+      <ThemeProvider>
+        <main className="bg-background text-foreground min-h-screen p-6">
+          <div className="mx-auto grid max-w-3xl gap-4">
+            <Announcement themed>
+              <AnnouncementTag>Release</AnnouncementTag>
+              <AnnouncementTitle>Kuzenbo is ready to ship.</AnnouncementTitle>
+            </Announcement>
+
+            <Card className="p-6">
+              <h1 className="text-xl font-semibold">Dashboard</h1>
+              <p className="text-muted-foreground mt-2">
+                Build with semantic tokens and composable primitives.
+              </p>
+              <div className="mt-4 flex gap-2">
+                <Button>Create Report</Button>
+                <Button variant="outline">View Logs</Button>
+              </div>
+            </Card>
+          </div>
+        </main>
+      </ThemeProvider>
+    </>
+  );
+}
+```
+
+## Understanding the example
+
+### Semantic color tokens
+
+Kuzenbo uses semantic color tokens that automatically adapt to light and dark mode:
+
+- `bg-background` - Main background color
+- `text-foreground` - Primary text color
+- `text-muted-foreground` - Secondary/muted text color
+
+<Tip>
+Using semantic tokens ensures your UI looks consistent across all themes without hardcoding colors.
+</Tip>
+
+### Component composition
+
+Components like `Announcement` and `Card` follow a composition pattern:
+
+```tsx
+<Announcement themed>
+  <AnnouncementTag>Release</AnnouncementTag>
+  <AnnouncementTitle>Kuzenbo is ready to ship.</AnnouncementTitle>
+</Announcement>
+```
+
+This gives you full control over the content and styling while maintaining accessibility.
+
+### Button variants
+
+Buttons support multiple variants through the `variant` prop:
+
+```tsx
+<Button>Create Report</Button>
+<Button variant="outline">View Logs</Button>
+```
+
+Available variants include: `default`, `outline`, `ghost`, `destructive`, and `link`.
 
 ## Next steps
 
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+<CardGroup cols={3}>
+  <Card title="Theming" icon="palette" href="/theming">
+    Learn about theme customization and prebuilt themes.
+  </Card>
+  <Card title="Styling" icon="paintbrush" href="/styling">
+    Understand the styling system and customization.
+  </Card>
+  <Card title="Components" icon="grid" href="/components/button">
+    Explore all available components.
+  </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>

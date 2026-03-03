@@ -1,0 +1,497 @@
+---
+title: "Styles baseline"
+description: "Optional global baseline styles for focus rings, scrollbars, text selection, and motion-safe behavior"
+---
+
+## Overview
+
+`@kuzenbo/styles` provides optional baseline global CSS that enhances the default browser experience while maintaining semantic token compatibility. It includes polished focus indicators, smooth scrollbars, accessible text selection, and motion-aware animations.
+
+## Installation
+
+<CodeGroup>
+
+```bash npm
+npm install @kuzenbo/styles
+```
+
+```bash bun
+bun add @kuzenbo/styles
+```
+
+```bash pnpm
+pnpm add @kuzenbo/styles
+```
+
+```bash yarn
+yarn add @kuzenbo/styles
+```
+
+</CodeGroup>
+
+<Note>
+  `@kuzenbo/styles` has no React runtime dependency. It's a pure CSS package that works with any framework.
+</Note>
+
+## Quick start
+
+Import the baseline styles alongside your theme:
+
+```tsx app/layout.tsx
+import "@kuzenbo/theme/prebuilt/kuzenbo.css";
+import "@kuzenbo/styles/recommended.css";
+```
+
+<Warning>
+  Import order matters. Always import theme CSS before baseline styles to ensure proper token resolution.
+</Warning>
+
+## What's included
+
+The baseline stylesheet provides seven key improvements:
+
+<Steps>
+  <Step title="Focus-visible rings">
+    Accessible keyboard focus indicators using semantic `--kb-ring` token.
+  </Step>
+  
+  <Step title="Polished scrollbars">
+    Thin, theme-aware scrollbars for both Firefox and WebKit browsers.
+  </Step>
+  
+  <Step title="Text selection colors">
+    High-contrast selection using `--kb-primary` tokens.
+  </Step>
+  
+  <Step title="Motion-safe animations">
+    Respects `prefers-reduced-motion` for smooth scrolling.
+  </Step>
+  
+  <Step title="Text wrapping">
+    Prevents layout breakage from long URLs and tokens.
+  </Step>
+  
+  <Step title="Anchor offsets">
+    Scroll padding for sticky headers via `--kb-anchor-offset`.
+  </Step>
+  
+  <Step title="Color scheme hints">
+    Syncs native browser controls with light/dark mode.
+  </Step>
+</Steps>
+
+## Focus indicators
+
+Kuzenbo uses `:focus-visible` for accessible, non-intrusive focus rings:
+
+```css
+:focus-visible {
+  outline-style: solid;
+  outline-width: 2px;
+  outline-offset: 2px;
+  outline-color: var(--kb-ring);
+}
+```
+
+### Browser compatibility fallback
+
+For browsers without `:focus-visible` support:
+
+```css
+@supports not selector(:focus-visible) {
+  :focus {
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: 2px;
+    outline-color: var(--kb-ring);
+  }
+}
+```
+
+### High-contrast mode
+
+Automatic adaptation for forced-colors mode:
+
+```css
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
+}
+```
+
+## Scrollbar styling
+
+Kuzenbo provides thin, theme-aware scrollbars that adapt to your color scheme.
+
+### Firefox scrollbars
+
+```css
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--kb-border) transparent;
+}
+```
+
+### WebKit scrollbars
+
+```css
+@media (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--kb-border);
+  border-radius: 4px;
+}
+```
+
+### Responsive behavior
+
+On touch devices, scrollbars expand for better usability:
+
+```css
+@media (pointer: coarse) {
+  * {
+    scrollbar-width: auto;
+  }
+}
+```
+
+## Text selection
+
+High-contrast text selection using semantic primary tokens:
+
+```css
+:root {
+  --kb-selection-background: var(--kb-primary);
+  --kb-selection-foreground: var(--kb-primary-foreground);
+}
+
+::selection {
+  background-color: var(--kb-selection-background);
+  color: var(--kb-selection-foreground);
+  text-shadow: none;
+}
+```
+
+### Custom selection colors
+
+Override selection colors globally or per component:
+
+```css
+/* Global override */
+:root {
+  --kb-selection-background: oklch(0.7 0.2 350);
+  --kb-selection-foreground: oklch(1 0 0);
+}
+
+/* Component-specific */
+.code-editor {
+  --kb-selection-background: var(--kb-accent);
+  --kb-selection-foreground: var(--kb-accent-foreground);
+}
+```
+
+## Motion preferences
+
+Kuzenbo respects user motion preferences for smooth scrolling:
+
+### Enable smooth scroll
+
+```css
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+```
+
+### Disable for reduced motion
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+```
+
+### Disable during scroll lock
+
+When modals or drawers lock scroll:
+
+```css
+html[data-base-ui-scroll-locked] {
+  scroll-behavior: auto;
+}
+```
+
+## Anchor offset configuration
+
+The `--kb-anchor-offset` variable ensures hash links and focus targets aren't hidden behind sticky headers.
+
+### Default value
+
+```css
+:root {
+  --kb-anchor-offset: 0px;
+}
+```
+
+### With sticky header
+
+```css
+:root {
+  --kb-anchor-offset: 5rem; /* Height of sticky header */
+}
+
+html {
+  scroll-padding-top: var(--kb-anchor-offset);
+}
+
+:where(h1, h2, h3, h4, h5, h6, [id]) {
+  scroll-margin-top: var(--kb-anchor-offset);
+}
+```
+
+### Example usage
+
+```tsx
+import "@kuzenbo/styles/recommended.css";
+
+export function Layout({ children }) {
+  return (
+    <div style={{ "--kb-anchor-offset": "4rem" }}>
+      <header className="sticky top-0 h-16">Navigation</header>
+      <main>{children}</main>
+    </div>
+  );
+}
+```
+
+## Root element defaults
+
+Kuzenbo sets sensible root defaults for a polished baseline:
+
+```css
+html {
+  /* Light mode by default */
+  color-scheme: light;
+  
+  /* Smooth font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Remove iOS tap highlight */
+  -webkit-tap-highlight-color: transparent;
+  
+  /* Prevent overscroll bounce */
+  overscroll-behavior: none;
+  
+  /* Reserve scrollbar space */
+  scrollbar-gutter: stable;
+  
+  /* Sticky header offset */
+  scroll-padding-top: var(--kb-anchor-offset);
+  
+  /* Semantic colors */
+  background-color: var(--kb-background);
+  color: var(--kb-foreground);
+}
+
+html.dark {
+  color-scheme: dark;
+}
+```
+
+## Text wrapping
+
+Prevents layout breakage from long URLs, tokens, and code:
+
+```css
+:where(p, li, td, th, figcaption, blockquote, pre, code) {
+  overflow-wrap: anywhere;
+}
+```
+
+### Link underlines
+
+Improved readability for underlined links:
+
+```css
+:where(a) {
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.12em;
+}
+```
+
+## Border and outline tokens
+
+Global border and outline alignment:
+
+```css
+* {
+  @apply border-border outline-ring/50;
+  outline-color: oklch(from var(--kb-ring) l c h / 0.5);
+}
+```
+
+<Note>
+  This uses `@layer base` to ensure low specificity and easy overrides.
+</Note>
+
+## Customization examples
+
+### Brand selection colors
+
+```css
+:root {
+  --kb-selection-background: oklch(0.65 0.25 270);
+  --kb-selection-foreground: oklch(1 0 0);
+}
+```
+
+### Larger scrollbars
+
+```css
+@media (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--kb-muted);
+    border-radius: 6px;
+  }
+}
+
+* {
+  scrollbar-width: auto;
+  scrollbar-color: var(--kb-muted) transparent;
+}
+```
+
+### Custom focus ring style
+
+```css
+:focus-visible {
+  outline-style: dashed;
+  outline-width: 3px;
+  outline-offset: 4px;
+  outline-color: var(--kb-accent);
+}
+```
+
+### Disable smooth scroll globally
+
+```css
+html {
+  scroll-behavior: auto !important;
+}
+```
+
+## Opting out
+
+The baseline styles are entirely optional. If you prefer to start from scratch:
+
+1. Don't import `@kuzenbo/styles/recommended.css`
+2. Import only your theme: `@kuzenbo/theme/prebuilt/kuzenbo.css`
+3. Add your own global styles as needed
+
+```tsx
+// Minimal setup without baseline styles
+import "@kuzenbo/theme/prebuilt/kuzenbo.css";
+import "./my-custom-globals.css";
+```
+
+## Integration with Tailwind
+
+The baseline styles work seamlessly with Tailwind CSS:
+
+```css globals.css
+@import "@kuzenbo/theme/prebuilt/kuzenbo.css";
+@import "@kuzenbo/styles/recommended.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Your custom base styles */
+}
+```
+
+<Warning>
+  Import theme and baseline styles before Tailwind layers to ensure proper token resolution.
+</Warning>
+
+## Accessibility considerations
+
+<AccordionGroup>
+  <Accordion title="Focus-visible vs focus">
+    The baseline uses `:focus-visible` to show focus rings only for keyboard navigation, not mouse clicks. This improves UX while maintaining accessibility.
+  </Accordion>
+  
+  <Accordion title="High-contrast mode support">
+    In forced-colors mode (Windows High Contrast), focus rings automatically use the system Highlight color for maximum visibility.
+  </Accordion>
+  
+  <Accordion title="Motion sensitivity">
+    Smooth scrolling is disabled for users who prefer reduced motion, respecting their system preferences.
+  </Accordion>
+  
+  <Accordion title="Color contrast">
+    Text selection uses high-contrast primary tokens (default APCA 75+) for readability across themes.
+  </Accordion>
+</AccordionGroup>
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Import order">
+    Always import in this order:
+    1. Theme CSS (`@kuzenbo/theme/prebuilt/*.css`)
+    2. Baseline styles (`@kuzenbo/styles/recommended.css`)
+    3. Tailwind layers (if using Tailwind)
+    4. Custom global styles
+  </Accordion>
+  
+  <Accordion title="Token-based overrides">
+    Use CSS variables to customize behavior instead of overriding rules:
+    
+    ```css
+    /* Good: Uses tokens */
+    :root {
+      --kb-anchor-offset: 4rem;
+      --kb-selection-background: var(--kb-accent);
+    }
+    
+    /* Avoid: Overrides rules */
+    html {
+      scroll-padding-top: 4rem !important;
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Responsive considerations">
+    The baseline automatically adapts scrollbars and other features based on pointer type (fine vs coarse). Test on both desktop and mobile devices.
+  </Accordion>
+</AccordionGroup>
+
+## Related documentation
+
+<CardGroup cols={2}>
+  <Card title="Theme runtime" icon="palette" href="/foundations/theme-runtime">
+    Learn about Kuzenbo's theme system and dark mode support.
+  </Card>
+  
+</CardGroup>

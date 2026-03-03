@@ -1,0 +1,243 @@
+---
+title: Pill
+description: Compact status indicators with icons, avatars, deltas, and interactive elements
+---
+
+The Pill component is a specialized Badge variant with rounded edges and support for embedded icons, avatars, status indicators, and deltas. Perfect for tags, filters, and compact metadata displays.
+
+## Import
+
+```tsx
+import { Pill } from "@kuzenbo/core";
+```
+
+## Usage
+
+```tsx
+<Pill>Active</Pill>
+<Pill variant="success">Verified</Pill>
+<Pill variant="warning">Pending</Pill>
+```
+
+## Anatomy
+
+Pill extends Badge with additional sub-components:
+
+- `Pill` - Root component (extends Badge)
+- `Pill.Icon` - Icon element with automatic sizing
+- `Pill.Indicator` - Status dot with optional pulse animation
+- `Pill.Status` - Predefined status indicator
+- `Pill.Delta` - Value change indicator with directional styling
+- `Pill.Avatar` - Embedded avatar
+- `Pill.AvatarGroup` - Multiple avatars
+- `Pill.Button` - Dismissible action button
+
+## Props
+
+### Pill
+
+<ParamField path="variant" type="'default' | 'secondary' | 'outline' | 'ghost' | 'link' | 'success' | 'warning' | 'info' | 'danger'" default="default">
+  Inherited from Badge. Determines the pill's color scheme.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="md">
+  Controls the pill size with adjusted padding for rounded appearance:
+  
+  - `xs` - Gap 1, px 2, py 0.5
+  - `sm` - Gap 1.5, px 2.5, py 1
+  - `md` - Gap 2, px 3, py 1.5
+  - `lg` - Gap 2.5, px 3.5, py 1.5
+  - `xl` - Gap 3, px 4, py 2
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Pill.Icon
+
+<ParamField path="icon" type="HugeiconsProps['icon']" required>
+  The Hugeicons icon component to render.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes. Icon size adapts to pill size automatically.
+</ParamField>
+
+### Pill.Indicator
+
+<ParamField path="variant" type="'success' | 'error' | 'warning' | 'info'" default="success">
+  Determines the indicator color:
+  
+  - `success` - Green indicator
+  - `error` - Red indicator
+  - `warning` - Yellow/orange indicator
+  - `info` - Blue indicator
+</ParamField>
+
+<ParamField path="pulse" type="boolean" default={false}>
+  When true, adds a pulsing animation to the indicator.
+</ParamField>
+
+### Pill.Status
+
+Predefined status component using Pill.Indicator internally.
+
+### Pill.Delta
+
+<ParamField path="value" type="number" required>
+  The numeric change value. Positive values show increase, negative show decrease.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+### Pill.Avatar
+
+Embeds an Avatar component with appropriate sizing.
+
+### Pill.AvatarGroup
+
+Embeds an AvatarGroup with appropriate sizing.
+
+### Pill.Button
+
+<ParamField path="onClick" type="function">
+  Click handler for the button action.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes.
+</ParamField>
+
+## Examples
+
+### With icon
+
+```tsx
+import { Pill } from "@kuzenbo/core";
+import { CheckCircleIcon } from "@hugeicons/react";
+
+<Pill variant="success">
+  <Pill.Icon icon={CheckCircleIcon} />
+  Verified
+</Pill>
+```
+
+### With status indicator
+
+```tsx
+<Pill variant="outline">
+  <Pill.Indicator variant="success" pulse />
+  Online
+</Pill>
+
+<Pill variant="outline">
+  <Pill.Indicator variant="warning" />
+  Away
+</Pill>
+```
+
+### With delta
+
+Show value changes with automatic directional styling:
+
+```tsx
+<Pill variant="success">
+  <Pill.Delta value={12.5} />
+  Revenue
+</Pill>
+
+<Pill variant="danger">
+  <Pill.Delta value={-8.3} />
+  Churn
+</Pill>
+```
+
+### With avatar
+
+```tsx
+import { Avatar } from "@kuzenbo/core";
+
+<Pill variant="outline">
+  <Pill.Avatar>
+    <Avatar.Image src="/user.jpg" alt="User" />
+  </Pill.Avatar>
+  Sarah Chen
+</Pill>
+```
+
+### Dismissible pill
+
+```tsx
+import { Close01Icon } from "@hugeicons/react";
+
+<Pill variant="secondary">
+  Design
+  <Pill.Button onClick={() => console.log("Remove tag")}>
+    <Close01Icon className="size-3" />
+  </Pill.Button>
+</Pill>
+```
+
+### Multiple sizes
+
+```tsx
+<div className="flex items-center gap-2">
+  <Pill size="xs">XS Pill</Pill>
+  <Pill size="sm">SM Pill</Pill>
+  <Pill size="md">MD Pill</Pill>
+  <Pill size="lg">LG Pill</Pill>
+  <Pill size="xl">XL Pill</Pill>
+</div>
+```
+
+### Filter tags
+
+```tsx
+<div className="flex flex-wrap gap-2">
+  <Pill variant="outline">
+    Status: Active
+    <Pill.Button onClick={onRemove}>
+      <Close01Icon className="size-3" />
+    </Pill.Button>
+  </Pill>
+  <Pill variant="outline">
+    Region: APAC
+    <Pill.Button onClick={onRemove}>
+      <Close01Icon className="size-3" />
+    </Pill.Button>
+  </Pill>
+</div>
+```
+
+## Data Attributes
+
+Inherits all data attributes from Badge:
+
+- `[data-size]` - Reflects current size
+- `[data-slot]` - Value is "badge"
+- `[data-variant]` - Reflects current variant
+
+Additional attributes from sub-components apply their specific sizing.
+
+## Accessibility
+
+- Inherits Badge accessibility features
+- Interactive Pill.Button should have accessible labels
+- Status indicators use color plus text for clarity
+- Icon-only pills should include `aria-label`
+
+## Composition
+
+Pill is built on Badge and inherits its Base UI render composition:
+
+```tsx
+<Pill
+  variant="outline"
+  render={(props) => <a href="/tags/design" {...props} />}
+>
+  Design
+</Pill>
+```

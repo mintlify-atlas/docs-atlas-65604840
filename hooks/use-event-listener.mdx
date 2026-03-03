@@ -1,0 +1,78 @@
+---
+title: useEventListener
+description: Attach a DOM event listener to an element with automatic cleanup
+---
+
+## Overview
+
+Creates a ref callback that attaches a DOM event listener to the current element node and cleans it up automatically. When the ref target changes, the previous listener is removed from the old node before attaching to the new node.
+
+## Function Signature
+
+```typescript
+function useEventListener<
+  K extends keyof HTMLElementEventMap,
+  T extends HTMLElement = HTMLElement
+>(
+  type: K,
+  listener: (this: HTMLDivElement, event: HTMLElementEventMap[K]) => void,
+  options?: boolean | AddEventListenerOptions
+): RefCallback<T | null>
+```
+
+## Parameters
+
+<ParamField path="type" type="K extends keyof HTMLElementEventMap" required>
+  Name of the DOM event to listen for (e.g., `"click"`, `"mousedown"`, `"keypress"`).
+</ParamField>
+
+<ParamField path="listener" type="(this: HTMLDivElement, event: HTMLElementEventMap[K]) => void" required>
+  Event handler invoked when the event fires on the attached element.
+</ParamField>
+
+<ParamField path="options" type="boolean | AddEventListenerOptions">
+  Optional native `addEventListener` options such as `capture`, `once`, or `passive`.
+</ParamField>
+
+## Return Value
+
+<ResponseField name="refCallback" type="RefCallback<T | null>">
+  A ref callback function to attach to your React element. The listener will be registered on the element and automatically cleaned up when the element is removed or the ref changes.
+</ResponseField>
+
+## Usage Example
+
+```tsx
+import { useCallback, useState } from "react";
+import { useEventListener } from "@kuzenbo/hooks";
+
+function Example() {
+  const [visible, setVisible] = useState(false);
+  const listener = useCallback(() => console.log("mouse down"), []);
+  const ref = useEventListener("mousedown", listener);
+  const handleToggle = useCallback(() => {
+    setVisible((value) => !value);
+  }, []);
+
+  return (
+    <div style={{ padding: 40 }}>
+      {visible && (
+        <div ref={ref} style={{ padding: 40, background: "orange" }}>
+          Click me
+        </div>
+      )}
+
+      <button type="button" onClick={handleToggle}>
+        Toggle visible
+      </button>
+    </div>
+  );
+}
+```
+
+## Features
+
+- Automatic cleanup when component unmounts
+- Removes listener from old element when ref target changes
+- Type-safe event types based on HTML element event map
+- Supports all native `addEventListener` options

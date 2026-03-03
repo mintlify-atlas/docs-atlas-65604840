@@ -1,0 +1,156 @@
+---
+title: Theme Icon
+description: Display icons with consistent theming and sizing.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { ThemeIcon } from "@kuzenbo/core";
+import { CheckIcon } from "lucide-react";
+
+function Example() {
+  return (
+    <ThemeIcon>
+      <CheckIcon />
+    </ThemeIcon>
+  );
+}
+```
+
+## Props
+
+<ParamField path="variant" type="'default' | 'outline' | 'ghost' | 'secondary' | 'danger' | 'success' | 'warning' | 'info' | 'link'" default="'default'">
+  The visual style variant.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the icon container.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Examples
+
+### Basic Usage
+
+```tsx
+<ThemeIcon>
+  <StarIcon />
+</ThemeIcon>
+```
+
+### Variants
+
+```tsx
+<div className="flex gap-2">
+  <ThemeIcon variant="default">
+    <CheckIcon />
+  </ThemeIcon>
+  <ThemeIcon variant="secondary">
+    <CheckIcon />
+  </ThemeIcon>
+  <ThemeIcon variant="success">
+    <CheckIcon />
+  </ThemeIcon>
+  <ThemeIcon variant="danger">
+    <XIcon />
+  </ThemeIcon>
+  <ThemeIcon variant="warning">
+    <AlertIcon />
+  </ThemeIcon>
+  <ThemeIcon variant="info">
+    <InfoIcon />
+  </ThemeIcon>
+</div>
+```
+
+### Sizes
+
+```tsx
+<div className="flex items-center gap-2">
+  <ThemeIcon size="xs">
+    <StarIcon />
+  </ThemeIcon>
+  <ThemeIcon size="sm">
+    <StarIcon />
+  </ThemeIcon>
+  <ThemeIcon size="md">
+    <StarIcon />
+  </ThemeIcon>
+  <ThemeIcon size="lg">
+    <StarIcon />
+  </ThemeIcon>
+  <ThemeIcon size="xl">
+    <StarIcon />
+  </ThemeIcon>
+</div>
+```
+
+### Outline Variant
+
+```tsx
+<ThemeIcon variant="outline">
+  <SettingsIcon />
+</ThemeIcon>
+```
+
+### Ghost Variant
+
+```tsx
+<ThemeIcon variant="ghost">
+  <BellIcon />
+</ThemeIcon>
+```
+
+### Status Icons
+
+```tsx
+<div className="flex gap-2">
+  <ThemeIcon variant="success" size="sm">
+    <CheckCircleIcon />
+  </ThemeIcon>
+  <ThemeIcon variant="danger" size="sm">
+    <XCircleIcon />
+  </ThemeIcon>
+  <ThemeIcon variant="warning" size="sm">
+    <AlertTriangleIcon />
+  </ThemeIcon>
+  <ThemeIcon variant="info" size="sm">
+    <InfoIcon />
+  </ThemeIcon>
+</div>
+```
+
+### Feature List
+
+```tsx
+function FeatureList() {
+  const features = [
+    { icon: <CheckIcon />, text: "Fast performance" },
+    { icon: <CheckIcon />, text: "Easy to use" },
+    { icon: <CheckIcon />, text: "Fully customizable" },
+  ];
+
+  return (
+    <ul className="space-y-3">
+      {features.map((feature, i) => (
+        <li key={i} className="flex items-center gap-3">
+          <ThemeIcon variant="success" size="sm">
+            {feature.icon}
+          </ThemeIcon>
+          <span>{feature.text}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```

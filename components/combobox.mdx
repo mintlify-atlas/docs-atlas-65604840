@@ -1,0 +1,174 @@
+---
+title: Combobox
+description: Autocomplete input and command palette with a list of suggestions.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+```tsx
+import { Combobox } from "@kuzenbo/core";
+
+const frameworks = [
+  { value: "react", label: "React" },
+  { value: "vue", label: "Vue" },
+  { value: "svelte", label: "Svelte" },
+];
+
+function Example() {
+  const [value, setValue] = useState("");
+
+  return (
+    <Combobox value={value} onValueChange={setValue}>
+      <Combobox.Label>Framework</Combobox.Label>
+      <Combobox.Row>
+        <Combobox.Input placeholder="Select framework..." />
+        <Combobox.Trigger />
+      </Combobox.Row>
+      <Combobox.Portal>
+        <Combobox.Positioner>
+          <Combobox.Popup>
+            <Combobox.Content>
+              <Combobox.List>
+                <Combobox.Empty>No results found.</Combobox.Empty>
+                <Combobox.Collection items={frameworks}>
+                  {(item) => (
+                    <Combobox.Item value={item.value}>
+                      <Combobox.ItemIndicator />
+                      {item.label}
+                    </Combobox.Item>
+                  )}
+                </Combobox.Collection>
+              </Combobox.List>
+            </Combobox.Content>
+          </Combobox.Popup>
+        </Combobox.Positioner>
+      </Combobox.Portal>
+    </Combobox>
+  );
+}
+```
+
+## Props
+
+### Combobox
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size of the combobox and its children.
+</ParamField>
+
+<ParamField path="value" type="ItemValue">
+  The controlled value.
+</ParamField>
+
+<ParamField path="onValueChange" type="(value: ItemValue) => void">
+  Callback when the value changes.
+</ParamField>
+
+<ParamField path="multiple" type="boolean">
+  Whether to allow multiple selections.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the combobox is disabled.
+</ParamField>
+
+<ParamField path="required" type="boolean">
+  Whether the combobox is required.
+</ParamField>
+
+### Combobox.Input
+
+<ParamField path="placeholder" type="string">
+  Placeholder text.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Combobox.Item
+
+<ParamField path="value" type="ItemValue" required>
+  The value for this item.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the item is disabled.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### Combobox.Collection
+
+<ParamField path="items" type="ItemValue[]" required>
+  The items to render.
+</ParamField>
+
+<ParamField path="children" type="(item: ItemValue) => ReactNode" required>
+  Function to render each item.
+</ParamField>
+
+## Advanced Patterns
+
+### Multiple Selection
+
+```tsx
+<Combobox multiple value={values} onValueChange={setValues}>
+  <Combobox.Chips>
+    {values.map((value) => (
+      <Combobox.Chip key={value} value={value}>
+        {value}
+        <Combobox.ChipRemove />
+      </Combobox.Chip>
+    ))}
+    <Combobox.ChipsInput />
+  </Combobox.Chips>
+  {/* ... */}
+</Combobox>
+```
+
+### Custom Filtering
+
+```tsx
+const { useFilter, useFilteredItems } = Combobox;
+
+function FilteredCombobox() {
+  const filter = useFilter({ sensitivity: "base" });
+  const filteredItems = useFilteredItems(items, filter);
+
+  return (
+    <Combobox>
+      {/* ... */}
+      <Combobox.Collection items={filteredItems}>
+        {(item) => <Combobox.Item value={item.value}>{item.label}</Combobox.Item>}
+      </Combobox.Collection>
+    </Combobox>
+  );
+}
+```
+
+### Grouped Items
+
+```tsx
+<Combobox.List>
+  <Combobox.Group>
+    <Combobox.GroupLabel>Frameworks</Combobox.GroupLabel>
+    <Combobox.Item value="react">React</Combobox.Item>
+    <Combobox.Item value="vue">Vue</Combobox.Item>
+  </Combobox.Group>
+  <Combobox.Separator />
+  <Combobox.Group>
+    <Combobox.GroupLabel>Libraries</Combobox.GroupLabel>
+    <Combobox.Item value="redux">Redux</Combobox.Item>
+    <Combobox.Item value="zustand">Zustand</Combobox.Item>
+  </Combobox.Group>
+</Combobox.List>
+```

@@ -1,0 +1,161 @@
+---
+title: "useMouse"
+description: "Track mouse pointer coordinates relative to an element for interactive UI and cursor-following effects."
+---
+
+## Overview
+
+`useMouse` tracks pointer coordinates for a target element and returns a ref to bind that element. Coordinates are reported relative to the element when it is mounted.
+
+This package also exports `useMousePosition` which tracks global mouse coordinates on the document.
+
+## Installation
+
+```npm
+npm i @kuzenbo/hooks
+```
+
+## Import
+
+```tsx
+import { useMouse, useMousePosition } from "@kuzenbo/hooks";
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { useMouse } from "@kuzenbo/hooks";
+
+export function MouseTracker() {
+  const { ref, x, y } = useMouse();
+
+  return (
+    <div
+      ref={ref}
+      className="relative h-64 w-full bg-muted rounded-lg"
+    >
+      <div className="p-4">
+        <p className="text-sm text-foreground">
+          Mouse position: x={x}, y={y}
+        </p>
+      </div>
+    </div>
+  );
+}
+```
+
+### Reset on Exit
+
+```tsx
+import { useMouse } from "@kuzenbo/hooks";
+
+export function MouseTrackerWithReset() {
+  const { ref, x, y } = useMouse({ resetOnExit: true });
+
+  return (
+    <div
+      ref={ref}
+      className="relative h-64 w-full bg-muted rounded-lg"
+    >
+      <div className="p-4">
+        <p className="text-sm text-foreground">
+          Position: ({x}, {y})
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Coordinates reset to (0, 0) when mouse leaves
+        </p>
+      </div>
+    </div>
+  );
+}
+```
+
+### Global Mouse Position
+
+```tsx
+import { useMousePosition } from "@kuzenbo/hooks";
+
+export function GlobalMouseTracker() {
+  const { x, y } = useMousePosition();
+
+  return (
+    <div className="p-4">
+      <p className="text-sm text-foreground">
+        Global mouse position: x={x}, y={y}
+      </p>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### useMouse
+
+```tsx
+function useMouse<T extends HTMLElement = HTMLElement>(
+  options?: { resetOnExit?: boolean }
+): UseMouseReturnValue<T>
+```
+
+<ParamField path="options" type="object">
+  Optional configuration object
+
+  <ParamField path="options.resetOnExit" type="boolean" default={false}>
+    Resets coordinates to `{ x: 0, y: 0 }` when the pointer leaves the element
+  </ParamField>
+</ParamField>
+
+<ResponseField name="ref" type="RefCallback<T | null>">
+  Ref callback to attach to the target element
+</ResponseField>
+
+<ResponseField name="x" type="number">
+  Horizontal coordinate relative to the element
+</ResponseField>
+
+<ResponseField name="y" type="number">
+  Vertical coordinate relative to the element
+</ResponseField>
+
+### useMousePosition
+
+```tsx
+function useMousePosition(): UseMousePositionReturnValue
+```
+
+<ResponseField name="x" type="number">
+  Global horizontal coordinate (clientX)
+</ResponseField>
+
+<ResponseField name="y" type="number">
+  Global vertical coordinate (clientY)
+</ResponseField>
+
+## Type Definitions
+
+```tsx
+interface UseMouseReturnValue<T extends HTMLElement = HTMLElement> {
+  ref: RefCallback<T | null>;
+  x: number;
+  y: number;
+}
+
+interface UseMousePositionReturnValue {
+  x: number;
+  y: number;
+}
+```
+
+## Caveats
+
+- Coordinates are relative to the element's bounding box, not the viewport
+- Coordinates are clamped to minimum value of 0
+- The hook uses `mousemove` events for tracking
+
+## SSR and RSC Notes
+
+- Use this hook in Client Components only
+- Do not call it from React Server Components

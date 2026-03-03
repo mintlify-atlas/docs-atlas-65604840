@@ -1,0 +1,192 @@
+---
+title: "useMove"
+description: "Enable pointer and touch scrubbing on an element with normalized coordinates for sliders, color pickers, and interactive controls."
+---
+
+## Overview
+
+`useMove` enables pointer/touch scrubbing on an element and reports normalized coordinates. Values passed to `onChange` are clamped to `0..1`; horizontal values are mirrored in `rtl` mode.
+
+## Installation
+
+```npm
+npm i @kuzenbo/hooks
+```
+
+## Import
+
+```tsx
+import { useMove } from "@kuzenbo/hooks";
+```
+
+## Usage
+
+### Basic Slider
+
+```tsx
+import { useMove } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function ColorSlider() {
+  const [value, setValue] = useState({ x: 0, y: 0 });
+  const { ref, active } = useMove(setValue);
+
+  return (
+    <div>
+      <div
+        ref={ref}
+        className="relative h-32 w-full bg-gradient-to-r from-blue-500 to-red-500 rounded-lg cursor-pointer"
+      >
+        <div
+          className="absolute h-4 w-4 bg-white rounded-full border-2 border-black transform -translate-x-1/2 -translate-y-1/2"
+          style={{
+            left: `${value.x * 100}%`,
+            top: `${value.y * 100}%`,
+          }}
+        />
+      </div>
+      <p className="mt-2 text-sm">
+        Position: x={value.x.toFixed(2)}, y={value.y.toFixed(2)}
+        {active && " (scrubbing)"}
+      </p>
+    </div>
+  );
+}
+```
+
+### With Callbacks
+
+```tsx
+import { useMove } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function SliderWithCallbacks() {
+  const [value, setValue] = useState({ x: 0.5, y: 0.5 });
+  const [scrubbing, setScrubbing] = useState(false);
+
+  const { ref, active } = useMove(
+    setValue,
+    {
+      onScrubStart: () => setScrubbing(true),
+      onScrubEnd: () => setScrubbing(false),
+    }
+  );
+
+  return (
+    <div>
+      <div
+        ref={ref}
+        className="relative h-32 w-full bg-muted rounded-lg cursor-pointer"
+      >
+        <div
+          className="absolute h-3 w-3 bg-primary rounded-full transform -translate-x-1/2 -translate-y-1/2"
+          style={{
+            left: `${value.x * 100}%`,
+            top: `${value.y * 100}%`,
+          }}
+        />
+      </div>
+      <p className="mt-2 text-sm">
+        {scrubbing ? "Scrubbing..." : "Ready"}
+      </p>
+    </div>
+  );
+}
+```
+
+### RTL Support
+
+```tsx
+import { useMove } from "@kuzenbo/hooks";
+import { useState } from "react";
+
+export function RTLSlider() {
+  const [value, setValue] = useState({ x: 0, y: 0 });
+  const { ref } = useMove(setValue, undefined, "rtl");
+
+  return (
+    <div
+      ref={ref}
+      className="relative h-20 w-full bg-muted rounded-lg cursor-pointer"
+      dir="rtl"
+    >
+      <div
+        className="absolute h-3 w-3 bg-primary rounded-full transform -translate-x-1/2 -translate-y-1/2"
+        style={{
+          left: `${value.x * 100}%`,
+          top: `${value.y * 100}%`,
+        }}
+      />
+    </div>
+  );
+}
+```
+
+## API Reference
+
+```tsx
+function useMove<T extends HTMLElement = HTMLElement>(
+  onChange: (value: UseMovePosition) => void,
+  handlers?: UseMoveHandlers,
+  dir?: "ltr" | "rtl"
+): UseMoveReturnValue<T>
+```
+
+<ParamField path="onChange" type="(value: UseMovePosition) => void" required>
+  Called on pointer movement with normalized `{ x, y }` values (0..1)
+</ParamField>
+
+<ParamField path="handlers" type="UseMoveHandlers">
+  Optional callbacks fired when scrubbing starts or ends
+
+  <ParamField path="handlers.onScrubStart" type="() => void">
+    Called when scrubbing starts
+  </ParamField>
+
+  <ParamField path="handlers.onScrubEnd" type="() => void">
+    Called when scrubbing ends
+  </ParamField>
+</ParamField>
+
+<ParamField path="dir" type="'ltr' | 'rtl'" default="ltr">
+  Horizontal direction used to interpret `x` values
+</ParamField>
+
+<ResponseField name="ref" type="RefCallback<T | null>">
+  Ref callback to attach to the scrubbing element
+</ResponseField>
+
+<ResponseField name="active" type="boolean">
+  `true` when the user is currently scrubbing
+</ResponseField>
+
+## Type Definitions
+
+```tsx
+interface UseMovePosition {
+  x: number;
+  y: number;
+}
+
+interface UseMoveHandlers {
+  onScrubStart?: () => void;
+  onScrubEnd?: () => void;
+}
+
+interface UseMoveReturnValue<T extends HTMLElement = HTMLElement> {
+  ref: RefCallback<T | null>;
+  active: boolean;
+}
+```
+
+## Caveats
+
+- Values are automatically clamped to `0..1` range
+- In RTL mode, horizontal values are mirrored (1 becomes 0, 0 becomes 1)
+- Uses `requestAnimationFrame` for smooth updates
+- Sets `user-select: none` on the element during scrubbing
+
+## SSR and RSC Notes
+
+- Use this hook in Client Components only
+- Do not call it from React Server Components

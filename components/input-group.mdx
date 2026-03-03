@@ -1,0 +1,222 @@
+---
+title: InputGroup
+description: Combines inputs with decorative addons, text, or action buttons.
+---
+
+## Import
+
+```tsx
+import { InputGroup } from "@kuzenbo/core";
+```
+
+## Usage
+
+The `InputGroup` component allows you to attach text, icons, or buttons to inputs, creating visually connected input combinations.
+
+```tsx
+import { InputGroup } from "@kuzenbo/core";
+
+export default function SearchInput() {
+  return (
+    <InputGroup>
+      <InputGroup.Input placeholder="Search account, invoice, or contract" />
+    </InputGroup>
+  );
+}
+```
+
+## With Addon Start
+
+Add decorative text or icons before the input:
+
+```tsx
+import { InputGroup } from "@kuzenbo/core";
+
+export default function InvoiceInput() {
+  return (
+    <InputGroup>
+      <InputGroup.Addon align="inline-start">
+        <InputGroup.Text>INV-</InputGroup.Text>
+      </InputGroup.Addon>
+      <InputGroup.Input placeholder="2026-0042" />
+    </InputGroup>
+  );
+}
+```
+
+## With Addon Both Sides
+
+Combine start and end addons for currency or unit inputs:
+
+```tsx
+import { InputGroup } from "@kuzenbo/core";
+
+export default function PriceInput() {
+  return (
+    <InputGroup>
+      <InputGroup.Addon align="inline-start">
+        <InputGroup.Text>$</InputGroup.Text>
+      </InputGroup.Addon>
+      <InputGroup.Input placeholder="25000" type="number" />
+      <InputGroup.Addon align="inline-end">
+        <InputGroup.Text>USD</InputGroup.Text>
+      </InputGroup.Addon>
+    </InputGroup>
+  );
+}
+```
+
+## With Button
+
+Add action buttons within the input group:
+
+```tsx
+import { InputGroup } from "@kuzenbo/core";
+
+export default function ValidatedInput() {
+  return (
+    <InputGroup>
+      <InputGroup.Input placeholder="Paste purchase order number" />
+      <InputGroup.Addon align="inline-end">
+        <InputGroup.Button>Validate</InputGroup.Button>
+      </InputGroup.Addon>
+    </InputGroup>
+  );
+}
+```
+
+## Sizes
+
+InputGroup supports five size variants:
+
+```tsx
+import { InputGroup } from "@kuzenbo/core";
+
+const sizes = ["xs", "sm", "md", "lg", "xl"] as const;
+
+export default function InputGroupSizes() {
+  return (
+    <div className="grid gap-3">
+      {sizes.map((size) => (
+        <InputGroup key={size} size={size}>
+          <InputGroup.Addon align="inline-start">
+            <InputGroup.Text>Seats</InputGroup.Text>
+          </InputGroup.Addon>
+          <InputGroup.Input placeholder={`${size.toUpperCase()} seat limit`} />
+          <InputGroup.Addon align="inline-end">
+            <InputGroup.Button>Save</InputGroup.Button>
+          </InputGroup.Addon>
+        </InputGroup>
+      ))}
+    </div>
+  );
+}
+```
+
+## Disabled State
+
+```tsx
+import { InputGroup } from "@kuzenbo/core";
+
+export default function DisabledInputGroup() {
+  return (
+    <InputGroup data-disabled="true">
+      <InputGroup.Addon align="inline-start">
+        <InputGroup.Text>Plan</InputGroup.Text>
+      </InputGroup.Addon>
+      <InputGroup.Input disabled readOnly value="Enterprise Annual" />
+    </InputGroup>
+  );
+}
+```
+
+## Props
+
+### InputGroup
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="md">
+  Controls the height and padding of the input group.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes for the container.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Input, addons, and buttons to display within the group.
+</ParamField>
+
+### InputGroup.Input
+
+<ParamField path="placeholder" type="string">
+  Placeholder text for the input.
+</ParamField>
+
+<ParamField path="type" type="string" default="text">
+  HTML input type (text, email, number, etc.).
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  Disables the input.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the size from the parent InputGroup.
+</ParamField>
+
+### InputGroup.Addon
+
+<ParamField path="align" type="'inline-start' | 'inline-end' | 'block-start' | 'block-end'" default="inline-start">
+  Position of the addon relative to the input.
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Content of the addon, typically `InputGroup.Text` or `InputGroup.Button`.
+</ParamField>
+
+### InputGroup.Text
+
+<ParamField path="children" type="ReactNode">
+  Text or icons to display as decorative addon content.
+</ParamField>
+
+### InputGroup.Button
+
+Accepts all standard Button props.
+
+### InputGroup.Textarea
+
+Similar to `InputGroup.Input` but renders a textarea element.
+
+## Composition
+
+```tsx
+import { InputGroup } from "@kuzenbo/core";
+
+<InputGroup>
+  <InputGroup.Addon align="inline-start">
+    <InputGroup.Text>https://</InputGroup.Text>
+  </InputGroup.Addon>
+  <InputGroup.Input placeholder="example.com" />
+</InputGroup>
+```
+
+## Types
+
+```tsx
+export type InputGroupProps = ComponentProps<"div"> & {
+  size?: InputSize;
+};
+export type InputGroupAddonProps = ComponentProps<"div">;
+export type InputGroupInputProps = ComponentProps<typeof Input>;
+export type InputGroupTextProps = ComponentProps<"span">;
+export type InputGroupButtonProps = ComponentProps<typeof Button>;
+export type InputGroupTextareaProps = ComponentProps<typeof Textarea>;
+```
+
+## Accessibility
+
+- Input remains focusable and keyboard-navigable
+- Addons are properly grouped with the input visually
+- Disabled state is communicated to assistive technologies
+- Focus ring encompasses the entire group

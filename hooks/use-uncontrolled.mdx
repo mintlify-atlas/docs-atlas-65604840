@@ -1,0 +1,302 @@
+---
+title: useUncontrolled
+description: Unifies controlled and uncontrolled state handling behind a single API
+---
+
+## Overview
+
+Unifies controlled and uncontrolled state handling behind a single API. If `value` is provided, the hook works in controlled mode and delegates updates to `onChange`. Otherwise, it stores state internally using `defaultValue` (or `finalValue` as fallback).
+
+## Import
+
+```tsx
+import { useUncontrolled } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useUncontrolled<T>(
+  options: UseUncontrolledOptions<T>
+): UseUncontrolledReturnValue<T>;
+```
+
+## Parameters
+
+<ParamField path="options" type="UseUncontrolledOptions<T>" required>
+  State control options
+  
+  <ParamField path="options.value" type="T">
+    Controlled value. When defined, internal state is ignored
+  </ParamField>
+  
+  <ParamField path="options.defaultValue" type="T">
+    Initial value used for uncontrolled mode
+  </ParamField>
+  
+  <ParamField path="options.finalValue" type="T">
+    Fallback value when `defaultValue` is not provided
+  </ParamField>
+  
+  <ParamField path="options.onChange" type="(value: T, ...payload: unknown[]) => void">
+    Callback fired whenever the setter is called
+  </ParamField>
+</ParamField>
+
+## Return Value
+
+<ResponseField name="[value, setValue, isControlled]" type="UseUncontrolledReturnValue<T>">
+  A tuple containing the current value, setter function, and controlled state flag
+  
+  <ResponseField name="value" type="T">
+    Current value (controlled or uncontrolled)
+  </ResponseField>
+  
+  <ResponseField name="setValue" type="(value: T, ...payload: unknown[]) => void">
+    Setter function that updates state and calls onChange
+  </ResponseField>
+  
+  <ResponseField name="isControlled" type="boolean">
+    True if the component is controlled, false if uncontrolled
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Reusable Input Component
+
+```tsx
+import { useUncontrolled } from '@kuzenbo/hooks';
+
+interface TextInputProps {
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+}
+
+function TextInput({ value, defaultValue, onChange }: TextInputProps) {
+  const [inputValue, setInputValue] = useUncontrolled({
+    value,
+    defaultValue,
+    finalValue: '',
+    onChange,
+  });
+
+  return (
+    <input
+      type="text"
+      value={inputValue}
+      onChange={(e) => setInputValue(e.target.value)}
+    />
+  );
+}
+
+// Uncontrolled usage
+function UncontrolledExample() {
+  return <TextInput defaultValue="hello" />;
+}
+
+// Controlled usage
+function ControlledExample() {
+  const [value, setValue] = React.useState('hello');
+  return <TextInput value={value} onChange={setValue} />;
+}
+```
+
+### Toggle Component
+
+```tsx
+import { useUncontrolled } from '@kuzenbo/hooks';
+
+interface ToggleProps {
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onChange?: (checked: boolean) => void;
+}
+
+function Toggle({ checked, defaultChecked, onChange }: ToggleProps) {
+  const [isChecked, setChecked, isControlled] = useUncontrolled({
+    value: checked,
+    defaultValue: defaultChecked,
+    finalValue: false,
+    onChange,
+  });
+
+  return (
+    <button
+      onClick={() => setChecked(!isChecked)}
+      aria-pressed={isChecked}
+      data-controlled={isControlled}
+    >
+      {isChecked ? 'ON' : 'OFF'}
+    </button>
+  );
+}
+```
+
+### Select Component with Payload
+
+```tsx
+import { useUncontrolled } from '@kuzenbo/hooks';
+
+interface Option {
+  value: string;
+  label: string;
+}
+
+interface SelectProps {
+  value?: string;
+  defaultValue?: string;
+  options: Option[];
+  onChange?: (value: string, option: Option) => void;
+}
+
+function Select({ value, defaultValue, options, onChange }: SelectProps) {
+  const [selectedValue, setSelectedValue] = useUncontrolled({
+    value,
+    defaultValue,
+    finalValue: options[0]?.value ?? '',
+    onChange,
+  });
+
+  const handleChange = (newValue: string) => {
+    const option = options.find((opt) => opt.value === newValue);
+    if (option) {
+      setSelectedValue(newValue, option);
+    }
+  };
+
+  return (
+    <select value={selectedValue} onChange={(e) => handleChange(e.target.value)}>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+```
+
+### Tabs Component
+
+```tsx
+import { useUncontrolled } from '@kuzenbo/hooks';
+
+interface TabsProps {
+  activeTab?: string;
+  defaultActiveTab?: string;
+  onTabChange?: (tab: string) => void;
+  tabs: Array<{ id: string; label: string; content: React.ReactNode }>;
+}
+
+function Tabs({ activeTab, defaultActiveTab, onTabChange, tabs }: TabsProps) {
+  const [active, setActive] = useUncontrolled({
+    value: activeTab,
+    defaultValue: defaultActiveTab,
+    finalValue: tabs[0]?.id ?? '',
+    onChange: onTabChange,
+  });
+
+  const activeContent = tabs.find((tab) => tab.id === active)?.content;
+
+  return (
+    <div>
+      <div className="tab-buttons">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActive(tab.id)}
+            className={active === tab.id ? 'active' : ''}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <div className="tab-content">{activeContent}</div>
+    </div>
+  );
+}
+```
+
+### Counter with Controlled/Uncontrolled Support
+
+```tsx
+import { useUncontrolled } from '@kuzenbo/hooks';
+
+interface CounterProps {
+  value?: number;
+  defaultValue?: number;
+  onChange?: (value: number, delta: number) => void;
+}
+
+function Counter({ value, defaultValue, onChange }: CounterProps) {
+  const [count, setCount, isControlled] = useUncontrolled({
+    value,
+    defaultValue,
+    finalValue: 0,
+    onChange,
+  });
+
+  const increment = () => setCount(count + 1, 1);
+  const decrement = () => setCount(count - 1, -1);
+
+  return (
+    <div>
+      <p>
+        Count: {count} {isControlled && '(Controlled)'}
+      </p>
+      <button onClick={decrement}>-</button>
+      <button onClick={increment}>+</button>
+    </div>
+  );
+}
+
+// Uncontrolled
+function UncontrolledCounter() {
+  return <Counter defaultValue={10} />;
+}
+
+// Controlled
+function ControlledCounter() {
+  const [value, setValue] = React.useState(10);
+  return (
+    <Counter
+      value={value}
+      onChange={(newValue, delta) => {
+        console.log(`Changed by ${delta}`);
+        setValue(newValue);
+      }}
+    />
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+export interface UseUncontrolledOptions<T> {
+  /** Value for controlled state */
+  value?: T;
+
+  /** Initial value for uncontrolled state */
+  defaultValue?: T;
+
+  /** Final value for uncontrolled state when value and defaultValue are not provided */
+  finalValue?: T;
+
+  /** Controlled state onChange handler */
+  onChange?: (value: T, ...payload: unknown[]) => void;
+}
+
+export type UseUncontrolledReturnValue<T> = [
+  /** Current value */
+  T,
+
+  /** Handler to update the state, passes `value` and `payload` to `onChange` */
+  (value: T, ...payload: unknown[]) => void,
+
+  /** True if the state is controlled, false if uncontrolled */
+  boolean,
+];
+```

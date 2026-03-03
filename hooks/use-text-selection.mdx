@@ -1,0 +1,120 @@
+---
+title: useTextSelection
+description: Subscribes to the document selection and returns the current Selection object
+---
+
+## Usage
+
+Subscribes to the document selection and returns the current `Selection` object. The hook updates whenever the browser fires the `selectionchange` event.
+
+```tsx
+import { useTextSelection } from '@kuzenbo/hooks';
+
+function Demo() {
+  const selection = useTextSelection();
+
+  return (
+    <div>
+      <p>Select some text on this page</p>
+      <div>
+        <strong>Selected text:</strong>
+        <p>{selection?.toString() || 'No selection'}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+## Track selection range
+
+Access detailed selection information:
+
+```tsx
+import { useTextSelection } from '@kuzenbo/hooks';
+
+function Demo() {
+  const selection = useTextSelection();
+
+  const getSelectionInfo = () => {
+    if (!selection || selection.rangeCount === 0) {
+      return null;
+    }
+
+    const range = selection.getRangeAt(0);
+    return {
+      text: selection.toString(),
+      collapsed: selection.isCollapsed,
+      rangeCount: selection.rangeCount,
+      startContainer: range.startContainer.nodeName,
+      endContainer: range.endContainer.nodeName,
+    };
+  };
+
+  const info = getSelectionInfo();
+
+  return (
+    <div>
+      <p>Select text to see details:</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      {info && (
+        <pre>{JSON.stringify(info, null, 2)}</pre>
+      )}
+    </div>
+  );
+}
+```
+
+## Copy selected text
+
+Implement a custom copy button:
+
+```tsx
+import { useTextSelection } from '@kuzenbo/hooks';
+
+function Demo() {
+  const selection = useTextSelection();
+  const selectedText = selection?.toString() || '';
+
+  const handleCopy = () => {
+    if (selectedText) {
+      navigator.clipboard.writeText(selectedText);
+    }
+  };
+
+  return (
+    <div>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      {selectedText && (
+        <button onClick={handleCopy}>
+          Copy "{selectedText.slice(0, 20)}..."
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+## Definition
+
+```tsx
+function useTextSelection(): Selection | null
+```
+
+### Returns
+
+<ResponseField name="selection" type="Selection | null">
+  The current browser `Selection` object, updated on every `selectionchange` event. Returns `null` if no selection exists.
+</ResponseField>
+
+## Selection API
+
+The returned `Selection` object provides:
+
+- `toString()`: Returns the selected text as a string
+- `getRangeAt(index)`: Returns the `Range` object at the specified index
+- `rangeCount`: Number of ranges in the selection
+- `isCollapsed`: `true` if the selection is collapsed (cursor position)
+- `anchorNode`, `anchorOffset`: Start point of the selection
+- `focusNode`, `focusOffset`: End point of the selection
+
+See [MDN Selection API](https://developer.mozilla.org/en-US/docs/Web/API/Selection) for full details.

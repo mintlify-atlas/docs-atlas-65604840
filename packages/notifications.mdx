@@ -1,0 +1,351 @@
+---
+title: '@kuzenbo/notifications'
+description: 'Toast and notification primitives for Kuzenbo'
+icon: 'bell'
+---
+
+## Overview
+
+The `@kuzenbo/notifications` package provides accessible, customizable toast notifications built on Base UI. Display temporary messages, alerts, and notifications with smooth animations and flexible positioning.
+
+<Note>
+Version 0.0.7 is currently published on npm. This package is production-ready.
+</Note>
+
+## Installation
+
+<CodeGroup>
+```bash npm
+npm install @kuzenbo/notifications @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash yarn
+yarn add @kuzenbo/notifications @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash pnpm
+pnpm add @kuzenbo/notifications @kuzenbo/core @kuzenbo/theme react react-dom
+```
+
+```bash bun
+bun add @kuzenbo/notifications @kuzenbo/core @kuzenbo/theme react react-dom
+```
+</CodeGroup>
+
+## Components
+
+<CardGroup cols={2}>
+  <Card title="Toast" icon="message">
+    Composable toast notification system with provider, portal, and positioning
+  </Card>
+  <Card title="Toast.Action" icon="hand-pointer">
+    Interactive action buttons within toasts
+  </Card>
+  <Card title="Toast.Close" icon="xmark">
+    Close button for dismissing toasts
+  </Card>
+  <Card title="useToast" icon="code">
+    Hook for programmatic toast control
+  </Card>
+</CardGroup>
+
+## Basic Usage
+
+### Setup Provider
+
+Wrap your app with the Toast provider:
+
+```tsx
+import { Toast } from '@kuzenbo/notifications/ui/toast';
+
+export function App({ children }) {
+  return (
+    <Toast>
+      <Toast.Viewport />
+      {children}
+    </Toast>
+  );
+}
+```
+
+### Show Toasts
+
+Use the `useToast` hook to display toasts:
+
+```tsx
+import { useToast } from '@kuzenbo/notifications/ui/toast';
+import { Button } from '@kuzenbo/core/ui/button';
+
+export function NotificationDemo() {
+  const { toast } = useToast();
+
+  return (
+    <Button
+      onClick={() => {
+        toast({
+          title: 'Success!',
+          description: 'Your changes have been saved.',
+        });
+      }}
+    >
+      Show Toast
+    </Button>
+  );
+}
+```
+
+## Toast Variants
+
+### Success Toast
+
+```tsx
+import { useToast } from '@kuzenbo/notifications/ui/toast';
+
+const { toast } = useToast();
+
+toast({
+  title: 'Success',
+  description: 'Operation completed successfully.',
+  variant: 'success',
+});
+```
+
+### Error Toast
+
+```tsx
+toast({
+  title: 'Error',
+  description: 'Something went wrong. Please try again.',
+  variant: 'danger',
+});
+```
+
+### Warning Toast
+
+```tsx
+toast({
+  title: 'Warning',
+  description: 'Please review your changes before continuing.',
+  variant: 'warning',
+});
+```
+
+### Info Toast
+
+```tsx
+toast({
+  title: 'Info',
+  description: 'New features are now available.',
+  variant: 'info',
+});
+```
+
+## Toast with Action
+
+Add interactive actions to toasts:
+
+```tsx
+import { useToast } from '@kuzenbo/notifications/ui/toast';
+
+const { toast } = useToast();
+
+toast({
+  title: 'Update Available',
+  description: 'A new version is ready to install.',
+  action: {
+    label: 'Update Now',
+    onClick: () => {
+      console.log('Updating...');
+    },
+  },
+});
+```
+
+## Custom Duration
+
+Control how long toasts stay visible:
+
+```tsx
+// Short notification (2 seconds)
+toast({
+  title: 'Copied!',
+  duration: 2000,
+});
+
+// Long notification (10 seconds)
+toast({
+  title: 'Important Notice',
+  description: 'Please read this carefully.',
+  duration: 10000,
+});
+
+// Persistent (requires manual dismiss)
+toast({
+  title: 'Action Required',
+  description: 'Please confirm your email address.',
+  duration: Infinity,
+});
+```
+
+## Toast Positions
+
+Position toasts in different screen areas:
+
+```tsx
+import { Toast } from '@kuzenbo/notifications/ui/toast';
+
+<Toast>
+  <Toast.Viewport position="top-right" />
+  {children}
+</Toast>
+
+// Available positions:
+// - top-left
+// - top-center
+// - top-right
+// - bottom-left
+// - bottom-center
+// - bottom-right
+```
+
+## Size Variants
+
+Toasts support the standard size system:
+
+```tsx
+<Toast size="sm">
+  <Toast.Viewport />
+</Toast>
+
+// Available sizes: xs, sm, md (default), lg, xl
+```
+
+## Custom Toast Component
+
+Build custom toast layouts:
+
+```tsx
+import { Toast, useToast } from '@kuzenbo/notifications/ui/toast';
+import { Avatar } from '@kuzenbo/core/ui/avatar';
+
+function CustomToast() {
+  const { toast } = useToast();
+
+  const showCustomToast = () => {
+    toast({
+      render: ({ close }) => (
+        <Toast.Root>
+          <Toast.Content>
+            <div className="flex items-start gap-3">
+              <Avatar src="/user.jpg" alt="User" size="sm" />
+              <div className="flex-1">
+                <Toast.Title>New Message</Toast.Title>
+                <Toast.Description>
+                  You have a new message from John
+                </Toast.Description>
+              </div>
+              <Toast.Close onClick={close} />
+            </div>
+          </Toast.Content>
+        </Toast.Root>
+      ),
+    });
+  };
+
+  return <button onClick={showCustomToast}>Show Custom Toast</button>;
+}
+```
+
+## Programmatic Control
+
+Manually control toast lifecycle:
+
+```tsx
+import { useToast } from '@kuzenbo/notifications/ui/toast';
+
+function ToastController() {
+  const { toast, dismiss, dismissAll } = useToast();
+
+  const id = toast({ title: 'Processing...' });
+
+  // Dismiss specific toast
+  setTimeout(() => dismiss(id), 3000);
+
+  // Dismiss all toasts
+  dismissAll();
+}
+```
+
+## Promise-based Toasts
+
+Show loading, success, and error states:
+
+```tsx
+import { useToast } from '@kuzenbo/notifications/ui/toast';
+
+async function saveData() {
+  const { toast } = useToast();
+
+  const promise = fetch('/api/save', { method: 'POST' });
+
+  toast.promise(promise, {
+    loading: 'Saving...',
+    success: 'Saved successfully!',
+    error: 'Failed to save',
+  });
+}
+```
+
+## Accessibility
+
+Toasts are built with accessibility in mind:
+
+- Screen reader announcements via `aria-live` regions
+- Keyboard navigation support
+- Focus management for actions
+- Respects `prefers-reduced-motion`
+
+## Dependencies
+
+- `@base-ui/react` - Accessible UI primitives
+- `@kuzenbo/core` - Core components
+- `@hugeicons/react` - Icon set
+- `tailwind-variants` - Styling
+- `tailwind-merge` - Class merging
+
+## Peer Dependencies
+
+```json
+{
+  "@kuzenbo/core": "^0.0.7",
+  "@kuzenbo/theme": "^0.0.7",
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0"
+}
+```
+
+## TypeScript
+
+Fully typed toast API:
+
+```tsx
+import { useToast } from '@kuzenbo/notifications/ui/toast';
+import type { ToastProps } from '@kuzenbo/notifications/ui/toast';
+
+const { toast } = useToast();
+
+const showTypedToast = (message: string) => {
+  toast({
+    title: message,
+    variant: 'success',
+  } satisfies Partial<ToastProps>);
+};
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Core Components" icon="box" href="/packages/core">
+    Explore other UI components
+  </Card>
+</CardGroup>

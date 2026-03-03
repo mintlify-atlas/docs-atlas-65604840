@@ -1,0 +1,163 @@
+---
+title: 'useDebouncedValue'
+description: 'Returns a debounced mirror of an input value with a cancel function'
+icon: 'clock'
+---
+
+Returns a debounced mirror of an input value and a function to cancel pending updates.
+
+## Signature
+
+```typescript
+function useDebouncedValue<T>(
+  value: T,
+  wait: number,
+  options?: UseDebouncedValueOptions
+): UseDebouncedValueReturnValue<T>
+```
+
+## Parameters
+
+<ParamField path="value" type="T" required>
+  Source value to debounce.
+</ParamField>
+
+<ParamField path="wait" type="number" required>
+  Debounce delay in milliseconds.
+</ParamField>
+
+<ParamField path="options" type="UseDebouncedValueOptions">
+  Optional debounce behavior configuration.
+  
+  <Expandable title="UseDebouncedValueOptions">
+    <ResponseField name="leading" type="boolean" default="false">
+      When `true`, applies the first change immediately before entering the debounce cooldown.
+    </ResponseField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+<ResponseField name="result" type="[T, () => void]">
+  A tuple containing the debounced value and a cancel function.
+  
+  <Expandable title="Tuple">
+    <ResponseField name="0" type="T">
+      The debounced value.
+    </ResponseField>
+    <ResponseField name="1" type="() => void">
+      Function to cancel pending debounce updates.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Usage
+
+### Basic debounced value
+
+```tsx
+import { useDebouncedValue } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function SearchResults() {
+  const [query, setQuery] = useState('');
+  const [debouncedQuery] = useDebouncedValue(query, 500);
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    if (debouncedQuery) {
+      fetch(`/api/search?q=${debouncedQuery}`)
+        .then(r => r.json())
+        .then(setResults);
+    }
+  }, [debouncedQuery]);
+
+  return (
+    <div>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search..."
+      />
+      <ul>
+        {results.map((r, i) => <li key={i}>{r}</li>)}
+      </ul>
+    </div>
+  );
+}
+```
+
+### With leading edge
+
+```tsx
+import { useDebouncedValue } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function LivePreview({ content }: { content: string }) {
+  const [debouncedContent] = useDebouncedValue(content, 300, { leading: true });
+
+  useEffect(() => {
+    console.log('Rendering preview for:', debouncedContent);
+  }, [debouncedContent]);
+
+  return <div dangerouslySetInnerHTML={{ __html: debouncedContent }} />;
+}
+```
+
+### Manual cancellation
+
+```tsx
+import { useDebouncedValue } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function AutoSave({ data }: { data: string }) {
+  const [debouncedData, cancel] = useDebouncedValue(data, 2000);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (debouncedData) {
+      setSaving(true);
+      fetch('/api/save', {
+        method: 'POST',
+        body: JSON.stringify({ data: debouncedData })
+      }).finally(() => setSaving(false));
+    }
+  }, [debouncedData]);
+
+  return (
+    <div>
+      {saving && <p>Saving...</p>}
+      <button onClick={cancel}>Cancel auto-save</button>
+    </div>
+  );
+}
+```
+
+### Debounced window resize
+
+```tsx
+import { useDebouncedValue } from '@kuzenbo/hooks';
+import { useState, useEffect } from 'react';
+
+function useWindowSize() {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const [debouncedSize] = useDebouncedValue(size, 200);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return debouncedSize;
+}
+
+function Component() {
+  const { width, height } = useWindowSize();
+  return <div>Window: {width} x {height}</div>;
+}
+```

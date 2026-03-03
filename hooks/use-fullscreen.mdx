@@ -1,0 +1,183 @@
+---
+title: 'useFullscreen'
+description: 'Control fullscreen mode for elements or the document'
+---
+
+`useFullscreen` provides two hooks for controlling fullscreen state with vendor-prefixed browser fallbacks.
+
+- `useFullscreenElement` - Controls fullscreen for a specific element
+- `useFullscreenDocument` - Controls document-level fullscreen
+
+## useFullscreenElement
+
+Controls fullscreen state for a specific element.
+
+```tsx
+import { useFullscreenElement } from '@kuzenbo/hooks';
+
+function VideoPlayer() {
+  const { ref, toggle, fullscreen } = useFullscreenElement<HTMLVideoElement>();
+
+  return (
+    <div>
+      <video ref={ref} src="video.mp4" controls />
+      <button onClick={toggle}>
+        {fullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+      </button>
+    </div>
+  );
+}
+```
+
+### API Reference
+
+#### Returns
+
+<ResponseField name="ref" type="RefCallback<T>">
+  A ref callback to attach to the element you want to make fullscreen.
+</ResponseField>
+
+<ResponseField name="toggle" type="() => Promise<void>">
+  Async function to toggle fullscreen state.
+</ResponseField>
+
+<ResponseField name="fullscreen" type="boolean">
+  `true` when the element is currently in fullscreen mode.
+</ResponseField>
+
+## useFullscreenDocument
+
+Controls document-level fullscreen for the root element (`document.documentElement`).
+
+```tsx
+import { useFullscreenDocument } from '@kuzenbo/hooks';
+
+function App() {
+  const { toggle, fullscreen } = useFullscreenDocument();
+
+  return (
+    <div>
+      <button onClick={toggle}>
+        {fullscreen ? 'Exit Fullscreen' : 'Fullscreen Page'}
+      </button>
+      <p>Fullscreen: {fullscreen ? 'Yes' : 'No'}</p>
+    </div>
+  );
+}
+```
+
+### API Reference
+
+#### Returns
+
+<ResponseField name="toggle" type="() => Promise<void>">
+  Async function to toggle document fullscreen state.
+</ResponseField>
+
+<ResponseField name="fullscreen" type="boolean">
+  `true` when the document is in fullscreen mode.
+</ResponseField>
+
+## Image Gallery
+
+```tsx
+import { useFullscreenElement } from '@kuzenbo/hooks';
+
+function ImageGallery() {
+  const { ref, toggle, fullscreen } = useFullscreenElement<HTMLDivElement>();
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <img src="image1.jpg" alt="Gallery" />
+      <img src="image2.jpg" alt="Gallery" />
+      <button
+        onClick={toggle}
+        style={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+        }}
+      >
+        {fullscreen ? '⬅️ Exit' : '⤢ Fullscreen'}
+      </button>
+    </div>
+  );
+}
+```
+
+## Presentation Mode
+
+```tsx
+import { useFullscreenDocument } from '@kuzenbo/hooks';
+import { useState } from 'react';
+
+function Presentation() {
+  const { toggle, fullscreen } = useFullscreenDocument();
+  const [slide, setSlide] = useState(0);
+
+  const startPresentation = async () => {
+    await toggle();
+    setSlide(0);
+  };
+
+  return (
+    <div>
+      {!fullscreen ? (
+        <button onClick={startPresentation}>Start Presentation</button>
+      ) : (
+        <div>
+          <h1>Slide {slide + 1}</h1>
+          <button onClick={() => setSlide(s => s + 1)}>Next</button>
+          <button onClick={toggle}>Exit</button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Conditional Rendering
+
+```tsx
+import { useFullscreenElement } from '@kuzenbo/hooks';
+
+function MediaViewer() {
+  const { ref, toggle, fullscreen } = useFullscreenElement();
+
+  return (
+    <div ref={ref}>
+      <img src="photo.jpg" alt="Media" />
+      {fullscreen && (
+        <div className="fullscreen-controls">
+          <button onClick={toggle}>Close</button>
+          <button>Share</button>
+          <button>Download</button>
+        </div>
+      )}
+      {!fullscreen && (
+        <button onClick={toggle}>View Fullscreen</button>
+      )}
+    </div>
+  );
+}
+```
+
+## Browser Support
+
+The hook automatically handles vendor prefixes for:
+
+- Standard `requestFullscreen` / `exitFullscreen`
+- WebKit (`webkitRequestFullscreen` / `webkitExitFullscreen`)
+- Mozilla (`mozRequestFullscreen` / `mozCancelFullScreen`)
+- MS (`msRequestFullscreen` / `msExitFullscreen`)
+
+```tsx
+import { useFullscreenDocument } from '@kuzenbo/hooks';
+
+function FullscreenButton() {
+  const { toggle, fullscreen } = useFullscreenDocument();
+
+  // Works across all browsers with fullscreen support
+  return <button onClick={toggle}>Toggle Fullscreen</button>;
+}
+```

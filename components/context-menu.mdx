@@ -1,0 +1,319 @@
+---
+title: ContextMenu
+description: A menu component that appears when right-clicking or long-pressing an element.
+---
+
+A context menu displays a list of actions when users right-click or long-press on an element, supporting nested submenus, checkboxes, radio groups, and keyboard navigation.
+
+## Installation
+
+```bash
+npm install @kuzenbo/core
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { ContextMenu } from "@kuzenbo/core";
+
+export default function ContextMenuExample() {
+  return (
+    <ContextMenu>
+      <ContextMenu.Trigger className="border border-dashed rounded-md p-8">
+        Right-click this area
+      </ContextMenu.Trigger>
+      <ContextMenu.Content>
+        <ContextMenu.Item>Open incident timeline</ContextMenu.Item>
+        <ContextMenu.Item>Assign incident owner</ContextMenu.Item>
+        <ContextMenu.Separator />
+        <ContextMenu.Item variant="danger">Archive incident</ContextMenu.Item>
+      </ContextMenu.Content>
+    </ContextMenu>
+  );
+}
+```
+
+### With Submenu
+
+```tsx
+import { ContextMenu } from "@kuzenbo/core";
+
+export default function SubmenuExample() {
+  return (
+    <ContextMenu>
+      <ContextMenu.Trigger className="border border-dashed rounded-md p-8">
+        Right-click for options
+      </ContextMenu.Trigger>
+      <ContextMenu.Content>
+        <ContextMenu.Group>
+          <ContextMenu.Label>Team permissions</ContextMenu.Label>
+          <ContextMenu.Item>Edit profile</ContextMenu.Item>
+          <ContextMenu.Sub>
+            <ContextMenu.SubTrigger>Change role</ContextMenu.SubTrigger>
+            <ContextMenu.SubContent>
+              <ContextMenu.Item>Viewer</ContextMenu.Item>
+              <ContextMenu.Item>Editor</ContextMenu.Item>
+              <ContextMenu.Item>Admin</ContextMenu.Item>
+            </ContextMenu.SubContent>
+          </ContextMenu.Sub>
+        </ContextMenu.Group>
+        <ContextMenu.Separator />
+        <ContextMenu.Item variant="danger">Remove from workspace</ContextMenu.Item>
+      </ContextMenu.Content>
+    </ContextMenu>
+  );
+}
+```
+
+### With Checkbox Items
+
+```tsx
+import { ContextMenu } from "@kuzenbo/core";
+
+export default function CheckboxExample() {
+  return (
+    <ContextMenu>
+      <ContextMenu.Trigger className="border border-dashed rounded-md p-8">
+        Right-click for column settings
+      </ContextMenu.Trigger>
+      <ContextMenu.Content>
+        <ContextMenu.Group>
+          <ContextMenu.Label>Column visibility</ContextMenu.Label>
+          <ContextMenu.CheckboxItem defaultChecked>
+            Status column
+          </ContextMenu.CheckboxItem>
+          <ContextMenu.CheckboxItem defaultChecked>
+            Owner column
+          </ContextMenu.CheckboxItem>
+          <ContextMenu.CheckboxItem>
+            Age column
+          </ContextMenu.CheckboxItem>
+        </ContextMenu.Group>
+      </ContextMenu.Content>
+    </ContextMenu>
+  );
+}
+```
+
+### With Disabled Items
+
+```tsx
+import { ContextMenu } from "@kuzenbo/core";
+
+export default function DisabledExample() {
+  return (
+    <ContextMenu>
+      <ContextMenu.Trigger className="border border-dashed rounded-md p-8">
+        Right-click for actions
+      </ContextMenu.Trigger>
+      <ContextMenu.Content>
+        <ContextMenu.Item>Create hotfix</ContextMenu.Item>
+        <ContextMenu.Item disabled>
+          Delete branch (missing permission)
+        </ContextMenu.Item>
+        <ContextMenu.Separator />
+        <ContextMenu.Item disabled variant="danger">
+          Force push (admin only)
+        </ContextMenu.Item>
+      </ContextMenu.Content>
+    </ContextMenu>
+  );
+}
+```
+
+### Composed Anatomy
+
+```tsx
+import { ContextMenu } from "@kuzenbo/core";
+
+export default function ComposedContext() {
+  return (
+    <ContextMenu>
+      <ContextMenu.Trigger className="border border-dashed rounded-md p-8">
+        Right-click here
+      </ContextMenu.Trigger>
+      <ContextMenu.Portal>
+        <ContextMenu.Backdrop />
+        <ContextMenu.Positioner>
+          <ContextMenu.Popup>
+            <ContextMenu.Arrow />
+            <ContextMenu.Group>
+              <ContextMenu.Label>Card actions</ContextMenu.Label>
+              <ContextMenu.Item>Open details</ContextMenu.Item>
+              <ContextMenu.LinkItem href="/docs">
+                View documentation
+              </ContextMenu.LinkItem>
+            </ContextMenu.Group>
+            <ContextMenu.Separator />
+            <ContextMenu.Item variant="danger">
+              Remove from sprint
+            </ContextMenu.Item>
+          </ContextMenu.Popup>
+        </ContextMenu.Positioner>
+      </ContextMenu.Portal>
+    </ContextMenu>
+  );
+}
+```
+
+## API Reference
+
+### ContextMenu (Root)
+
+<ParamField path="defaultOpen" type="boolean">
+  The initial open state when uncontrolled.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  The controlled open state of the menu.
+</ParamField>
+
+<ParamField path="onOpenChange" type="(open: boolean) => void">
+  Callback fired when the open state changes.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'" default="'md'">
+  The size variant for the menu.
+</ParamField>
+
+### ContextMenu.Content
+
+<ParamField path="side" type="'top' | 'right' | 'bottom' | 'left'" default="'right'">
+  The preferred side of the cursor to render against.
+</ParamField>
+
+<ParamField path="sideOffset" type="number" default="0">
+  The distance in pixels from the cursor.
+</ParamField>
+
+<ParamField path="align" type="'start' | 'center' | 'end'" default="'start'">
+  The alignment of the menu relative to the cursor.
+</ParamField>
+
+<ParamField path="alignOffset" type="number" default="4">
+  The offset in pixels from the alignment axis.
+</ParamField>
+
+<ParamField path="size" type="'xs' | 'sm' | 'md' | 'lg' | 'xl'">
+  Override the root size for this content.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### ContextMenu.Trigger
+
+<ParamField path="children" type="ReactNode">
+  The content that will trigger the context menu on right-click.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+### ContextMenu.Item
+
+<ParamField path="variant" type="'default' | 'danger'" default="'default'">
+  The visual variant of the item.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the item is disabled.
+</ParamField>
+
+<ParamField path="onSelect" type="() => void">
+  Callback fired when the item is selected.
+</ParamField>
+
+### ContextMenu.CheckboxItem
+
+<ParamField path="checked" type="boolean">
+  The controlled checked state.
+</ParamField>
+
+<ParamField path="defaultChecked" type="boolean">
+  The initial checked state when uncontrolled.
+</ParamField>
+
+<ParamField path="onCheckedChange" type="(checked: boolean) => void">
+  Callback fired when the checked state changes.
+</ParamField>
+
+### ContextMenu.RadioGroup
+
+<ParamField path="value" type="string">
+  The controlled value of the selected radio item.
+</ParamField>
+
+<ParamField path="defaultValue" type="string">
+  The initial value when uncontrolled.
+</ParamField>
+
+<ParamField path="onValueChange" type="(value: string) => void">
+  Callback fired when the value changes.
+</ParamField>
+
+### ContextMenu.RadioItem
+
+<ParamField path="value" type="string" required>
+  The value of this radio item.
+</ParamField>
+
+### ContextMenu.LinkItem
+
+<ParamField path="href" type="string" required>
+  The URL to navigate to.
+</ParamField>
+
+### ContextMenu.Label
+
+<ParamField path="children" type="ReactNode">
+  The label content.
+</ParamField>
+
+### ContextMenu.Separator
+
+Visual separator between menu items.
+
+### ContextMenu.Shortcut
+
+<ParamField path="children" type="ReactNode">
+  The keyboard shortcut text.
+</ParamField>
+
+## Component Parts
+
+- `ContextMenu` - Root component that manages state
+- `ContextMenu.Trigger` - Element that triggers the menu on right-click
+- `ContextMenu.Portal` - Portals the menu content
+- `ContextMenu.Positioner` - Positions the menu at cursor location
+- `ContextMenu.Popup` - The menu container
+- `ContextMenu.Content` - Convenience wrapper
+- `ContextMenu.Item` - A menu item
+- `ContextMenu.CheckboxItem` - A checkable menu item
+- `ContextMenu.RadioGroup` - Groups radio items
+- `ContextMenu.RadioItem` - A radio menu item
+- `ContextMenu.LinkItem` - A navigation menu item
+- `ContextMenu.Label` - A non-interactive label
+- `ContextMenu.Separator` - Visual separator
+- `ContextMenu.Shortcut` - Keyboard shortcut indicator
+- `ContextMenu.Sub` - Submenu root
+- `ContextMenu.SubTrigger` - Opens a submenu
+- `ContextMenu.SubContent` - Submenu content
+- `ContextMenu.Group` - Groups related items
+- `ContextMenu.Arrow` - Visual arrow indicator
+- `ContextMenu.Backdrop` - Optional backdrop overlay
+
+## Accessibility
+
+- Full keyboard navigation support
+- Arrow keys navigate between items
+- Enter or Space activates items
+- Escape closes the menu
+- Type-ahead to focus items
+- Proper ARIA attributes
+- Focus management on open/close
+- Supports both right-click and long-press gestures

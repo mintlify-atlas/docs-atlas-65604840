@@ -1,0 +1,295 @@
+---
+title: useStateHistory
+description: Tracks state snapshots over time with history navigation
+---
+
+## Overview
+
+Tracks state snapshots over time and exposes history navigation helpers. Calling `set` appends a new entry and drops any "future" entries after the current index.
+
+## Import
+
+```tsx
+import { useStateHistory } from '@kuzenbo/hooks';
+```
+
+## Signature
+
+```tsx
+function useStateHistory<T>(
+  initialValue: T
+): UseStateHistoryReturnValue<T>;
+```
+
+## Parameters
+
+<ParamField path="initialValue" type="T" required>
+  Initial history entry and the value restored by `reset`
+</ParamField>
+
+## Return Value
+
+<ResponseField name="[current, handlers, history]" type="UseStateHistoryReturnValue<T>">
+  A tuple containing the current value, handler functions, and history state
+  
+  <ResponseField name="current" type="T">
+    Current value at the current history index
+  </ResponseField>
+  
+  <ResponseField name="handlers" type="UseStateHistoryHandlers<T>">
+    Object containing history manipulation functions
+    
+    <ResponseField name="handlers.set" type="(value: T) => void">
+      Adds a new history entry and clears future entries
+    </ResponseField>
+    
+    <ResponseField name="handlers.back" type="(steps?: number) => void">
+      Navigates backward in history by the specified number of steps (default: 1)
+    </ResponseField>
+    
+    <ResponseField name="handlers.forward" type="(steps?: number) => void">
+      Navigates forward in history by the specified number of steps (default: 1)
+    </ResponseField>
+    
+    <ResponseField name="handlers.reset" type="() => void">
+      Resets history to the initial value
+    </ResponseField>
+  </ResponseField>
+  
+  <ResponseField name="history" type="UseStateHistoryValue<T>">
+    Object containing history metadata
+    
+    <ResponseField name="history.history" type="T[]">
+      Array of all history entries
+    </ResponseField>
+    
+    <ResponseField name="history.current" type="number">
+      Current index in the history array
+    </ResponseField>
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Undo/Redo Text Editor
+
+```tsx
+import { useStateHistory } from '@kuzenbo/hooks';
+
+function TextEditor() {
+  const [text, { set, back, forward, reset }, { history, current }] =
+    useStateHistory('');
+
+  const canUndo = current > 0;
+  const canRedo = current < history.length - 1;
+
+  return (
+    <div>
+      <div>
+        <button onClick={() => back()} disabled={!canUndo}>
+          Undo
+        </button>
+        <button onClick={() => forward()} disabled={!canRedo}>
+          Redo
+        </button>
+        <button onClick={reset}>Reset</button>
+      </div>
+      
+      <textarea
+        value={text}
+        onChange={(e) => set(e.target.value)}
+        rows={10}
+        cols={50}
+      />
+      
+      <p>
+        History: {current + 1} / {history.length}
+      </p>
+    </div>
+  );
+}
+```
+
+### Canvas Drawing History
+
+```tsx
+import { useStateHistory } from '@kuzenbo/hooks';
+
+interface DrawingState {
+  paths: string[];
+  color: string;
+}
+
+function DrawingCanvas() {
+  const [state, { set, back, forward }, { current, history }] =
+    useStateHistory<DrawingState>({
+      paths: [],
+      color: '#000000',
+    });
+
+  const addPath = (path: string) => {
+    set({
+      ...state,
+      paths: [...state.paths, path],
+    });
+  };
+
+  const changeColor = (color: string) => {
+    set({
+      ...state,
+      color,
+    });
+  };
+
+  return (
+    <div>
+      <div>
+        <button onClick={() => back()} disabled={current === 0}>
+          Undo
+        </button>
+        <button onClick={() => forward()} disabled={current === history.length - 1}>
+          Redo
+        </button>
+        <input
+          type="color"
+          value={state.color}
+          onChange={(e) => changeColor(e.target.value)}
+        />
+      </div>
+      
+      <canvas
+        onClick={() => addPath(`path-${Date.now()}`)}
+        width={500}
+        height={500}
+      />
+      
+      <p>Paths drawn: {state.paths.length}</p>
+    </div>
+  );
+}
+```
+
+### Form State History
+
+```tsx
+import { useStateHistory } from '@kuzenbo/hooks';
+
+interface FormState {
+  name: string;
+  email: string;
+  age: number;
+}
+
+function FormWithHistory() {
+  const [form, { set, back, forward, reset }, { current, history }] =
+    useStateHistory<FormState>({
+      name: '',
+      email: '',
+      age: 0,
+    });
+
+  const updateField = <K extends keyof FormState>(
+    field: K,
+    value: FormState[K]
+  ) => {
+    set({ ...form, [field]: value });
+  };
+
+  return (
+    <div>
+      <div>
+        <button onClick={() => back()}>Undo</button>
+        <button onClick={() => forward()}>Redo</button>
+        <button onClick={reset}>Reset</button>
+        <span>
+          {current + 1} / {history.length}
+        </span>
+      </div>
+      
+      <form>
+        <input
+          type="text"
+          value={form.name}
+          onChange={(e) => updateField('name', e.target.value)}
+          placeholder="Name"
+        />
+        <input
+          type="email"
+          value={form.email}
+          onChange={(e) => updateField('email', e.target.value)}
+          placeholder="Email"
+        />
+        <input
+          type="number"
+          value={form.age}
+          onChange={(e) => updateField('age', parseInt(e.target.value))}
+          placeholder="Age"
+        />
+      </form>
+    </div>
+  );
+}
+```
+
+### Multi-Step Navigation
+
+```tsx
+import { useStateHistory } from '@kuzenbo/hooks';
+
+function HistoryNavigator() {
+  const [value, { set, back, forward }, { history, current }] =
+    useStateHistory(0);
+
+  return (
+    <div>
+      <h3>Value: {value}</h3>
+      
+      <div>
+        <button onClick={() => back(5)}>Back 5</button>
+        <button onClick={() => back()}>Back 1</button>
+        <button onClick={() => forward()}>Forward 1</button>
+        <button onClick={() => forward(5)}>Forward 5</button>
+      </div>
+      
+      <button onClick={() => set(value + 1)}>Increment</button>
+      
+      <div>
+        <h4>History</h4>
+        {history.map((val, index) => (
+          <span
+            key={index}
+            style={{
+              fontWeight: index === current ? 'bold' : 'normal',
+              margin: '0 4px',
+            }}
+          >
+            {val}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+## Type Definitions
+
+```tsx
+export interface UseStateHistoryHandlers<T> {
+  set: (value: T) => void;
+  back: (steps?: number) => void;
+  forward: (steps?: number) => void;
+  reset: () => void;
+}
+
+export interface UseStateHistoryValue<T> {
+  history: T[];
+  current: number;
+}
+
+export type UseStateHistoryReturnValue<T> = [
+  T,
+  UseStateHistoryHandlers<T>,
+  UseStateHistoryValue<T>,
+];
+```

@@ -1,0 +1,199 @@
+---
+title: Input
+description: A text input field for collecting user input with support for various input types and sizes.
+---
+
+## Installation
+
+```bash
+npm install @kuzenbo/core @kuzenbo/theme
+```
+
+## Usage
+
+```tsx
+import { Input } from "@kuzenbo/core";
+
+function App() {
+  return (
+    <Input
+      name="workspaceName"
+      placeholder="Acme Security Platform"
+    />
+  );
+}
+```
+
+## Examples
+
+### Input Types
+
+Inputs support all native HTML input types.
+
+```tsx
+import { Input } from "@kuzenbo/core";
+
+function TypesExample() {
+  return (
+    <div className="grid gap-3">
+      <Input
+        name="workspaceName"
+        placeholder="Acme Security Platform"
+        type="text"
+      />
+      <Input
+        autoComplete="email"
+        name="billingContactEmail"
+        placeholder="billing@acme.io"
+        type="email"
+      />
+      <Input
+        autoComplete="current-password"
+        name="adminPassword"
+        placeholder="Enter admin override password"
+        type="password"
+      />
+      <Input
+        aria-label="Attach signed master service agreement"
+        name="signedAgreement"
+        type="file"
+      />
+    </div>
+  );
+}
+```
+
+### Sizes
+
+Inputs are available in five size variants.
+
+```tsx
+import { Input } from "@kuzenbo/core";
+
+function SizesExample() {
+  return (
+    <div className="grid gap-2">
+      <Input size="xs" placeholder="XS project code" />
+      <Input size="sm" placeholder="SM project code" />
+      <Input size="md" placeholder="MD project code" />
+      <Input size="lg" placeholder="LG project code" />
+      <Input size="xl" placeholder="XL project code" />
+    </div>
+  );
+}
+```
+
+### With Default Value
+
+Set initial values using `defaultValue` or controlled with `value`.
+
+```tsx
+import { Input } from "@kuzenbo/core";
+
+function DefaultValueExample() {
+  return (
+    <Input
+      defaultValue="PO-2026-0042"
+      name="purchaseOrderCode"
+    />
+  );
+}
+```
+
+### Disabled
+
+Disabled inputs are non-interactive and visually muted.
+
+```tsx
+import { Input } from "@kuzenbo/core";
+
+function DisabledExample() {
+  return (
+    <Input
+      disabled
+      name="workspaceSlug"
+      readOnly
+      value="acme-enterprise"
+    />
+  );
+}
+```
+
+### With Input Group
+
+Combine inputs with labels, icons, and addons using InputGroup.
+
+```tsx
+import { Input } from "@kuzenbo/core";
+import { InputGroup } from "@kuzenbo/core";
+
+function InputGroupExample() {
+  return (
+    <InputGroup size="xl">
+      <InputGroup.Input placeholder="Workspace legal name" />
+    </InputGroup>
+  );
+}
+```
+
+## Props
+
+Input extends all native HTML input props.
+
+<ParamField path="size" type="string" default="md">
+  Size variant of the input.
+  
+  Options: `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"`
+</ParamField>
+
+<ParamField path="type" type="string" default="text">
+  The type of input field.
+  
+  Supports all native HTML input types: `"text"` | `"email"` | `"password"` | `"number"` | `"search"` | `"tel"` | `"url"` | `"file"` | etc.
+</ParamField>
+
+<ParamField path="placeholder" type="string">
+  Placeholder text displayed when the input is empty.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the input and makes it non-interactive.
+</ParamField>
+
+<ParamField path="readOnly" type="boolean" default="false">
+  When true, makes the input read-only but still focusable.
+</ParamField>
+
+<ParamField path="value" type="string">
+  Controlled value for the input.
+</ParamField>
+
+<ParamField path="defaultValue" type="string">
+  Initial value for uncontrolled usage.
+</ParamField>
+
+<ParamField path="htmlSize" type="number">
+  The native HTML size attribute (number of visible characters).
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the input.
+</ParamField>
+
+## TypeScript
+
+```tsx
+import type { InputProps } from "@kuzenbo/core";
+
+const CustomInput = (props: InputProps) => {
+  return <Input {...props} />;
+};
+```
+
+## Accessibility
+
+- Input uses semantic `<input>` element
+- Supports all ARIA attributes for enhanced accessibility
+- Invalid state indicated with `aria-invalid` attribute
+- Works with native form validation
+- Supports `autoComplete` for browser autofill

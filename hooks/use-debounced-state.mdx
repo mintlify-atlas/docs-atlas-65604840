@@ -1,0 +1,149 @@
+---
+title: 'useDebouncedState'
+description: 'Manages local state updates with debounce timing to reduce rapid re-renders'
+icon: 'clock'
+---
+
+Manages local state updates with debounce timing to reduce rapid re-renders. Optionally applies the first update immediately with `leading`.
+
+## Signature
+
+```typescript
+function useDebouncedState<T>(
+  defaultValue: T,
+  wait: number,
+  options?: UseDebouncedStateOptions
+): UseDebouncedStateReturnValue<T>
+```
+
+## Parameters
+
+<ParamField path="defaultValue" type="T" required>
+  Initial state value.
+</ParamField>
+
+<ParamField path="wait" type="number" required>
+  Debounce delay in milliseconds.
+</ParamField>
+
+<ParamField path="options" type="UseDebouncedStateOptions">
+  Optional debounce behavior configuration.
+  
+  <Expandable title="UseDebouncedStateOptions">
+    <ResponseField name="leading" type="boolean" default="false">
+      When `true`, applies the first update immediately before debouncing subsequent updates.
+    </ResponseField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+<ResponseField name="result" type="[T, (newValue: SetStateAction<T>) => void]">
+  A tuple containing the current value and a setter function.
+  
+  <Expandable title="Tuple">
+    <ResponseField name="0" type="T">
+      The current debounced state value.
+    </ResponseField>
+    <ResponseField name="1" type="(newValue: SetStateAction<T>) => void">
+      Setter function that accepts a new value or updater function.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Usage
+
+### Basic debounced state
+
+```tsx
+import { useDebouncedState } from '@kuzenbo/hooks';
+
+function SearchInput() {
+  const [value, setValue] = useDebouncedState('', 500);
+
+  return (
+    <div>
+      <input
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Type to search..."
+      />
+      <p>Debounced value: {value}</p>
+    </div>
+  );
+}
+```
+
+### With leading edge
+
+```tsx
+import { useDebouncedState } from '@kuzenbo/hooks';
+import { useEffect } from 'react';
+
+function Counter() {
+  const [count, setCount] = useDebouncedState(0, 1000, { leading: true });
+
+  useEffect(() => {
+    console.log('Count updated:', count);
+  }, [count]);
+
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <p>Count: {count}</p>
+    </div>
+  );
+}
+```
+
+### Functional updates
+
+```tsx
+import { useDebouncedState } from '@kuzenbo/hooks';
+
+function TodoList() {
+  const [items, setItems] = useDebouncedState<string[]>([], 300);
+
+  const addItem = (item: string) => {
+    setItems((prev) => [...prev, item]);
+  };
+
+  return (
+    <div>
+      <button onClick={() => addItem('New item')}>Add Item</button>
+      <ul>
+        {items.map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### Form input with debounced validation
+
+```tsx
+import { useDebouncedState } from '@kuzenbo/hooks';
+import { useEffect, useState } from 'react';
+
+function EmailInput() {
+  const [email, setEmail] = useDebouncedState('', 500);
+  const [isValid, setIsValid] = useState(true);
+
+  useEffect(() => {
+    if (email) {
+      setIsValid(email.includes('@'));
+    }
+  }, [email]);
+
+  return (
+    <div>
+      <input
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter email"
+      />
+      {!isValid && <p>Invalid email address</p>}
+    </div>
+  );
+}
+```
